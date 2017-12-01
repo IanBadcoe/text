@@ -1,0 +1,8 @@
+#
+*.obj
+*.ipch
+*.db
+.vs
+*.opendb
+x64
+text/x64

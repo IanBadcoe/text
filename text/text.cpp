@@ -9,6 +9,7 @@
 #include "Map.h"
 
 World world(1000, 1000);
+Map map(1000, 1000);
 
 static bool is_border(int x, int y) {
 	return x == 0 || y == 0 || x == world.GetWidth() - 1 || y == world.GetHeight() - 1;
@@ -44,14 +45,6 @@ int main()
 	GetConsoleScreenBufferInfo(console, &inf);
 	SetConsoleScreenBufferSize(console, inf.dwMaximumWindowSize);
 
-	COORD c;
-	c.X = 10;
-	c.Y = 10;
-
-	DWORD dummy;
-	WORD attr = FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY | BACKGROUND_RED;
-
-
 	srand(17);
 
 	for(int k = 0; k < world.GetWidth(); k++)
@@ -70,7 +63,7 @@ int main()
 		}
 	}
 
-	for (int k = 0; k < 5; k++) {
+	for (int k = 0; k < 50; k++) {
 		for (int i = 0; i < world.GetWidth(); i++)
 		{
 			for (int j = 0; j < world.GetWidth(); j++)
@@ -78,42 +71,22 @@ int main()
 				int d = rand() % 4;
 
 				Entity* e = clone_entity(world.GetTerrain(i, j));
+
+				world.SetTerrain(i, j, e);
 			}
 		}
 	}
 
-	WriteConsoleOutputAttribute(console, &attr, 1, c, &dummy);
-	WriteConsoleOutputCharacter(console, L"X", 1, c, &dummy);
-	wchar_t ch;
-
-	for (int k = 0; k < 300; k++)
+	for (int i = 0; i < inf.dwMaximumWindowSize.X; i++)
 	{
-		c.X = 2;
-		c.Y = k;
-		ch = (k % 10) + '0';
-		WriteConsoleOutputCharacter(console, &ch, 1, c, &dummy);
-		c.X = 1;
-		c.Y = k;
-		ch = (k / 10 % 10) + '0';
-		WriteConsoleOutputCharacter(console, &ch, 1, c, &dummy);
-		c.X = 0;
-		c.Y = k;
-		ch = (k / 100 % 10) + '0';
-		WriteConsoleOutputCharacter(console, &ch, 1, c, &dummy);
-
-		c.X = k;
-		c.Y = 2;
-		ch = (k % 10) + '0';
-		WriteConsoleOutputCharacter(console, &ch, 1, c, &dummy);
-		c.X = k;
-		c.Y = 1;
-		ch = (k / 10 % 10) + '0';
-		WriteConsoleOutputCharacter(console, &ch, 1, c, &dummy);
-		c.X = k;
-		c.Y = 0;
-		ch = (k / 100 % 10) + '0';
-		WriteConsoleOutputCharacter(console, &ch, 1, c, &dummy);
+		for (int j = 0; j < inf.dwMaximumWindowSize.Y; j++)
+		{
+			map.SetChar(i, j, world[i][j]);
+		}
 	}
+
+	map.Draw(console, 0, 0, inf.dwMaximumWindowSize.X, inf.dwMaximumWindowSize.Y);
+
     return 0;
 }
 

@@ -8,13 +8,13 @@ class Wall : public Entity {
 public:
 	Wall(int str) : Entity(EntityType::Wall), _str(str) {}
 
-	virtual DisplayChar* Disp() const {
+	virtual DisplayChar& Disp() const {
 		if (_str > 500) {
-			return &s_strong_wall;
+			return s_strong_wall;
 		}
 		else
 		{
-			return &s_weak_wall;
+			return s_weak_wall;
 		}
 	}
 
