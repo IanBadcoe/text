@@ -1,6 +1,7 @@
 #pragma once
 
 class Entity;
+class World;
 
 #define	FOREGROUND_BLACK 0
 #define FOREGROUND_YELLOW FOREGROUND_GREEN | FOREGROUND_RED
@@ -46,15 +47,27 @@ private:
 	};
 
 public:
-	Map(int width, int height) : _width(width), _height(height), _frame(0) {
+	Map(int width, int height)
+		: _width(width),
+		  _height(height),
+		  _frame(0),
+		  _char_buff(nullptr),
+		  _attr_buff(nullptr),
+		  _buff_size(0)
+	{
 		_map = new MapChar[width * height];
+	}
+	~Map() {
+		delete[] _map;
+		delete[] _char_buff;
+		delete[] _attr_buff;
 	}
 
 	DisplayChar GetChar(int i, int j) const {
 		return _map[idx(i, j)]._dc;
 	}
 
-	void SetChar(int x, int y, Entity* e);
+	void SetChar(int x, int y, const Entity* e);
 
 	int idx(int x, int y) const {
 		return x + y * _width;
@@ -64,7 +77,21 @@ public:
 
 	void Draw(HANDLE console, int x, int y, int w, int h);
 
+	void ReadWorld(const World& world, int x, int y, int w, int h);
+
 private:
+	void EnsureBuffers(size_t s) {
+		if (s > _buff_size)
+		{
+			delete[] _char_buff;
+			delete[] _attr_buff;
+
+			_char_buff = new wchar_t[s];
+			_attr_buff = new WORD[s];
+			_buff_size = s;
+		}
+	}
+
 	int _width;
 	int _height;
 
@@ -73,4 +100,8 @@ private:
 	int _frame;
 
 	static DisplayChar s_void;
+
+	wchar_t* _char_buff;
+	WORD* _attr_buff;
+	size_t _buff_size;
 };

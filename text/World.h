@@ -4,17 +4,6 @@
 
 class World;
 
-class WorldColumn {
-public:
-	WorldColumn(int col, World* world) : _x(col), _world(world) {}
-
-	Entity* operator[](int y);
-
-private:
-	int _x;
-	World* _world;
-};
-
 class World {
 public:
 	World(int width, int height) : _width(width), _height(height) {
@@ -40,11 +29,33 @@ public:
 		delete _terrain;
 	}
 
+	Entity* GetCell(int i, int j) {
+		if (GetEntity(i, j))
+			return GetEntity(i, j);
+
+		return GetTerrain(i, j);
+	}
+
+	const Entity* GetCell(int i, int j) const {
+		if (GetEntity(i, j))
+			return GetEntity(i, j);
+
+		return GetTerrain(i, j);
+	}
+
 	Entity* GetTerrain(int x, int y) {
 		return _terrain[idx(x, y)];
 	}
 
+	const Entity* GetTerrain(int x, int y) const {
+		return _terrain[idx(x, y)];
+	}
+
 	Entity* GetEntity(int x, int y) {
+		return _entities[idx(x, y)];
+	}
+
+	const Entity* GetEntity(int x, int y) const {
 		return _entities[idx(x, y)];
 	}
 
@@ -94,10 +105,6 @@ public:
 		_entities[idx(x, y)] = nullptr;
 	}
 
-	WorldColumn operator[](int x) {
-		return WorldColumn(x, this);
-	}
-
 	int GetWidth() const {
 		return _width;
 	}
@@ -113,10 +120,3 @@ private:
 	Entity **_terrain;
 	Entity **_entities;
 };
-
-inline Entity* WorldColumn::operator[](int y) {
-	if (_world->GetEntity(_x, y))
-		return _world->GetEntity(_x, y);
-
-	return _world->GetTerrain(_x, y);
-}

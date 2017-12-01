@@ -63,7 +63,7 @@ int main()
 		}
 	}
 
-	for (int k = 0; k < 50; k++) {
+	for (int k = 0; k < 5; k++) {
 		for (int i = 0; i < world.GetWidth(); i++)
 		{
 			for (int j = 0; j < world.GetWidth(); j++)
@@ -77,15 +77,35 @@ int main()
 		}
 	}
 
-	for (int i = 0; i < inf.dwMaximumWindowSize.X; i++)
-	{
-		for (int j = 0; j < inf.dwMaximumWindowSize.Y; j++)
-		{
-			map.SetChar(i, j, world[i][j]);
-		}
-	}
+	int px = 0;
+	int py = 0;
 
-	map.Draw(console, 0, 0, inf.dwMaximumWindowSize.X, inf.dwMaximumWindowSize.Y);
+	int max_scroll_x = 999 - inf.dwMaximumWindowSize.X;
+	int max_scroll_y = 999 - inf.dwMaximumWindowSize.Y;
+
+	while(true)
+	{
+		if (GetAsyncKeyState(VK_LEFT))
+		{
+			px = max(min(px - 1, max_scroll_x), 0);
+		}
+		if (GetAsyncKeyState(VK_RIGHT))
+		{
+			px = max(min(px + 1, max_scroll_x), 0);
+		}
+		if (GetAsyncKeyState(VK_UP))
+		{
+			py = max(min(py - 1, max_scroll_y), 0);
+		}
+		if (GetAsyncKeyState(VK_DOWN))
+		{
+			py = max(min(py + 1, max_scroll_y), 0);
+		}
+
+		map.ReadWorld(world, px, py, inf.dwMaximumWindowSize.X, inf.dwMaximumWindowSize.Y);
+
+		map.Draw(console, px, py, inf.dwMaximumWindowSize.X, inf.dwMaximumWindowSize.Y);
+	}
 
     return 0;
 }
