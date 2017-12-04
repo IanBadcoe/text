@@ -4,9 +4,9 @@
 
 class DisplayChar;
 
-class Wall : public Entity {
+class Wall : public Terrain {
 public:
-	Wall(int str) : Entity(EntityType::Wall), _str(str) {}
+	Wall(int str) : Terrain(EntityType::Wall, false), _str(str) {}
 
 	virtual DisplayChar& Disp() const {
 		if (_str > 500) {

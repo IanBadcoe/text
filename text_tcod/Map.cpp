@@ -22,7 +22,7 @@ void Map::SetChar(int x, int y, const Entity* entity, const Entity* terrain) {
 	}
 	else
 	{
-		_map[idx(x, y)]._dc = s_void;
+		_map[idx(x, y)]._dc = terrain->Disp();
 	}
 }
 
@@ -31,8 +31,18 @@ void Map::Draw(TCODConsole* console, int x, int y, int w, int h) {
 	{
 		for (int j = 0; j < h; j++)
 		{
-			const DisplayChar& dc = _map[idx(i + x, j + y)]._dc;
-			console->putCharEx(i, j, dc._char, dc._fcol, dc._bcol);
+			const MapChar& mc = _map[idx(i + x, j + y)];
+			float fade = (100 - (_frame - mc._frame)) / 100.0f;
+
+			if (fade < 0.0)
+			{
+				console->putCharEx(i, j, ' ', TCOD_white, TCOD_black);
+			}
+			else
+			{
+				const DisplayChar& dc = _map[idx(i + x, j + y)]._dc;
+				console->putCharEx(i, j, dc._char, dc._fcol * fade, dc._bcol * fade);
+			}
 		}
 	}
 }

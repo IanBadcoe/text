@@ -2,13 +2,17 @@
 
 #include "Entity.h"
 
-class Floor : public Entity {
+#include "color.hpp"
+
+class Floor : public Terrain {
 public:
-	Floor() : Entity(EntityType::Floor) {}
+	Floor() : Terrain(EntityType::Floor, true) {}
 
 	virtual DisplayChar& Disp() const {
 		return s_floor;
 	}
 private:
 	static DisplayChar s_floor;
+	static TCODColor s_floor_foreground;
+	static TCODColor s_floor_background;
 };
