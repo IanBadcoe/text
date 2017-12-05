@@ -6,7 +6,7 @@
 
 class Floor : public Terrain {
 public:
-	Floor() : Terrain(EntityType::Floor, true) {}
+	Floor() : Terrain(EntityType::Floor, true, true) {}
 
 	virtual DisplayChar& Disp() const {
 		return s_floor;

@@ -39,10 +39,15 @@ private:
 
 class Terrain : public Entity {
 public:
-	Terrain(EntityType et, bool is_walkable) : Entity(et), _is_walkable(is_walkable) {}
+	Terrain(EntityType et, bool is_walkable, bool is_transparent) :
+		Entity(et),
+		_is_walkable(is_walkable),
+		_is_transparent(is_transparent) {}
 
 	bool IsWalkable() const { return _is_walkable; }
+	bool IsTransparent() const { return _is_transparent; }
 
 private:
 	bool _is_walkable;
+	bool _is_transparent;
 };

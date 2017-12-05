@@ -15,11 +15,11 @@ public:
 
 	const Entity* GetCell(int i, int j) const;
 
-	Entity* GetTerrain(int x, int y) {
+	Terrain* GetTerrain(int x, int y) {
 		return _terrain[idx(x, y)];
 	}
 
-	const Entity* GetTerrain(int x, int y) const {
+	const Terrain* GetTerrain(int x, int y) const {
 		return _terrain[idx(x, y)];
 	}
 

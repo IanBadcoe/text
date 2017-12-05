@@ -2,9 +2,12 @@
 
 #include "color.hpp"
 #include "console.hpp"
+#include "fov.hpp"
 
 class Entity;
+class Terrain;
 class World;
+class Player;
 
 class DisplayChar {
 public:
@@ -29,13 +32,22 @@ private:
 	};
 
 public:
-	Map(int width, int height)
+	Map(int width, int height, Player* p)
 		: _width(width),
 		  _height(height),
-		  _frame(0)
+		  _frame(0),
+		  _p(p),
+		  _tcod_map(width, height)
 	{
 		_map = new MapChar[width * height];
+
+		for (int i = 0; i < _width; i++) {
+			for (int j = 0; j < _height; j++) {
+				_tcod_map.setProperties(i, j, false, false);
+			}
+		}
 	}
+
 	~Map() {
 		delete[] _map;
 	}
@@ -44,7 +56,7 @@ public:
 		return _map[idx(i, j)]._dc;
 	}
 
-	void SetChar(int x, int y, const Entity* entity, const Entity* terrain);
+	void SetChar(int x, int y, const Entity* entity, const Terrain* terrain);
 
 	int idx(int x, int y) const {
 		return x + y * _width;
@@ -54,7 +66,7 @@ public:
 
 	void Draw(TCODConsole* console, int x, int y, int w, int h);
 
-	void ReadWorld(const World& world, int x, int y, int w, int h);
+	void ReadWorld(const World& world, int x, int y, int w, int h, int px, int py);
 
 private:
 	int _width;
@@ -63,6 +75,10 @@ private:
 	MapChar* _map;
 
 	int _frame;
+
+	Player* _p;
+
+	TCODMap _tcod_map;
 
 	static DisplayChar s_void;
 };
