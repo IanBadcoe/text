@@ -103,3 +103,8 @@ Player* World::GetPlayer(int i)
 
 	return _players[i];
 }
+
+void World::QueueStep(Actor* a, float delay)
+{
+	_action_queue.push(QueueEntry(a, )
+}

@@ -3,6 +3,7 @@
 #include "Entity.h"
 
 #include <algorithm>
+#include <queue>
 
 class World;
 class Player;
@@ -68,6 +69,8 @@ public:
 			&& pos._y >= 0 && pos._y < _height;
 	}
 
+	void QueueStep(Actor* a, float delay);
+
 private:
 	int _width;
 	int _height;
@@ -76,4 +79,16 @@ private:
 	Actor **_actors;
 
 	Player* _players[4];
+
+	struct QueueEntry {
+		Actor* _a;
+		float _time;
+
+		bool operator<(const QueueEntry& rhs) {
+			// earliest first
+			return _time > rhs._time;
+		}
+	};
+
+	std::priority_queue<QueueEntry> _action_queue;
 };

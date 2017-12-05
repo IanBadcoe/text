@@ -64,7 +64,8 @@ public:
 		Entity(et), _speed(speed) {
 	}
 
-	virtual void Step() = 0;
+	void Step();
+	virtual float InnerStep() = 0;
 
 private:
 	float _speed;
