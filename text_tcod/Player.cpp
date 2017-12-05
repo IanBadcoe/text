@@ -1,6 +1,10 @@
 #include "Player.h"
 
 #include "Map.h"
+#include "World.h"
+#include "Coord.h"
+
+#include "sys.hpp"
 
 TCODColor Player::s_foreground[4] = {
 	TCODColor(128, 32, 32),
@@ -15,6 +19,28 @@ DisplayChar Player::s_player[4] = {
 	DisplayChar('@', s_foreground[2]),
 	DisplayChar('@', s_foreground[3])
 };
+
+void Player::Step()
+{
+	World* w = GetWorld();
+	assert(w);
+
+	TCOD_key_t key;
+	TCOD_event_t ev = TCODSystem::waitForEvent(TCOD_EVENT_KEY, &key, nullptr, true);
+
+	if (key.vk >= TCODK_KP0 && key.vk <= TCODK_KP9 && key.vk != TCODK_KP5)
+	{
+		Coord::Dir d = Coord::Dir(key.vk - TCODK_KP0);
+
+		Coord old_pos = GetPos();
+		Coord new_pos = old_pos.Step(d);
+
+		if (w->InRange(new_pos)) {
+			w->RemoveActor(old_pos);
+			w->AddActor(new_pos, this);
+		}
+	}
+}
 
 DisplayChar& Player::Disp() const
 {

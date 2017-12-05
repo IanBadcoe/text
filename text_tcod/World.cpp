@@ -5,12 +5,12 @@
 World::World(int width, int height) : _width(width), _height(height)
 {
 	_terrain = new Terrain*[_width * _height];
-	_entities = new Entity*[_width * _height];
+	_actors = new Actor*[_width * _height];
 
 	for (int i = 0; i < _width; i++) {
 		for (int j = 0; j < _width; j++) {
-			_terrain[idx(i, j)] = nullptr;
-			_entities[idx(i, j)] = nullptr;
+			_terrain[idx(Coord(i, j))] = nullptr;
+			_actors[idx(Coord(i, j))] = nullptr;
 		}
 	}
 
@@ -24,49 +24,33 @@ World::~World()
 {
 	for (int i = 0; i < _width; i++) {
 		for (int j = 0; j < _height; j++) {
-			ClearTerrain(i, j);
-			ClearEntity(i, j);
+			ClearTerrain(Coord(i, j));
+			ClearEntity(Coord(i, j));
 		}
 	}
 
 	delete _terrain;
 }
 
-Entity* World::GetCell(int i, int j)
+void World::SetTerrain(Coord pos, Terrain* e)
 {
-	if (GetEntity(i, j))
-		return GetEntity(i, j);
+	ClearTerrain(pos);
 
-	return GetTerrain(i, j);
-}
-
-const Entity* World::GetCell(int i, int j) const
-{
-	if (GetEntity(i, j))
-		return GetEntity(i, j);
-
-	return GetTerrain(i, j);
-}
-
-void World::SetTerrain(int x, int y, Terrain* e)
-{
-	ClearTerrain(x, y);
-
-	_terrain[idx(x, y)] = e;
+	_terrain[idx(pos)] = e;
 
 	if (e) {
-		e->SetPos(this, x, y);
+		e->SetPos(this, pos);
 	}
 }
 
-void World::SetEntity(int x, int y, Entity* e)
+void World::AddActor(Coord pos, Actor* e)
 {
-	ClearEntity(x, y);
+	assert(!_actors[idx(pos)]);
 
-	_entities[idx(x, y)] = e;
+	_actors[idx(pos)] = e;
 
 	if (e) {
-		e->SetPos(this, x, y);
+		e->SetPos(this, pos);
 	}
 
 	if (e->GetType() == EntityType::Player)
@@ -81,28 +65,36 @@ void World::SetEntity(int x, int y, Entity* e)
 	}
 }
 
-void World::ClearTerrain(int x, int y)
+void World::RemoveActor(Coord pos)
 {
-	Entity* e = GetTerrain(x, y);
+	assert(_actors[idx(pos)]);
 
-	if (e)
-	{
-		delete e;
-	}
-
-	_terrain[idx(x, y)] = nullptr;
+	_actors[idx(pos)]->LeaveWorld();
+	_actors[idx(pos)] = nullptr;
 }
 
-void World::ClearEntity(int x, int y)
+void World::ClearTerrain(Coord pos)
 {
-	Entity* e = GetEntity(x, y);
+	Entity* e = GetTerrain(pos);
 
 	if (e)
 	{
 		delete e;
 	}
 
-	_entities[idx(x, y)] = nullptr;
+	_terrain[idx(pos)] = nullptr;
+}
+
+void World::ClearEntity(Coord pos)
+{
+	Entity* e = GetActor(pos);
+
+	if (e)
+	{
+		delete e;
+	}
+
+	_actors[idx(pos)] = nullptr;
 }
 
 Player* World::GetPlayer(int i)

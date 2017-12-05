@@ -2,6 +2,8 @@
 
 #include <assert.h>
 
+#include "Coord.h"
+
 class World;
 class DisplayChar;
 
@@ -13,27 +15,31 @@ enum class EntityType {
 
 class Entity {
 public:
-	Entity(EntityType t) : _type(t), _x(0), _y(0), _w(nullptr) {}
+	Entity(EntityType t) : _type(t), _pos(0, 0), _w(nullptr) {}
 
 	virtual DisplayChar& Disp() const = 0;
 
-	void SetPos(World* w, int x, int y) {
+	void SetPos(World* w, Coord pos) {
 		assert(_w == nullptr);
 
-		_x = x;
-		_y = y;
+		_pos = pos;
 		_w = w;
+	}
+	void LeaveWorld() {
+		assert(_w);
+		_w = nullptr;
 	}
 
 	EntityType GetType() const { return _type; }
 
-	int GetX() const { return _x; }
-	int GetY() const { return _y; }
+	Coord GetPos() const { return _pos; }
+
+	World* GetWorld() { return _w; }
+	const World* GetWorld() const { return _w; }
 
 private:
 	EntityType _type;
-	int _x;
-	int _y;
+	Coord _pos;
 	World* _w;
 };
 
@@ -50,4 +56,16 @@ public:
 private:
 	bool _is_walkable;
 	bool _is_transparent;
+};
+
+class Actor : public Entity {
+public:
+	Actor(EntityType et, float speed) :
+		Entity(et), _speed(speed) {
+	}
+
+	virtual void Step() = 0;
+
+private:
+	float _speed;
 };

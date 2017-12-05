@@ -2,6 +2,8 @@
 
 #include "Entity.h"
 
+#include <algorithm>
+
 class World;
 class Player;
 
@@ -11,37 +13,34 @@ public:
 
 	~World();
 
-	Entity* GetCell(int i, int j);
-
-	const Entity* GetCell(int i, int j) const;
-
-	Terrain* GetTerrain(int x, int y) {
-		return _terrain[idx(x, y)];
+	Terrain* GetTerrain(Coord pos) {
+		return _terrain[idx(pos)];
 	}
 
-	const Terrain* GetTerrain(int x, int y) const {
-		return _terrain[idx(x, y)];
+	const Terrain* GetTerrain(Coord pos) const {
+		return _terrain[idx(pos)];
 	}
 
-	Entity* GetEntity(int x, int y) {
-		return _entities[idx(x, y)];
+	Actor* GetActor(Coord pos) {
+		return _actors[idx(pos)];
 	}
 
-	const Entity* GetEntity(int x, int y) const {
-		return _entities[idx(x, y)];
+	const Actor* GetActor(Coord pos) const {
+		return _actors[idx(pos)];
 	}
 
-	void SetTerrain(int x, int y, Terrain* e);
+	void SetTerrain(Coord pos, Terrain* e);
 
-	void SetEntity(int x, int y, Entity* e);
+	void AddActor(Coord pos, Actor* e);
+	void RemoveActor(Coord pos);
 
-	int idx(int x, int y) const {
-		return x + y * _width;
+	int idx(Coord pos) const {
+		return pos._x + pos._y * _width;
 	}
 
-	void ClearTerrain(int x, int y);
+	void ClearTerrain(Coord pos);
 
-	void ClearEntity(int x, int y);
+	void ClearEntity(Coord pos);
 
 	int GetWidth() const {
 		return _width;
@@ -51,20 +50,30 @@ public:
 		return _height;
 	}
 
-	bool IsWalkable(int x, int y) {
-		Terrain* t = _terrain[idx(x, y)];
+	bool IsWalkable(Coord pos) {
+		Terrain* t = _terrain[idx(pos)];
 
 		return t ? t->IsWalkable() : false;
 	}
 
 	Player* GetPlayer(int i);
 
+	Coord ClampCoord(Coord c) {
+		return Coord(std::min(std::max(c._x, 0), _width),
+			std::min(std::max(c._y, 0), _height));
+	}
+
+	bool InRange(Coord pos) {
+		return pos._x >= 0 && pos._x < _width
+			&& pos._y >= 0 && pos._y < _height;
+	}
+
 private:
 	int _width;
 	int _height;
 
 	Terrain **_terrain;
-	Entity **_entities;
+	Actor **_actors;
 
 	Player* _players[4];
 };

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Coord.h"
+
 #include "color.hpp"
 #include "console.hpp"
 #include "fov.hpp"
@@ -52,21 +54,21 @@ public:
 		delete[] _map;
 	}
 
-	DisplayChar GetChar(int i, int j) const {
-		return _map[idx(i, j)]._dc;
+	DisplayChar GetChar(Coord pos) const {
+		return _map[idx(pos)]._dc;
 	}
 
-	void SetChar(int x, int y, const Entity* entity, const Terrain* terrain);
+	void SetChar(Coord pos, const Entity* entity, const Terrain* terrain);
 
-	int idx(int x, int y) const {
-		return x + y * _width;
+	int idx(Coord pos) const {
+		return pos._x + pos._y * _width;
 	}
 
 	void NextFrame() { _frame++; }
 
-	void Draw(TCODConsole* console, int x, int y, int w, int h);
+	void Draw(TCODConsole* console, Coord bottom_left, Coord screen_size);
 
-	void ReadWorld(const World& world, int x, int y, int w, int h, int px, int py);
+	void ReadWorld(const World& world, Coord eye_pos);
 
 private:
 	int _width;

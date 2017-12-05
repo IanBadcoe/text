@@ -12,15 +12,15 @@ void Template::Apply(World& w)
 	{
 		for (int j = 0; j < w.GetHeight(); j++)
 		{
-			w.SetTerrain(i, j, TerrainForCell(i, j));
+			w.SetTerrain(Coord(i, j), TerrainForCell(Coord(i, j)));
 		}
 	}
 }
 
-Terrain* CircleTemplate::TerrainForCell(int x, int y)
+Terrain* CircleTemplate::TerrainForCell(Coord pos)
 {
-	int dx = x - _cx;
-	int dy = y - _cy;
+	int dx = pos._x - _cx;
+	int dy = pos._y - _cy;
 
 	int r2 = (dx * dx) + (dy * dy);
 
