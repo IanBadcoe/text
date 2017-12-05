@@ -81,10 +81,12 @@ private:
 	Player* _players[4];
 
 	struct QueueEntry {
+		QueueEntry(Actor* a, float time) : _a(a), _time(time) {}
+
 		Actor* _a;
 		float _time;
 
-		bool operator<(const QueueEntry& rhs) {
+		bool operator<(const QueueEntry& rhs) const {
 			// earliest first
 			return _time > rhs._time;
 		}

@@ -4,5 +4,5 @@
 *.db
 .vs
 *.opendb
-x64
-text/x64
+./x64
+text_tcod/x64

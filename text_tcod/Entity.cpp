@@ -2,12 +2,12 @@
 
 #include "World.h"
 
-void Actor::Step()
+void Actor::Step(float time)
 {
-	float time = InnerStep();
+	float duration = InnerStep();
 
 	if (_speed != 0.0)
 	{
-		GetWorld()->QueueStep(this, time / _speed);
+		GetWorld()->QueueStep(this, time + duration / _speed);
 	}
 }

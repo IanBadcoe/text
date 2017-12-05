@@ -12,7 +12,7 @@ public:
 		assert(_num >= 0 && _num < 4);
 	}
 
-	virtual void Step();
+	virtual float InnerStep();
 
 	virtual DisplayChar& Disp() const;
 

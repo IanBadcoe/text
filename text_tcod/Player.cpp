@@ -20,7 +20,7 @@ DisplayChar Player::s_player[4] = {
 	DisplayChar('@', s_foreground[3])
 };
 
-void Player::Step()
+float Player::InnerStep()
 {
 	World* w = GetWorld();
 	assert(w);
@@ -40,6 +40,8 @@ void Player::Step()
 			w->AddActor(new_pos, this);
 		}
 	}
+
+	return 1.0f;
 }
 
 DisplayChar& Player::Disp() const
