@@ -39,7 +39,7 @@ void World::SetTerrain(Coord pos, Terrain* e)
 	_terrain[idx(pos)] = e;
 
 	if (e) {
-		e->SetPos(this, pos);
+		e->SetPos(pos);
 	}
 }
 
@@ -50,7 +50,8 @@ void World::AddActor(Coord pos, Actor* e)
 	_actors[idx(pos)] = e;
 
 	if (e) {
-		e->SetPos(this, pos);
+		e->SetPos(pos);
+		e->SetWorld(this);
 	}
 
 	if (e->GetType() == EntityType::Player)
@@ -69,7 +70,7 @@ void World::RemoveActor(Coord pos)
 {
 	assert(_actors[idx(pos)]);
 
-	_actors[idx(pos)]->LeaveWorld();
+	_actors[idx(pos)]->SetWorld(nullptr);
 	_actors[idx(pos)] = nullptr;
 }
 
@@ -102,9 +103,4 @@ Player* World::GetPlayer(int i)
 	assert(i >= 0 && i < 4);
 
 	return _players[i];
-}
-
-void World::QueueStep(Actor* a, float time)
-{
-	_action_queue.push(QueueEntry(a, time));
 }

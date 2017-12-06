@@ -12,3 +12,19 @@ Coord Coord::DC[8] = {
 	Coord(DX[6], DY[6]),
 	Coord(DX[7], DY[7])
 };
+
+static std::map<TCOD_keycode_t, Coord::Dir> s_init_dir_map() {
+	std::map<TCOD_keycode_t, Coord::Dir> ret;
+	ret[TCODK_KP1] = Coord::Dir::SouthWest;
+	ret[TCODK_KP2] = Coord::Dir::South;
+	ret[TCODK_KP3] = Coord::Dir::SouthEast;
+	ret[TCODK_KP6] = Coord::Dir::East;
+	ret[TCODK_KP9] = Coord::Dir::NorthEast;
+	ret[TCODK_KP8] = Coord::Dir::North;
+	ret[TCODK_KP7] = Coord::Dir::NorthWest;
+	ret[TCODK_KP4] = Coord::Dir::West;
+
+	return ret;
+}
+
+std::map<TCOD_keycode_t, Coord::Dir> Coord::KeyMap = s_init_dir_map();

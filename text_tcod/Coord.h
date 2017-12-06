@@ -1,5 +1,9 @@
 #pragma once
 
+#include <map>
+
+#include "console_types.h"
+
 class Coord {
 public:
 	Coord() : _x(0), _y(0) {}
@@ -20,6 +24,9 @@ public:
 	static int DY[8];
 
 	static Coord DC[8];
+
+	typedef std::map<TCOD_keycode_t, Dir> KeyMapType;
+	static KeyMapType KeyMap;
 
 	Coord Step(Dir d) {
 		return *this + DC[(int)d];

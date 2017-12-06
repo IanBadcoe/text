@@ -19,23 +19,20 @@ public:
 
 	virtual DisplayChar& Disp() const = 0;
 
-	void SetPos(World* w, Coord pos) {
-		assert(_w == nullptr);
-
+	void SetPos(Coord pos) {
 		_pos = pos;
-		_w = w;
 	}
-	void LeaveWorld() {
-		assert(_w);
-		_w = nullptr;
-	}
-
 	EntityType GetType() const { return _type; }
 
 	Coord GetPos() const { return _pos; }
 
-	World* GetWorld() { return _w; }
-	const World* GetWorld() const { return _w; }
+	World* GetWorld() { return _w;  }
+
+	void SetWorld(World* w) {
+		assert(!w || !_w || w == _w);
+
+		_w = w;
+	}
 
 private:
 	EntityType _type;
@@ -56,17 +53,4 @@ public:
 private:
 	bool _is_walkable;
 	bool _is_transparent;
-};
-
-class Actor : public Entity {
-public:
-	Actor(EntityType et, float speed) :
-		Entity(et), _speed(speed) {
-	}
-
-	void Step(float time);
-	virtual float InnerStep() = 0;
-
-private:
-	float _speed;
 };

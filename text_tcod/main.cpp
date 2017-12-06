@@ -15,6 +15,8 @@ int main() {
 
 	ct.Apply(world);
 
+	Player* p0;
+
 	for (int i = 0; i < 200; i++) {
 		if (world.IsWalkable(Coord(100, i)))
 		{
@@ -23,15 +25,18 @@ int main() {
 		}
 	}
 
+	p0 = world.GetPlayer(0);
+
 	Map map(200, 200, world.GetPlayer(0));
 
-	while (!TCODConsole::isWindowClosed()) {
-		TCOD_key_t key;
-		TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS, &key, NULL);
-		TCODConsole::root->clear();
-//		TCODConsole::root->putChar(40, 25, '@');
-		Player* p = world.GetPlayer(0);
-		Coord pp = p->GetPos();
+	StepableQueue sq;
+	sq.AddFutureStep(p0, 1.5f);
+
+	while (!TCODConsole::isWindowClosed() && sq.AnythingToStep()) {
+		while (sq.AnythingToStep() && sq.Step())
+			;
+
+		Coord pp = p0->GetPos();
 		Coord map_corner = pp - Coord(40, 25);
 		map_corner = world.ClampCoord(map_corner);
 		map.ReadWorld(world, pp);

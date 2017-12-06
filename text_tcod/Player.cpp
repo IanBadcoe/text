@@ -26,11 +26,14 @@ float Player::InnerStep()
 	assert(w);
 
 	TCOD_key_t key;
-	TCOD_event_t ev = TCODSystem::waitForEvent(TCOD_EVENT_KEY, &key, nullptr, true);
+	TCOD_event_t ev = TCODSystem::checkForEvent(TCOD_EVENT_KEY, &key, nullptr);
 
-	if (key.vk >= TCODK_KP0 && key.vk <= TCODK_KP9 && key.vk != TCODK_KP5)
+	if (key.vk >= TCODK_KP1 && key.vk <= TCODK_KP9 && key.vk != TCODK_KP5)
 	{
-		Coord::Dir d = Coord::Dir(key.vk - TCODK_KP0);
+		Coord::KeyMapType::iterator it = Coord::KeyMap.find(key.vk);
+		assert(it != Coord::KeyMap.end());
+
+		Coord::Dir d = it->second;
 
 		Coord old_pos = GetPos();
 		Coord new_pos = old_pos.Step(d);

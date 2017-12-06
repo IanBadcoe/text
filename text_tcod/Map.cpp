@@ -1,5 +1,6 @@
 #include "Map.h"
 #include "Entity.h"
+#include "Actor.h"
 #include "World.h"
 
 DisplayChar Map::s_void(L' ', TCOD_white);

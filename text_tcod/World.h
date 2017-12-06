@@ -7,6 +7,7 @@
 
 class World;
 class Player;
+class Actor;
 
 class World {
 public:
@@ -69,8 +70,6 @@ public:
 			&& pos._y >= 0 && pos._y < _height;
 	}
 
-	void QueueStep(Actor* a, float delay);
-
 private:
 	int _width;
 	int _height;
@@ -79,18 +78,4 @@ private:
 	Actor **_actors;
 
 	Player* _players[4];
-
-	struct QueueEntry {
-		QueueEntry(Actor* a, float time) : _a(a), _time(time) {}
-
-		Actor* _a;
-		float _time;
-
-		bool operator<(const QueueEntry& rhs) const {
-			// earliest first
-			return _time > rhs._time;
-		}
-	};
-
-	std::priority_queue<QueueEntry> _action_queue;
 };
