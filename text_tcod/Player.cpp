@@ -39,8 +39,12 @@ float Player::InnerStep()
 		Coord new_pos = old_pos.Step(d);
 
 		if (w->InRange(new_pos)) {
-			w->RemoveActor(old_pos);
-			w->AddActor(new_pos, this);
+			if (!w->GetActor(new_pos)
+				&& w->GetTerrain(new_pos)->IsWalkable())
+			{
+				w->RemoveActor(old_pos);
+				w->AddActor(new_pos, this);
+			}
 		}
 	}
 
