@@ -6,3 +6,10 @@
 *.opendb
 x64/
 text_tcod/x64/
+*.idb
+*.tlog
+*.log
+*.pdb
+*.ilk
+*.user
+
