@@ -5,9 +5,15 @@
 #include "Template.h"
 #include "Player.h"
 
+#include "enet/enet.h"
+
 #include <algorithm>
+#include <assert.h>
+
+static bool s_is_host = false;
 
 int main() {
+	TCODConsole::setCustomFont("dejavu16x16_gs_tc.png", TCOD_FONT_LAYOUT_TCOD | TCOD_FONT_TYPE_GREYSCALE);
 	TCODConsole::initRoot(80, 50, "text", false);
 
 	World world(200, 200);

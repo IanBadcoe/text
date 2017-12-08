@@ -47,7 +47,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../libtcod-msvs-x64/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../libtcod-msvs-x64/include;../enet-1.3.13/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>TCOD_SDL2;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -56,7 +56,8 @@
     </Link>
     <PostBuildEvent>
       <Command>copy ..\libtcod-msvs-x64\build\msvs\libtcod_sdl\x64\Debug\libtcod.dll $(OutputPath)
-copy ..\libtcod-msvs-x64\SDL2.dll $(OutputPath)</Command>
+copy ..\libtcod-msvs-x64\SDL2.dll $(OutputPath)
+copy ..\libtcod-msvs-x64\data\fonts\dejavu16x16_gs_tc.png $(OutputPath)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -66,7 +67,7 @@ copy ..\libtcod-msvs-x64\SDL2.dll $(OutputPath)</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../libtcod-msvs-x64/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../libtcod-msvs-x64/include;../enet-1.3.13/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>TCOD_SDL2;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
@@ -76,7 +77,9 @@ copy ..\libtcod-msvs-x64\SDL2.dll $(OutputPath)</Command>
       <AdditionalDependencies>libtcod.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\libtcod-msvs-x64\build\msvs\libtcod_sdl\x64\Release\libtcod.dll $(OutputPath)</Command>
+      <Command>copy ..\libtcod-msvs-x64\build\msvs\libtcod_sdl\x64\Release\libtcod.dll $(OutputPath)
+copy ..\libtcod-msvs-x64\SDL2.dll $(OutputPath)
+copy ..\libtcod-msvs-x64\data\fonts\dejavu16x16_gs_tc.png $(OutputPath)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
