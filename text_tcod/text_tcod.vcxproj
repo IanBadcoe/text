@@ -51,8 +51,8 @@
       <PreprocessorDefinitions>TCOD_SDL2;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>..\libtcod-msvs-x64\build\msvs\libtcod_sdl\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libtcod.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\enet-1.3.13;..\libtcod-msvs-x64\build\msvs\libtcod_sdl\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libtcod.lib;enet64.lib;Ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy ..\libtcod-msvs-x64\build\msvs\libtcod_sdl\x64\Debug\libtcod.dll $(OutputPath)
@@ -73,8 +73,8 @@ copy ..\libtcod-msvs-x64\data\fonts\dejavu16x16_gs_tc.png $(OutputPath)</Command
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\libtcod-msvs-x64\build\msvs\libtcod_sdl\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libtcod.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\enet-1.3.13;..\libtcod-msvs-x64\build\msvs\libtcod_sdl\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libtcod.lib;enet64.lib;Ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy ..\libtcod-msvs-x64\build\msvs\libtcod_sdl\x64\Release\libtcod.dll $(OutputPath)
@@ -89,6 +89,7 @@ copy ..\libtcod-msvs-x64\data\fonts\dejavu16x16_gs_tc.png $(OutputPath)</Command
     <ClCompile Include="Floor.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="Networker.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Template.cpp" />
     <ClCompile Include="Wall.cpp" />
@@ -100,6 +101,7 @@ copy ..\libtcod-msvs-x64\data\fonts\dejavu16x16_gs_tc.png $(OutputPath)</Command
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Floor.h" />
     <ClInclude Include="Map.h" />
+    <ClInclude Include="Networker.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Template.h" />
     <ClInclude Include="Wall.h" />
