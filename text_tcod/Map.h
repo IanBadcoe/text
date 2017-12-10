@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Coord.h"
+#include "World.h"
 
 #include "color.hpp"
 #include "console.hpp"
@@ -34,27 +35,52 @@ private:
 	};
 
 public:
-	Map(int width, int height, Player* p)
-		: _width(width),
-		  _height(height),
-		  _frame(0),
-		  _p(p),
-		  _tcod_map(width, height)
-	{
-		_map = new MapChar[width * height];
-
-		for (int i = 0; i < _width; i++) {
-			for (int j = 0; j < _height; j++) {
-				_tcod_map.setProperties(i, j, false, false);
-			}
-		}
-	}
+    Map(const Player* p) :
+        _width(0),
+        _height(0),
+        _frame(0),
+        _p(p),
+        _tcod_map(nullptr),
+        _world(nullptr)
+    {
+    }
 
 	~Map() {
 		delete[] _map;
+        delete _tcod_map;
 	}
 
-	DisplayChar GetChar(Coord pos) const {
+    void SetWorld(const World* world)
+    {
+        if (world == _world)
+            return;
+
+        _world = world;
+
+        _width = _world->GetWidth();
+        _height = _world->GetHeight();
+
+        ClearWorld();
+
+        _map = new MapChar[_width * _height];
+        _tcod_map = new TCODMap(_width, _height);
+
+        for (int i = 0; i < _width; i++) {
+            for (int j = 0; j < _height; j++) {
+                _tcod_map->setProperties(i, j, false, false);
+            }
+        }
+    }
+
+    void ClearWorld() {
+        delete _map;
+        delete _tcod_map;
+        _width = 0;
+        _height = 0;
+
+    }
+    
+    DisplayChar GetChar(Coord pos) const {
 		return _map[idx(pos)]._dc;
 	}
 
@@ -66,21 +92,23 @@ public:
 
 	void NextFrame() { _frame++; }
 
-	void Draw(TCODConsole* console, Coord bottom_left, Coord screen_size);
-
-	void ReadWorld(const World& world, Coord eye_pos);
+	void Draw(TCODConsole* console);
 
 private:
-	int _width;
+    void ReadWorld(Coord eye_pos);
+
+    int _width;
 	int _height;
 
 	MapChar* _map;
 
 	int _frame;
 
-	Player* _p;
+	const Player* _p;
 
-	TCODMap _tcod_map;
+	TCODMap* _tcod_map;
+
+    const World* _world;
 
 	static DisplayChar s_void;
 };

@@ -8,7 +8,7 @@ class Terrain;
 
 class Template {
 public:
-	void Apply(World& w);
+	void Apply(World* w);
 
 	virtual Terrain* TerrainForCell(Coord pos) = 0;
 };

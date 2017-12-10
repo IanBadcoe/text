@@ -6,13 +6,13 @@
 
 #include "Math.h"
 
-void Template::Apply(World& w)
+void Template::Apply(World* w)
 {
-	for (int i = 0; i < w.GetWidth(); i++)
+	for (int i = 0; i < w->GetWidth(); i++)
 	{
-		for (int j = 0; j < w.GetHeight(); j++)
+		for (int j = 0; j < w->GetHeight(); j++)
 		{
-			w.SetTerrain(Coord(i, j), TerrainForCell(Coord(i, j)));
+			w->SetTerrain(Coord(i, j), TerrainForCell(Coord(i, j)));
 		}
 	}
 }

@@ -98,9 +98,14 @@ void World::ClearEntity(Coord pos)
 	_actors[idx(pos)] = nullptr;
 }
 
-Player* World::GetPlayer(int i)
+const Player* World::GetPlayer(int i) const
 {
-	assert(i >= 0 && i < 4);
-
-	return _players[i];
+    return const_cast<World*>(this)->GetPlayer(i);
 }
+
+Player* World::GetPlayer(int i) {
+    assert(i >= 0 && i < 4);
+
+    return _players[i];
+}
+

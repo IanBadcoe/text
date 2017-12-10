@@ -4,17 +4,56 @@
 #include "World.h"
 #include "Template.h"
 #include "Player.h"
+#include "Networker.h"
+#include "Universe.h"
+#include "Command.h"
+#include "CommandCollator.h"
 
 #include "enet/enet.h"
 
 #include <algorithm>
 #include <assert.h>
 
-static bool s_is_host = false;
-
-int main() {
+int main(int argc, char* argv[]) {
 	TCODConsole::setCustomFont("dejavu16x16_gs_tc.png", TCOD_FONT_LAYOUT_TCOD | TCOD_FONT_TYPE_GREYSCALE);
 	TCODConsole::initRoot(80, 50, "text", false);
+
+    Universe u;
+    CommandCollator cc;
+    StepableQueue sq;
+
+    Map map(u.GetWorld()->GetPlayer(0));
+
+    if (argc == 2 && std::string("-nn") == argv[1])
+    {
+        cc.SetCommandSequenceReceiver(&u);
+        u.SetCommandReceiver(&cc);
+
+        while (!cc.IsEnded())
+        {
+            while (sq.AnythingToStep() && sq.Step())
+                ;
+
+            cc.EndFrame();
+
+            map.Draw(TCODConsole::root);
+            TCODConsole::flush();
+            map.NextFrame();
+        }
+
+        return 0;
+    }
+
+    Networker network(5432);
+
+/*    if (network.IsServer())
+    {
+        s_server = new ServerTest(network);
+    }
+    else
+    {
+        s_client = new ClientTest(network);
+    }
 
 	World world(200, 200);
 	CircleTemplate ct(100, 100, 75, 3);
@@ -35,21 +74,12 @@ int main() {
 
 	Map map(200, 200, world.GetPlayer(0));
 
-	StepableQueue sq;
 	sq.AddFutureStep(p0, 1.5f);
 
 	while (!TCODConsole::isWindowClosed() && sq.AnythingToStep()) {
 		while (sq.AnythingToStep() && sq.Step())
 			;
-
-		Coord pp = p0->GetPos();
-		Coord map_corner = pp - Coord(40, 25);
-		map_corner = world.ClampCoord(map_corner);
-		map.ReadWorld(world, pp);
-		map.Draw(TCODConsole::root, map_corner, Coord(80, 50));
-		TCODConsole::flush();
-		map.NextFrame();
-	}
+	} */
 
 	return 0;
 }

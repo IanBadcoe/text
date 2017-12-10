@@ -26,7 +26,8 @@ public:
 
 	Coord GetPos() const { return _pos; }
 
-	World* GetWorld() { return _w;  }
+    const World* GetWorld() const { return _w; }
+    World* GetWorld() { return _w;  }
 
 	void SetWorld(World* w) {
 		assert(!w || !_w || w == _w);

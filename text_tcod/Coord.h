@@ -32,13 +32,17 @@ public:
 		return *this + DC[(int)d];
 	}
 
-	Coord operator+(const Coord& c) {
+	Coord operator+(const Coord& c) const {
 		return Coord(_x + c._x, _y + c._y);
 	}
 
-	Coord operator-(const Coord& c) {
+	Coord operator-(const Coord& c) const {
 		return Coord(_x - c._x, _y - c._y);
 	}
+
+    Coord operator/(int v) const {
+        return Coord(_x / v, _y / 2);
+    }
 
 	int _x;
 	int _y;

@@ -22,6 +22,11 @@ DisplayChar Player::s_player[4] = {
 
 float Player::InnerStep()
 {
+    // if we wer given a command dest, then we are the local player and should process 
+    if (_commands_dest) {
+        ProcessInput();
+    }
+
 	World* w = GetWorld();
 	assert(w);
 
@@ -48,10 +53,15 @@ float Player::InnerStep()
 		}
 	}
 
-	return 1.0f;
+	return 0.0f;
 }
 
 DisplayChar& Player::Disp() const
 {
 	return s_player[_num];
+}
+
+void Player::SetCommandReceiver(ICommandReceiver * cr)
+{
+    _commands_dest = cr;
 }
