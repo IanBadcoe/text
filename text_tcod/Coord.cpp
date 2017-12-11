@@ -1,3 +1,5 @@
+#include "precompiled.h"
+
 #include "Coord.h"
 
 int Coord::DX[8] = { 0, 1, 1, 1, 0, -1, -1, -1 };

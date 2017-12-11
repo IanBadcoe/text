@@ -1,3 +1,5 @@
+#include "precompiled.h"
+
 #include "libtcod.hpp"
 
 #include "Map.h"
@@ -9,10 +11,7 @@
 #include "Command.h"
 #include "CommandCollator.h"
 
-#include "enet/enet.h"
-
-#include <algorithm>
-#include <assert.h>
+//#include "enet/enet.h"
 
 int main(int argc, char* argv[]) {
 	TCODConsole::setCustomFont("dejavu16x16_gs_tc.png", TCOD_FONT_LAYOUT_TCOD | TCOD_FONT_TYPE_GREYSCALE);
@@ -20,7 +19,6 @@ int main(int argc, char* argv[]) {
 
     Universe u;
     CommandCollator cc;
-    StepableQueue sq;
 
     Map map(u.GetWorld()->GetPlayer(0));
 
@@ -29,9 +27,9 @@ int main(int argc, char* argv[]) {
         cc.SetCommandSequenceReceiver(&u);
         u.SetCommandReceiver(&cc);
 
-        while (!cc.IsEnded())
+        while (!u.IsEnded())
         {
-            while (sq.AnythingToStep() && sq.Step())
+            while (u.Step())
                 ;
 
             cc.EndFrame();

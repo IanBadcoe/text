@@ -5,9 +5,6 @@
 class CommandCollator : public ICommandReceiver, public ICommandSequenceSender
 {
 public:
-    // will have an "end game" commane eventually
-    bool IsEnded() const { return false; }
-
     // ICommandReceiver
     void ReceiveCommand(const Command& c)
     {

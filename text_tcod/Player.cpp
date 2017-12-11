@@ -1,10 +1,10 @@
+#include "precompiled.h"
+
 #include "Player.h"
 
 #include "Map.h"
 #include "World.h"
 #include "Coord.h"
-
-#include "sys.hpp"
 
 TCODColor Player::s_foreground[4] = {
 	TCODColor(128, 32, 32),
@@ -22,46 +22,26 @@ DisplayChar Player::s_player[4] = {
 
 float Player::InnerStep()
 {
-    // if we wer given a command dest, then we are the local player and should process 
-    if (_commands_dest) {
-        ProcessInput();
-    }
-
 	World* w = GetWorld();
 	assert(w);
 
-	TCOD_key_t key;
-	TCOD_event_t ev = TCODSystem::checkForEvent(TCOD_EVENT_KEY, &key, nullptr);
-
-	if (key.vk >= TCODK_KP1 && key.vk <= TCODK_KP9 && key.vk != TCODK_KP5)
-	{
-		Coord::KeyMapType::iterator it = Coord::KeyMap.find(key.vk);
-		assert(it != Coord::KeyMap.end());
-
-		Coord::Dir d = it->second;
-
-		Coord old_pos = GetPos();
-		Coord new_pos = old_pos.Step(d);
-
-		if (w->InRange(new_pos)) {
-			if (!w->GetActor(new_pos)
-				&& w->GetTerrain(new_pos)->IsWalkable())
-			{
-				w->RemoveActor(old_pos);
-				w->AddActor(new_pos, this);
-			}
-		}
-	}
-
-	return 0.0f;
+	return 0;
 }
+
+
+/*Coord old_pos = GetPos();
+Coord new_pos = old_pos.Step(d);
+
+if (w->InRange(new_pos)) {
+	if (!w->GetActor(new_pos)
+		&& w->GetTerrain(new_pos)->IsWalkable())
+	{
+		w->RemoveActor(old_pos);
+		w->AddActor(new_pos, this);
+	}
+} */
 
 DisplayChar& Player::Disp() const
 {
 	return s_player[_num];
-}
-
-void Player::SetCommandReceiver(ICommandReceiver * cr)
-{
-    _commands_dest = cr;
 }

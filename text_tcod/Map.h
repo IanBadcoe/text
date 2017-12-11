@@ -57,12 +57,12 @@ public:
 
         _world = world;
 
-        _width = _world->GetWidth();
-        _height = _world->GetHeight();
-
         ClearWorld();
 
-        _map = new MapChar[_width * _height];
+		_width = _world->GetWidth();
+		_height = _world->GetHeight();
+
+		_map = new MapChar[_width * _height];
         _tcod_map = new TCODMap(_width, _height);
 
         for (int i = 0; i < _width; i++) {
@@ -75,7 +75,11 @@ public:
     void ClearWorld() {
         delete _map;
         delete _tcod_map;
-        _width = 0;
+
+		_map = nullptr;
+		_tcod_map = nullptr;
+
+		_width = 0;
         _height = 0;
 
     }

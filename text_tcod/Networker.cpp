@@ -1,3 +1,5 @@
+#include "precompiled.h"
+
 #include "Networker.h"
 
 #include "enet/enet.h"

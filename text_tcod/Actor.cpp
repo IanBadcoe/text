@@ -1,12 +1,14 @@
+#include "precompiled.h"
+
 #include "Actor.h"
 
 #include "World.h"
 
 void Stepable::Step(StepableQueue* queue, float time)
 {
-	float duration = InnerStep();
+	DWORD duration = InnerStep();
 
-	if (_speed != 0.0f && duration != 0.0f)
+	if (_speed != 0.0f && duration != 0)
 	{
 		queue->AddFutureStep(this, time + duration / _speed);
 	}
@@ -22,8 +24,8 @@ bool StepableQueue::Step()
 
 	int new_frame = (int)new_time;
 
-	// if we have reached the frame the next step should be in
-	// execute that step
+	// if we have reached the frame the next step should be
+	// executed in that step
 	if (new_frame - _last_frame < 2)
 	{
 		_queue.pop();

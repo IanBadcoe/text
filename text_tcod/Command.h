@@ -10,7 +10,7 @@ struct Command {
 
     int _player;
 
-    enum Type {
+    enum class Type {
         Move
     };
 

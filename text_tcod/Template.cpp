@@ -1,3 +1,5 @@
+#include "precompiled.h"
+
 #include "Template.h"
 
 #include "Floor.h"

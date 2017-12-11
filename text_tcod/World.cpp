@@ -1,3 +1,5 @@
+#include "precompiled.h"
+
 #include "World.h"
 
 #include "Player.h"

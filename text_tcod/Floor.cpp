@@ -1,3 +1,5 @@
+#include "precompiled.h"
+
 #include "Floor.h"
 
 #include "Map.h"

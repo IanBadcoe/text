@@ -1,10 +1,12 @@
+#include "precompiled.h"
+
 #include "Universe.h"
 
 #include "World.h"
 #include "Template.h"
 #include "player.h"
 
-Universe::Universe()
+Universe::Universe() : _is_ended(false)
 {
     _world = new World(200, 200);
 
@@ -20,9 +22,10 @@ Universe::Universe()
         }
     }
 
-    Player* p0 = _world->GetPlayer(0);
+	_input = new InputHandler();
+	_input->SetCommandReceiver(this);
 
-    p0->SetCommandReceiver(this);
+	_queue.AddFutureStep(_input, 0);
 }
 
 
@@ -32,6 +35,10 @@ Universe::~Universe()
 
 void Universe::ReceiveCommandSequence(const CommandSequence & cs)
 {
+	for (int i = 0; i < cs._commands.size(); i++)
+	{
+
+	}
 }
 
 void Universe::SetCommandReceiver(ICommandReceiver * csr)
