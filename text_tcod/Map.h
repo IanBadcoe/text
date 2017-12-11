@@ -2,6 +2,7 @@
 
 #include "Coord.h"
 #include "World.h"
+#include "DisplayChar.h"
 
 #include "color.hpp"
 #include "console.hpp"
@@ -11,17 +12,6 @@ class Entity;
 class Terrain;
 class World;
 class Player;
-
-class DisplayChar {
-public:
-	DisplayChar(wchar_t c, TCODColor fcol, TCODColor bcol) : _char(c), _fcol(fcol), _bcol(bcol), _use_bcol(true) {}
-	DisplayChar(wchar_t c, TCODColor fcol) : _char(c), _fcol(fcol), _use_bcol(false) {}
-
-	wchar_t _char;
-	TCODColor _fcol;
-	TCODColor _bcol;
-	bool _use_bcol;
-};
 
 class Map {
 private:

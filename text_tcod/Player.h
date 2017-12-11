@@ -10,15 +10,16 @@
 
 class Player : public Actor, public ICommandReceiver {
 public:
-	Player(int num) : Actor(EntityType::Player, 1.0f), _num(num) {
-		assert(_num >= 0 && _num < 4);
+	Player(int id) : Actor(EntityType::Player, 1.0f), _id(id) {
+		assert(_id >= 0 && _id < 4);
 	}
 
 	virtual float InnerStep();
 
-	virtual DisplayChar& Disp() const;
+	virtual DisplayChar Disp() const;
 
-	int GetNum() const { return _num; }
+	int GetId() const { return _id; }
+	void SetId(int id) { _id = id; }
 
 	// ICommandReceiver
 	virtual void ReceiveCommand(const Command& c) override {
@@ -27,11 +28,22 @@ public:
 
 	float ExecuteCommand(const Command& cmd);
 
+	static void SetMaxPlayers(int num, const TCODColor* colours) {
+		s_max_players = num;
+
+		s_foreground.clear();
+
+		for (int i = 0; i < s_max_players; i++)
+		{
+			s_foreground.push_back(colours[i]);
+		}
+	}
+
 private:
-	int _num;
+	int _id;
 
 	std::queue<Command> _command_queue;
 
-	static DisplayChar s_player[4];
-	static TCODColor s_foreground[4];
+	static int s_max_players;
+	static std::vector<TCODColor> s_foreground;
 };

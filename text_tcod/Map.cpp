@@ -61,7 +61,7 @@ void Map::Draw(TCODConsole* console) {
 			}
 			else
 			{
-				const DisplayChar& dc = _map[idx(world_pos)]._dc;
+				DisplayChar dc = _map[idx(world_pos)]._dc;
 				console->putCharEx(i, screen_size._y - j - 1,
 					dc._char, dc._fcol * fade, dc._bcol * fade);
 			}

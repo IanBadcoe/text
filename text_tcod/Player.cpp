@@ -6,19 +6,8 @@
 #include "World.h"
 #include "Coord.h"
 
-TCODColor Player::s_foreground[4] = {
-	TCODColor(128, 32, 32),
-	TCODColor(32, 128, 32),
-	TCODColor(32, 32, 128),
-	TCODColor(32, 128, 128)
-};
-
-DisplayChar Player::s_player[4] = {
-	DisplayChar('@', s_foreground[0]),
-	DisplayChar('@', s_foreground[1]),
-	DisplayChar('@', s_foreground[2]),
-	DisplayChar('@', s_foreground[3])
-};
+std::vector<TCODColor> Player::s_foreground;
+int Player::s_max_players = 0;
 
 float Player::InnerStep()
 {
@@ -33,10 +22,9 @@ float Player::InnerStep()
 	return ExecuteCommand(c);
 }
 
-
-DisplayChar& Player::Disp() const
+DisplayChar Player::Disp() const
 {
-	return s_player[_num];
+	return DisplayChar('@', s_foreground[_id]);
 }
 
 float Player::ExecuteCommand(const Command & cmd)

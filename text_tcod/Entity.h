@@ -17,7 +17,7 @@ class Entity {
 public:
 	Entity(EntityType t) : _type(t), _pos(0, 0), _w(nullptr) {}
 
-	virtual DisplayChar& Disp() const = 0;
+	virtual DisplayChar Disp() const = 0;
 
 	void SetPos(Coord pos) {
 		_pos = pos;

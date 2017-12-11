@@ -5,11 +5,18 @@
 #include "World.h"
 #include "InputHandler.h"
 #include "Actor.h"
+#include "Networker.h"
 
-class Universe : public ICommandSequenceReceiver, public ICommandSender, public ICommandReceiver
+#include <map>
+
+class Universe :
+	public ICommandSequenceReceiver,
+	public ICommandSender,
+	public ICommandReceiver,
+	public INetworkHandler
 {
 public:
-    Universe(int player_id);
+    Universe();
     ~Universe();
 
     const World* GetWorld() const { return _world; }
@@ -36,12 +43,21 @@ public:
 		return _is_ended;
 	}
 
-	Player* GetPlayer() { return _local_player; }
-	const Player* GetPlayer() const { return _local_player; }
+	Player* GetPlayer(int i) { assert(i >= 0 && i < 4);  return _players[i]; }
+	const Player* GetPlayer(int i) const { assert(i >= 0 && i < 4);  return _players[i]; }
+
+	// Inherited via INetworkHandler
+	virtual void Connected(Networker* networker, const PeerHandle peer) override;
+	virtual void Disconnected(Networker* networker, const PeerHandle peer) override;
+	virtual void Receive(Networker* networker, const PeerHandle peer, const std::vector<uint8_t>& data) override;
+
+	void SetPlayerId(int id);
 
 private:
 	void ProcessCommand(const Command& cmd);
 	bool ProcessGlobalCommand(const Command& cmd);
+
+	int AddPeer(PeerHandle peer);
 
 	ICommandReceiver* _pass_commands_to;
 
@@ -53,7 +69,9 @@ private:
 
 	bool _is_ended;
 
-	Player* _local_player;
+	Player* _players[4];
 	int _player_id;
+
+	std::map<PeerHandle, int> _peer_to_player_id_map;
 };
 

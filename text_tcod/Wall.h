@@ -2,13 +2,15 @@
 
 #include "Entity.h"
 
+#include "DisplayChar.h"
+
 class DisplayChar;
 
 class Wall : public Terrain {
 public:
 	Wall(int str) : Terrain(EntityType::Wall, false, false), _str(str) {}
 
-	virtual DisplayChar& Disp() const {
+	virtual DisplayChar Disp() const {
 		if (_str > 500) {
 			return s_strong_wall;
 		}
