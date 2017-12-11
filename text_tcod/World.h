@@ -58,9 +58,6 @@ public:
 		return t ? t->IsWalkable() : false;
 	}
 
-    Player* GetPlayer(int i);
-    const Player* GetPlayer(int i) const;
-
 	Coord ClampCoord(Coord c) const {
 		return Coord(std::min(std::max(c._x, 0), _width),
 			std::min(std::max(c._y, 0), _height));
@@ -77,6 +74,4 @@ private:
 
 	Terrain **_terrain;
 	Actor **_actors;
-
-	Player* _players[4];
 };

@@ -9,7 +9,7 @@
 class Universe : public ICommandSequenceReceiver, public ICommandSender, public ICommandReceiver
 {
 public:
-    Universe();
+    Universe(int player_id);
     ~Universe();
 
     const World* GetWorld() const { return _world; }
@@ -32,14 +32,18 @@ public:
 		return _queue.Step();
 	}
 
-	void ProcessCommand(const Command& cmd);
-
 	bool IsEnded() const {
 		return _is_ended;
 	}
 
+	Player* GetPlayer() { return _local_player; }
+	const Player* GetPlayer() const { return _local_player; }
+
 private:
-    ICommandReceiver* _pass_commands_to;
+	void ProcessCommand(const Command& cmd);
+	bool ProcessGlobalCommand(const Command& cmd);
+
+	ICommandReceiver* _pass_commands_to;
 
     World* _world;
 
@@ -48,5 +52,8 @@ private:
 	StepableQueue _queue;
 
 	bool _is_ended;
+
+	Player* _local_player;
+	int _player_id;
 };
 

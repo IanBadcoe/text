@@ -6,7 +6,6 @@
 
 InputHandler::InputHandler() :
 	Stepable(1.0f),
-	_next_frame(0.0f),
 	_command_dest(nullptr)
 {
 }
@@ -32,8 +31,16 @@ float InputHandler::InnerStep()
 		_command_dest->ReceiveCommand(cmd);
 	}
 
+	if (key.vk == TCODK_ESCAPE)
+	{
+		Command cmd;
+		cmd._type = Command::Type::Exit;
+
+		_command_dest->ReceiveCommand(cmd);
+	}
+
 	// Input handler runs are in lock-step with the ends of frames...
-	return ++_next_frame;
+	return 1.0f;
 }
 
 void InputHandler::SetCommandReceiver(ICommandReceiver* cr)

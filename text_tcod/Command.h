@@ -11,12 +11,15 @@ struct Command {
     int _player;
 
     enum class Type {
-        Move
+        Move,
+		Exit
     };
 
     Type _type;
 
     Coord::Dir _dir;
+
+	int _player_id;
 };
 
 struct CommandSequence {

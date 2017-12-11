@@ -15,11 +15,6 @@ World::World(int width, int height) : _width(width), _height(height)
 			_actors[idx(Coord(i, j))] = nullptr;
 		}
 	}
-
-	_players[0] = nullptr;
-	_players[1] = nullptr;
-	_players[2] = nullptr;
-	_players[3] = nullptr;
 }
 
 World::~World()
@@ -55,17 +50,6 @@ void World::AddActor(Coord pos, Actor* e)
 		e->SetPos(pos);
 		e->SetWorld(this);
 	}
-
-	if (e->GetType() == EntityType::Player)
-	{
-		Player* p = static_cast<Player*>(e);
-
-		int num = p->GetNum();
-
-		assert(_players[num] == nullptr || _players[num] == p);
-
-		_players[num] = p;
-	}
 }
 
 void World::RemoveActor(Coord pos)
@@ -98,16 +82,5 @@ void World::ClearEntity(Coord pos)
 	}
 
 	_actors[idx(pos)] = nullptr;
-}
-
-const Player* World::GetPlayer(int i) const
-{
-    return const_cast<World*>(this)->GetPlayer(i);
-}
-
-Player* World::GetPlayer(int i) {
-    assert(i >= 0 && i < 4);
-
-    return _players[i];
 }
 

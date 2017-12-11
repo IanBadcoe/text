@@ -22,26 +22,51 @@ DisplayChar Player::s_player[4] = {
 
 float Player::InnerStep()
 {
-	World* w = GetWorld();
-	assert(w);
+	if (!_command_queue.size())
+	{
+		return 0.1f;
+	}
 
-	return 0;
+	Command c = _command_queue.front();
+	_command_queue.pop();
+
+	return ExecuteCommand(c);
 }
 
-
-/*Coord old_pos = GetPos();
-Coord new_pos = old_pos.Step(d);
-
-if (w->InRange(new_pos)) {
-	if (!w->GetActor(new_pos)
-		&& w->GetTerrain(new_pos)->IsWalkable())
-	{
-		w->RemoveActor(old_pos);
-		w->AddActor(new_pos, this);
-	}
-} */
 
 DisplayChar& Player::Disp() const
 {
 	return s_player[_num];
+}
+
+float Player::ExecuteCommand(const Command & cmd)
+{
+	World* w = GetWorld();
+	assert(w);
+
+	switch (cmd._type)
+	{
+	case Command::Type::Move:
+	{
+		Coord::Dir d = cmd._dir;
+
+		Coord old_pos = GetPos();
+		Coord new_pos = old_pos.Step(d);
+
+		if (w->InRange(new_pos)) {
+			if (!w->GetActor(new_pos)
+				&& w->GetTerrain(new_pos)->IsWalkable())
+			{
+				w->RemoveActor(old_pos);
+				w->AddActor(new_pos, this);
+			}
+		}
+
+		return 3.0f;
+	}
+	}
+
+	assert(false);
+
+	return 0.0f;
 }

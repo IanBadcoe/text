@@ -6,7 +6,7 @@
 
 void Stepable::Step(StepableQueue* queue, float time)
 {
-	DWORD duration = InnerStep();
+	float duration = InnerStep();
 
 	if (_speed != 0.0f && duration != 0)
 	{

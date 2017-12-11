@@ -17,14 +17,14 @@ int main(int argc, char* argv[]) {
 	TCODConsole::setCustomFont("dejavu16x16_gs_tc.png", TCOD_FONT_LAYOUT_TCOD | TCOD_FONT_TYPE_GREYSCALE);
 	TCODConsole::initRoot(80, 50, "text", false);
 
-    Universe u;
-    CommandCollator cc;
-
-    Map map(u.GetWorld()->GetPlayer(0));
-
     if (argc == 2 && std::string("-nn") == argv[1])
     {
-        cc.SetCommandSequenceReceiver(&u);
+		Universe u(1);
+		CommandCollator cc;
+
+		Map map(u.GetPlayer());
+
+		cc.SetCommandSequenceReceiver(&u);
         u.SetCommandReceiver(&cc);
 
         while (!u.IsEnded())

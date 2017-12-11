@@ -14,8 +14,6 @@ public:
 	virtual void SetCommandReceiver(ICommandReceiver* cr) override;
 
 private:
-	float _next_frame;
-
 	ICommandReceiver* _command_dest;
 };
 
