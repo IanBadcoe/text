@@ -10,8 +10,11 @@
 #include "Universe.h"
 #include "Command.h"
 #include "CommandCollator.h"
+#include "Server.h"
+#include "Client.h"
 
-//#include "enet/enet.h"
+#define MAX_PLAYERS 4
+#define DESIRED_FRAMETIME 1000 / 30
 
 int main(int argc, char* argv[]) {
 	TCODConsole::setCustomFont("dejavu16x16_gs_tc.png", TCOD_FONT_LAYOUT_TCOD | TCOD_FONT_TYPE_GREYSCALE);
@@ -24,20 +27,22 @@ int main(int argc, char* argv[]) {
 		TCODColor(32, 128, 128)
 	};
 
-	Player::SetMaxPlayers(4, player_foregrounds);
+	assert(sizeof(player_foregrounds) / sizeof(TCODColor) >= MAX_PLAYERS);
+
+	Player::SetMaxPlayers(MAX_PLAYERS, player_foregrounds);
+
+	Universe u;
+
+	Map map(u.GetPlayer(0));
 
     if (argc == 2 && std::string("-nn") == argv[1])
     {
-		Universe u;
-
 		CommandCollator cc;
-
-		Map map(u.GetPlayer(0));
 
 		cc.SetCommandSequenceReceiver(&u);
         u.SetCommandReceiver(&cc);
 
-        while (!u.IsEnded())
+        while (!cc.IsEnded())
         {
             while (u.Step())
                 ;
@@ -52,17 +57,76 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    Networker network(5432);
+    Networker network(55555, MAX_PLAYERS);
 
-/*    if (network.IsServer())
-    {
-        s_server = new ServerTest(network);
-    }
-    else
-    {
-        s_client = new ClientTest(network);
-    }
+	while (!network.IsReady())
+		;
 
+	if (network.IsServer())
+	{
+		Server server(&network);
+
+		// universe sends commands to server
+		u.SetCommandReceiver(&server);
+		// server sends command sequences to our local universe and also via Network to all others
+		server.SetCommandSequenceReceiver(&u);
+
+		DWORD _end_frame = timeGetTime() + DESIRED_FRAMETIME;
+
+		while (!server.IsEnded())
+		{
+			while (u.Step())
+				;
+
+			DWORD now = timeGetTime();
+			if (now < _end_frame)
+			{
+				Sleep(_end_frame - timeGetTime());
+			}
+
+			_end_frame = now + DESIRED_FRAMETIME;
+
+			// server services network events, including incoming commands
+			network.SendEvents(&server);
+
+			server.EndFrame();
+
+			map.Draw(TCODConsole::root);
+			TCODConsole::flush();
+			map.NextFrame();
+		}
+	}
+	else
+	{
+		Client client(&network);
+
+		// universe sends commands to server
+		u.SetCommandReceiver(&client);
+		// client sends command sequences to our local universe
+		client.SetCommandSequenceReceiver(&u);
+
+		while (!client.IsEnded())
+		{
+			while (!client.FrameReceived())
+			{
+				Sleep(1);
+
+				// client services network events, including incoming command sequences
+				network.SendEvents(&client);
+			}
+
+			while (u.Step())
+				;
+
+			map.Draw(TCODConsole::root);
+			TCODConsole::flush();
+			map.NextFrame();
+
+			client.EndFrame();
+		}
+	}
+	
+	/*
 	World world(200, 200);
 	CircleTemplate ct(100, 100, 75, 3);
 

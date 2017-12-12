@@ -1,5 +1,9 @@
 #pragma once
 
+#include <vector>
+
+#include <sstream>
+
 struct Message {
 	enum class Type {
 		JoinResponse
@@ -8,18 +12,20 @@ struct Message {
 	Message(Type t) : _type(t) {}
 
 	Type _type;
+
+	virtual void ToBytes(std::ostringstream& out) = 0;
+	virtual void FromBytes(std::istringstream& in) = 0;
+
+	void ToBytesBase(std::ostringstream& out);
+	void FromBytesBase(std::istringstream& in);
 };
 
-struct JoinResponseMessage : public Message {
-	JoinResponseMessage() : Message(Message::Type::JoinResponse) {}
+struct PeerJoined : public Message {
+	PeerJoined() : Message(Message::Type::JoinResponse) {}
 
 	int _player_num;
+
+	// Inherited via Message
+	virtual void ToBytes(std::ostringstream & out) override;
+	virtual void FromBytes(std::istringstream & in) override;
 };
-
-template<typename T>
-inline void CrackMessage(const uint8_t * data, size_t size, T& out)
-{
-	assert(size == sizeof(T));
-
-	memcpy(&out, data, size);
-}

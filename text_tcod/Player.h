@@ -11,7 +11,7 @@
 class Player : public Actor, public ICommandReceiver {
 public:
 	Player(int id) : Actor(EntityType::Player, 1.0f), _id(id) {
-		assert(_id >= 0 && _id < 4);
+		assert(_id >= 0 && _id < s_max_players);
 	}
 
 	virtual float InnerStep();

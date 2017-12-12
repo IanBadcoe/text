@@ -15,14 +15,14 @@ typedef PeerDummy* PeerHandle;
 
 class INetworkHandler {
 public:
-	virtual void Connected(Networker* networker, const PeerHandle peer) = 0;
-	virtual void Disconnected(Networker* networker, const PeerHandle peer) = 0;
+	virtual void Connected(Networker* networker, const PeerHandle peer, bool is_this_peer) = 0;
+	virtual void Disconnected(Networker* networker, const PeerHandle peer, bool is_this_peer) = 0;
 	virtual void Receive(Networker* networker, const PeerHandle peer, const std::vector<uint8_t>& data) = 0;
 };
 
 class Networker {
 public:
-	Networker(enet_uint16 port);
+	Networker(enet_uint16 port, int max_players);
 	~Networker();
 
 	bool IsReady();
@@ -32,12 +32,12 @@ public:
 	void SetTerminate();
 	bool IsTerminated();
 
-	void SetNetworkHandler(INetworkHandler* nh);
-
 	template <typename T> void SendToPeer(PeerHandle peer, const T& msg);
 	template <typename T> void SendToAllPeers(const T& msg);
 	void SendToPeer(PeerHandle peer, const uint8_t* data, size_t size);
 	void SendToAllPeers(const uint8_t* data, size_t size);
+
+	void SendEvents(INetworkHandler* nh);
 
 private:
 	bool TryFindHost();
@@ -50,6 +50,8 @@ private:
 
     static DWORD WINAPI NetworkThreadFunc(_In_ LPVOID lpParameter);
     void InnerThreadFunction();
+
+	void StoreEvent(const ENetEvent& event);
 
     NetworkData* _data;
 };

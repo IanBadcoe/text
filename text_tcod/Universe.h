@@ -12,8 +12,7 @@
 class Universe :
 	public ICommandSequenceReceiver,
 	public ICommandSender,
-	public ICommandReceiver,
-	public INetworkHandler
+	public ICommandReceiver
 {
 public:
     Universe();
@@ -39,25 +38,14 @@ public:
 		return _queue.Step();
 	}
 
-	bool IsEnded() const {
-		return _is_ended;
-	}
+	Player* GetPlayer(int i);
+	const Player* GetPlayer(int i) const;
 
-	Player* GetPlayer(int i) { assert(i >= 0 && i < 4);  return _players[i]; }
-	const Player* GetPlayer(int i) const { assert(i >= 0 && i < 4);  return _players[i]; }
-
-	// Inherited via INetworkHandler
-	virtual void Connected(Networker* networker, const PeerHandle peer) override;
-	virtual void Disconnected(Networker* networker, const PeerHandle peer) override;
-	virtual void Receive(Networker* networker, const PeerHandle peer, const std::vector<uint8_t>& data) override;
-
-	void SetPlayerId(int id);
+	void SetLocalPlayerId(int id);
 
 private:
 	void ProcessCommand(const Command& cmd);
 	bool ProcessGlobalCommand(const Command& cmd);
-
-	int AddPeer(PeerHandle peer);
 
 	ICommandReceiver* _pass_commands_to;
 
@@ -67,11 +55,7 @@ private:
 
 	StepableQueue _queue;
 
-	bool _is_ended;
-
-	Player* _players[4];
-	int _player_id;
-
-	std::map<PeerHandle, int> _peer_to_player_id_map;
+	std::map<int, Player*> _players;
+	int _local_player_id;
 };
 

@@ -53,8 +53,8 @@
       <PrecompiledHeaderFile>precompiled.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>..\enet-1.3.13;..\libtcod-msvs-x64\build\msvs\libtcod_sdl\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libtcod.lib;enet64.lib;Ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);..\libtcod-msvs-x64\build\msvs\libtcod_sdl\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>enet.lib;libtcod.lib;Ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy ..\libtcod-msvs-x64\build\msvs\libtcod_sdl\x64\Debug\libtcod.dll $(OutputPath)
@@ -77,8 +77,8 @@ copy ..\libtcod-msvs-x64\data\fonts\dejavu16x16_gs_tc.png $(OutputPath)</Command
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\enet-1.3.13;..\libtcod-msvs-x64\build\msvs\libtcod_sdl\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libtcod.lib;enet64.lib;Ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(OutDir);..\libtcod-msvs-x64\build\msvs\libtcod_sdl\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>enet.lib;libtcod.lib;enet.lib;Ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy ..\libtcod-msvs-x64\build\msvs\libtcod_sdl\x64\Release\libtcod.dll $(OutputPath)
@@ -88,6 +88,7 @@ copy ..\libtcod-msvs-x64\data\fonts\dejavu16x16_gs_tc.png $(OutputPath)</Command
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Actor.cpp" />
+    <ClCompile Include="Client.cpp" />
     <ClCompile Include="CommandCollator.cpp" />
     <ClCompile Include="Coord.cpp" />
     <ClCompile Include="Entity.cpp" />
@@ -95,12 +96,14 @@ copy ..\libtcod-msvs-x64\data\fonts\dejavu16x16_gs_tc.png $(OutputPath)</Command
     <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="Messages.cpp" />
     <ClCompile Include="Networker.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="precompiled.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Server.cpp" />
     <ClCompile Include="Template.cpp" />
     <ClCompile Include="Universe.cpp" />
     <ClCompile Include="Wall.cpp" />
@@ -108,6 +111,7 @@ copy ..\libtcod-msvs-x64\data\fonts\dejavu16x16_gs_tc.png $(OutputPath)</Command
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Actor.h" />
+    <ClInclude Include="Client.h" />
     <ClInclude Include="CommandCollator.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="Coord.h" />
@@ -120,6 +124,7 @@ copy ..\libtcod-msvs-x64\data\fonts\dejavu16x16_gs_tc.png $(OutputPath)</Command
     <ClInclude Include="Networker.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="precompiled.h" />
+    <ClInclude Include="Server.h" />
     <ClInclude Include="Template.h" />
     <ClInclude Include="Universe.h" />
     <ClInclude Include="Wall.h" />

@@ -5,9 +5,19 @@
 class CommandCollator : public ICommandReceiver, public ICommandSequenceSender
 {
 public:
+	CommandCollator() : _is_ended(false) {}
+
     // ICommandReceiver
     void ReceiveCommand(const Command& c)
     {
+		// as a special case, process end command here so that we do not need a Universe on the server
+
+		if (c._type == Command::Type::Exit)
+		{
+			_is_ended = true;
+			return;
+		}
+
         _wip._commands.push_back(c);
     }
 
@@ -25,8 +35,11 @@ public:
         _destination->ReceiveCommandSequence(ret);
     }
 
+	bool IsEnded() const { return _is_ended; }
+
 private:
     CommandSequence _wip;
     ICommandSequenceReceiver*  _destination;
+	bool _is_ended;
 };
 

@@ -9,7 +9,7 @@
 
 class NetworkData {
 public:
-	NetworkData(enet_uint16 port) :
+	NetworkData(enet_uint16 port, int max_players) :
 		_port(port),
 		_ready(false),
 		_failed(false),
@@ -18,14 +18,7 @@ public:
         _enet_peer(nullptr),
         _terminate(false),
         _terminated(false),
-		_network_handler(nullptr) {}
-
-    enet_uint16 _port;
-
-    ENetHost* _enet_host;
-    ENetPeer* _enet_peer;
-
-    HANDLE _thread;
+		_max_players(max_players) {}
 
 	void SetReady();
 	void SetFailed();
@@ -33,15 +26,25 @@ public:
 	void SetTerminate();
 	void SetTerminated();
 
-	void SetNetworkHandler(INetworkHandler* nh);
-
 	bool IsReady() const;
 	bool IsFailed() const;
 	bool IsServer() const;
 	bool IsTerminate() const;
 	bool IsTerminated() const;
 
-	INetworkHandler* GetNetworkHandler() const;
+	void SendEvents(Networker* n, INetworkHandler* nh);
+	void StoreEvent(const ENetEvent& event);
+
+	// accessed only from this thread...
+	const enet_uint16 _port;
+
+    ENetHost* _enet_host;
+    ENetPeer* _enet_peer;
+
+    HANDLE _thread;
+
+	const int _max_players;
+
 private:
 	mutable Concurrency::critical_section _cs;
 
@@ -52,11 +55,11 @@ private:
 	bool _terminate;
 	bool _terminated;
 
-	INetworkHandler* _network_handler;
+	std::vector<ENetEvent> _event_queue;
 };
 
-Networker::Networker(enet_uint16 port) :
-    _data(new NetworkData(port))
+Networker::Networker(enet_uint16 port, int max_players) :
+    _data(new NetworkData(port, max_players))
 {
     _data->_thread = CreateThread(nullptr, 0, NetworkThreadFunc, this, 0, nullptr);
 }
@@ -98,19 +101,27 @@ bool Networker::IsTerminated()
 	return _data->IsTerminated();
 }
 
-void Networker::SetNetworkHandler(INetworkHandler * nh)
-{
-	assert(_data);
-
-	_data->SetNetworkHandler(nh);
-}
-
 void Networker::SendToPeer(PeerHandle peer, const uint8_t * data, size_t size)
 {
 }
 
 void Networker::SendToAllPeers(const uint8_t * data, size_t size)
 {
+}
+
+
+void Networker::StoreEvent(const ENetEvent & event)
+{
+	assert(_data);
+
+	_data->StoreEvent(event);
+}
+
+void Networker::SendEvents(INetworkHandler* nh)
+{
+	assert(_data);
+
+	_data->SendEvents(this, nh);
 }
 
 void NetworkData::SetReady()
@@ -148,13 +159,6 @@ void NetworkData::SetTerminated()
 	_terminated = true;
 }
 
-void NetworkData::SetNetworkHandler(INetworkHandler * nh)
-{
-	Concurrency::critical_section::scoped_lock sl(_cs);
-
-	_network_handler = nh;
-}
-
 bool NetworkData::IsReady() const
 {
 	Concurrency::critical_section::scoped_lock sl(_cs);
@@ -190,11 +194,43 @@ bool NetworkData::IsTerminated() const
 	return _terminated;
 }
 
-INetworkHandler * NetworkData::GetNetworkHandler() const
+void NetworkData::SendEvents(Networker* n, INetworkHandler * nh)
 {
 	Concurrency::critical_section::scoped_lock sl(_cs);
 
-	return _network_handler;
+	for (int i = 0; i < _event_queue.size(); i++)
+	{
+		ENetEvent event = _event_queue[i];
+		switch (event.type) {
+		case ENetEventType::ENET_EVENT_TYPE_CONNECT:
+		{
+			nh->Connected(n, reinterpret_cast<PeerHandle>(event.peer), event.peer == _enet_peer);
+			break;
+		}
+
+		case ENetEventType::ENET_EVENT_TYPE_DISCONNECT:
+		{
+			nh->Disconnected(n, reinterpret_cast<PeerHandle>(event.peer), event.peer == _enet_peer);
+			break;
+		}
+
+		case ENetEventType::ENET_EVENT_TYPE_RECEIVE:
+		{
+			std::vector<uint8_t> data(event.packet->data, event.packet->data + event.packet->dataLength);
+			enet_packet_destroy(event.packet);
+			nh->Receive(n, reinterpret_cast<PeerHandle>(event.peer), data);
+			break;
+		}
+		}
+	}
+}
+
+void NetworkData::StoreEvent(const ENetEvent & event)
+{
+	Concurrency::critical_section::scoped_lock sl(_cs);
+
+	_event_queue.push_back(event);
+
 }
 
 bool Networker::TryFindHost()
@@ -208,7 +244,7 @@ bool Networker::TryFindHost()
 	_data->_enet_host = enet_host_create(
 		NULL	/* create a client host */,
 		1		/* only allow 1 outgoing connection */,
-		1		/* #channels */,
+		2		/* #channels */,
 		0, 0    /* no throttling */);
 
     if (!_data->_enet_host)
@@ -216,12 +252,14 @@ bool Networker::TryFindHost()
         return false;
     }
 
-    ENetAddress addr;
-    addr.host = ENET_HOST_ANY;
-    addr.port = _data->_port;
+	int ret;
+    ENetAddress address;
+//    ret = enet_address_set_host(&addr, "10.7.9.30");
+	address.host = ENET_HOST_BROADCAST;
+    address.port = _data->_port;
 
     /* Initiate the connection, allocating the two channels 0 and 1. */
-    _data->_enet_peer = enet_host_connect(_data->_enet_host, &addr, 1, 0);
+    _data->_enet_peer = enet_host_connect(_data->_enet_host, &address, 1, 0);
 
     if (_data->_enet_peer == NULL)
     {
@@ -233,11 +271,16 @@ bool Networker::TryFindHost()
     ENetEvent event;
 
     /* Wait up to 5 seconds for the connection attempt to succeed. */
-    if (enet_host_service(_data->_enet_host, &event, 5000) > 0 &&
-        event.type == ENET_EVENT_TYPE_CONNECT)
+	ret = enet_host_service(_data->_enet_host, &event, 5000);
+
+    if (ret > 0 && event.type == ENET_EVENT_TYPE_CONNECT)
     {
-        return true;
+		StoreEvent(event);
+		return true;
     }
+
+	enet_peer_reset(_data->_enet_peer);
+	_data->_enet_peer = nullptr;
 
     DestroyHost();
 
@@ -257,12 +300,14 @@ bool Networker::TryCreateHost()
 	/* A specific host address can be specified by   */
 	/* enet_address_set_host (& address, "x.x.x.x"); */
 	address.host = ENET_HOST_ANY;
+//	int ret = enet_address_set_host(&address, "10.7.9.30");
 	/* Bind the server to port 1234. */
 	address.port = 1234;
-	_data->_enet_host = enet_host_create(&address /* the address to bind the server host to */,
-		4		/* #clients */,
-		2		/* #channels */,
-		0, 0	/* no throttling */);
+	_data->_enet_host = enet_host_create(
+		&address				/* the address to bind the server host to */,
+		32, //_data->_max_players		/* #clients */,
+		2						/* #channels */,
+		0, 0					/* no throttling */);
 
 	if (_data->_enet_host == NULL)
 	{
@@ -337,6 +382,14 @@ void Networker::LeaveSession() {
 
 void Networker::InnerThreadFunction()
 {
+	if (enet_initialize() != 0)
+	{
+		_data->SetFailed();
+		_data->SetReady();
+
+		return;
+	}
+
 	if (TryFindHost())
 	{
 		_data->SetReady();
@@ -370,7 +423,8 @@ void Networker::InnerThreadFunction()
 
 		ENetEvent event;
 
-		int ret = enet_host_service(_data->_enet_host, &event, 50);
+		int ret = enet_host_service(_data->_enet_host, &event, 5);
+		printf("enet service\n");
 
 		if (ret < 0)
 		{
@@ -378,27 +432,7 @@ void Networker::InnerThreadFunction()
 		}
 		else if (ret > 0)
 		{
-			INetworkHandler* nh = _data->GetNetworkHandler();
-
-			switch (event.type) {
-			case ENetEventType::ENET_EVENT_TYPE_CONNECT:
-			{
-				nh->Connected(this, reinterpret_cast<PeerHandle>(event.peer));
-				break;
-			}
-			case ENetEventType::ENET_EVENT_TYPE_DISCONNECT:
-			{
-				nh->Disconnected(this, reinterpret_cast<PeerHandle>(event.peer));
-				break;
-			}
-			case ENetEventType::ENET_EVENT_TYPE_RECEIVE:
-			{
-				std::vector<uint8_t> data(event.packet->data, event.packet->data + event.packet->dataLength);
-				enet_packet_destroy(event.packet);
-				nh->Receive(this, reinterpret_cast<PeerHandle>(event.peer), data);
-				break;
-			}
-			}
+			StoreEvent(event);
 		}
 	}
 }
