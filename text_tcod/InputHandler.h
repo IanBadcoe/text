@@ -7,6 +7,7 @@ class InputHandler : public Stepable, public ICommandSender
 {
 public:
 	InputHandler();
+	~InputHandler();
 
 	virtual float InnerStep() override;
 

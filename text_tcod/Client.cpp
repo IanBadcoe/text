@@ -2,30 +2,66 @@
 
 #include "Client.h"
 
+#include "Messages.h"
+#include "Universe.h"
 
-void Client::Connected(Networker * networker, const PeerHandle peer, bool is_this_peer)
+void Client::Connected(Networker* networker, const PeerHandle peer)
 {
-	printf("Client: Connection from: %p (%s)\n", peer, is_this_peer ? "local" : "remote");
+	printf("Client: Connection, peer=%p\n", peer);
 }
 
-void Client::Disconnected(Networker * networker, const PeerHandle peer, bool is_this_peer)
+void Client::Disconnected(Networker* networker, const PeerHandle peer)
 {
-	printf("Client: Disconnection from: %p (%s)\n", peer, is_this_peer ? "local" : "remote");
+	printf("Client: Disconnection, peer=%p\n", peer);
 }
 
-void Client::Receive(Networker * networker, const PeerHandle peer, const std::vector<uint8_t>& data)
+void Client::Receive(Networker* networker, const PeerHandle peer, const std::string& data)
+{
+	Message::Type t = *reinterpret_cast<const Message::Type*>(data.data());
+
+	std::istringstream str;
+	str.str(data);
+
+	switch (t)
+	{
+	case Message::Type::Command:
+	{
+		assert(false);
+		break;
+	}
+
+	case Message::Type::JoinResponse:
+	{
+		PeerJoinedMessage pj;
+		pj.FromBytes(str);
+
+		_universe->EnsurePlayer(pj._player_id, true);
+		_current_frame = pj._frame_number;
+	}
+
+	case Message::Type::Universe:
+	{
+		UniverseMessage um(_universe);
+		um.FromBytes(str);
+	}
+	}
+}
+
+void Client::ReceiveCommand(const Command& c)
+{
+	Command temp(c);
+	temp._from_frame = _current_frame;
+
+	CommandMessage cm(c);
+
+//	_network->
+}
+
+void Client::ReceiveCommandSequence(const CommandSequence& cs)
 {
 }
 
-void Client::ReceiveCommand(const Command & c)
-{
-}
-
-void Client::ReceiveCommandSequence(const CommandSequence & cs)
-{
-}
-
-void Client::SetCommandSequenceReceiver(ICommandSequenceReceiver * csr)
+void Client::SetCommandSequenceReceiver(ICommandSequenceReceiver* csr)
 {
 }
 

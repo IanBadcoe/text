@@ -5,7 +5,7 @@
 #include "enet/enet.h"
 
 #include "assert.h"
-
+#include "concrt.h"
 
 class NetworkData {
 public:
@@ -103,16 +103,26 @@ bool Networker::IsTerminated()
 	return _data->IsTerminated();
 }
 
-void Networker::SendToPeer(PeerHandle peer, const uint8_t * data, size_t size)
+void Networker::SendToPeer(PeerHandle peer, const uint8_t* data, size_t size)
 {
+	ENetPacket* packet = enet_packet_create(data,
+		size,
+		ENET_PACKET_FLAG_RELIABLE);
+
+	enet_peer_send(reinterpret_cast<ENetPeer*>(peer), 0, packet);
 }
 
-void Networker::SendToAllPeers(const uint8_t * data, size_t size)
+void Networker::SendToAllPeers(const uint8_t* data, size_t size)
 {
+	ENetPacket* packet = enet_packet_create(data,
+		size,
+		ENET_PACKET_FLAG_RELIABLE);
+
+	enet_host_broadcast(_data->_enet_host, 0, packet);
 }
 
 
-void Networker::StoreEvent(const ENetEvent & event)
+void Networker::StoreEvent(const ENetEvent& event)
 {
 	assert(_data);
 
@@ -196,7 +206,7 @@ bool NetworkData::IsTerminated() const
 	return _terminated;
 }
 
-void NetworkData::SendEvents(Networker* n, INetworkHandler * nh)
+void NetworkData::SendEvents(Networker* n, INetworkHandler* nh)
 {
 	Concurrency::critical_section::scoped_lock sl(_cs);
 
@@ -206,19 +216,19 @@ void NetworkData::SendEvents(Networker* n, INetworkHandler * nh)
 		switch (event.type) {
 		case ENetEventType::ENET_EVENT_TYPE_CONNECT:
 		{
-			nh->Connected(n, reinterpret_cast<PeerHandle>(event.peer), event.peer == _enet_peer);
+			nh->Connected(n, reinterpret_cast<PeerHandle>(event.peer));
 			break;
 		}
 
 		case ENetEventType::ENET_EVENT_TYPE_DISCONNECT:
 		{
-			nh->Disconnected(n, reinterpret_cast<PeerHandle>(event.peer), event.peer == _enet_peer);
+			nh->Disconnected(n, reinterpret_cast<PeerHandle>(event.peer));
 			break;
 		}
 
 		case ENetEventType::ENET_EVENT_TYPE_RECEIVE:
 		{
-			std::vector<uint8_t> data(event.packet->data, event.packet->data + event.packet->dataLength);
+			std::string data(event.packet->data, event.packet->data + event.packet->dataLength);
 			enet_packet_destroy(event.packet);
 			nh->Receive(n, reinterpret_cast<PeerHandle>(event.peer), data);
 			break;
@@ -229,7 +239,7 @@ void NetworkData::SendEvents(Networker* n, INetworkHandler * nh)
 	_event_queue.clear();
 }
 
-void NetworkData::StoreEvent(const ENetEvent & event)
+void NetworkData::StoreEvent(const ENetEvent& event)
 {
 	Concurrency::critical_section::scoped_lock sl(_cs);
 
@@ -249,8 +259,7 @@ bool Networker::TryFindHost()
 		NULL	/* create a client host */,
 		1		/* only allow 1 outgoing connection */,
 		2		/* #channels */,
-		57600 / 8 /* 56K modem with 56 Kbps downstream bandwidth */,
-		14400 / 8 /* 56K modem with 14 Kbps upstream bandwidth */);
+		0, 0	/* no throttling */);
 
     if (!_data->_enet_host)
 	{

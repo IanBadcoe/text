@@ -2,41 +2,72 @@
 
 #include "Messages.h"
 
-// utilities
+#include "Universe.h"
 
-template <typename T>
-std::ostringstream& operator<<=(std::ostringstream& out, const T& in) {
-	out.write(reinterpret_cast<const char*>(&in), sizeof(T));
-
-	return out;
-}
-
-template <typename T>
-std::istringstream& operator>>=(std::istringstream& in, T& out) {
-	in.read(reinterpret_cast<char*>(&out), sizeof(T));
-
-	return in;
-}
-
-void PeerJoined::ToBytes(std::ostringstream& out)
+void PeerJoinedMessage::ToBytes(std::ostringstream& out) const
 {
 	ToBytesBase(out);
 
-	out <<= _player_num;
+	out <<= _player_id;
+	out <<= _frame_number;
 }
 
-void PeerJoined::FromBytes(std::istringstream& in)
+void PeerJoinedMessage::FromBytes(std::istringstream& in)
 {
 	FromBytesBase(in);
 
-	in >>= _player_num;
+	in >>= _player_id;
+	in >>= _frame_number;
 }
 
-void Message::ToBytesBase(std::ostringstream& out)
+void Message::ToBytesBase(std::ostringstream& out) const
 {
 	out <<= _type;
 }
 
 void Message::FromBytesBase(std::istringstream& in)
 {
+	in >>= _type;
+}
+
+void CommandMessage::ToBytes(std::ostringstream& out) const
+{
+	ToBytesBase(out);
+
+	out <<= _command;
+}
+
+void CommandMessage::FromBytes(std::istringstream& in)
+{
+	FromBytesBase(in);
+
+	in >>= _command;
+}
+
+void PeerLeftMessage::ToBytes(std::ostringstream& out) const
+{
+	ToBytesBase(out);
+
+	out <<= _player_id;
+}
+
+void PeerLeftMessage::FromBytes(std::istringstream& in)
+{
+	FromBytesBase(in);
+
+	in >>= _player_id;
+}
+
+void UniverseMessage::ToBytes(std::ostringstream& out) const
+{
+	ToBytesBase(out);
+
+	_universe->SerialiseTo(out);
+}
+
+void UniverseMessage::FromBytes(std::istringstream& in)
+{
+	FromBytesBase(in);
+
+	_universe->SerialiseFrom(in);
 }

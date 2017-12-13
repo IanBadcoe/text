@@ -2,6 +2,8 @@
 
 #include "Entity.h"
 
+#include "ISerialisable.h"
+
 #include <algorithm>
 #include <queue>
 
@@ -9,11 +11,15 @@ class World;
 class Player;
 class Actor;
 
-class World {
+class World : ISerialisable {
 public:
 	World(int width, int height);
 
 	~World();
+
+	// Inherited via ISerialisable
+	virtual void SerialiseTo(std::ostringstream& out) const override;
+	virtual void SerialiseFrom(std::istringstream& in) override;
 
 	Terrain* GetTerrain(Coord pos) {
 		return _terrain[idx(pos)];
@@ -67,6 +73,8 @@ public:
 		return pos._x >= 0 && pos._x < _width
 			&& pos._y >= 0 && pos._y < _height;
 	}
+
+	void Clear();
 
 private:
 	int _width;

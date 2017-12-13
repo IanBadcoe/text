@@ -6,13 +6,15 @@
 #include "InputHandler.h"
 #include "Actor.h"
 #include "Networker.h"
+#include "ISerialisable.h"
 
 #include <map>
 
 class Universe :
 	public ICommandSequenceReceiver,
 	public ICommandSender,
-	public ICommandReceiver
+	public ICommandReceiver,
+	public ISerialisable
 {
 public:
     Universe();
@@ -21,13 +23,17 @@ public:
     const World* GetWorld() const { return _world; }
 
     // Inherited via ICommandSequenceReceiver
-    virtual void ReceiveCommandSequence(const CommandSequence & cs) override;
+    virtual void ReceiveCommandSequence(const CommandSequence& cs) override;
 
     // Inherited via ICommandSequenceSender
-    virtual void SetCommandReceiver(ICommandReceiver * csr) override;
+    virtual void SetCommandReceiver(ICommandReceiver* csr) override;
 
     // Inherited via ICommandReceiver
-    virtual void ReceiveCommand(const Command & c) override;
+    virtual void ReceiveCommand(const Command& c) override;
+
+	// Inherited via ISerialisable
+	virtual void SerialiseTo(std::ostringstream& out) const override;
+	virtual void SerialiseFrom(std::istringstream& in) override;
 
 	// true -> end of frame
 	// false -> more to process
@@ -41,7 +47,10 @@ public:
 	Player* GetPlayer(int i);
 	const Player* GetPlayer(int i) const;
 
-	void SetLocalPlayerId(int id);
+	Player* GetLocalPlayer() { return GetPlayer(_local_player_id); }
+	const Player* GetLocalPlayer() const { return GetPlayer(_local_player_id); }
+
+	void EnsurePlayer(int player_id, bool is_local);
 
 private:
 	void ProcessCommand(const Command& cmd);

@@ -10,6 +10,7 @@
 
 class Player : public Actor, public ICommandReceiver {
 public:
+	Player(std::istringstream& in);
 	Player(int id) : Actor(EntityType::Player, 1.0f), _id(id) {
 		assert(_id >= 0 && _id < s_max_players);
 	}
@@ -46,4 +47,9 @@ private:
 
 	static int s_max_players;
 	static std::vector<TCODColor> s_foreground;
+
+	// Inherited via Actor
+	virtual void SerialiseTo(std::ostringstream& out) const override;
+
+	static EntityCreator s_creator;
 };

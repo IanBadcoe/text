@@ -25,11 +25,11 @@ private:
 	};
 
 public:
-    Map(const Player* p) :
+    Map() :
         _width(0),
         _height(0),
         _frame(0),
-        _p(p),
+        _p(nullptr),
         _tcod_map(nullptr),
         _world(nullptr)
     {
@@ -39,6 +39,8 @@ public:
 		delete[] _map;
         delete _tcod_map;
 	}
+
+	void SetPlayer(const Player* p) { _p = p; }
 
     void SetWorld(const World* world)
     {

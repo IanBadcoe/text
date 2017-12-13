@@ -13,6 +13,10 @@ public:
 	virtual DisplayChar Disp() const {
 		return s_floor;
 	}
+
+	// Inherited via Terrain
+	virtual void SerialiseTo(std::ostringstream& out) const override;
+
 private:
 	static DisplayChar s_floor;
 	static TCODColor s_floor_foreground;

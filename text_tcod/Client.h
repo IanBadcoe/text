@@ -10,25 +10,25 @@ class Client :
 	public ICommandSequenceSender
 {
 public:
-	Client(Networker* network) : _network(network), _is_ended(false), _highest_frame_received(-1), _next_frame_required(0) {}
+	Client(Networker* network, Universe* universe) : _network(network), _is_ended(false), _highest_frame_received(-1), _current_frame(0), _universe(universe) {}
 
 	// Inherited via INetworkHandler
-	virtual void Connected(Networker * networker, const PeerHandle peer, bool is_this_peer) override;
-	virtual void Disconnected(Networker * networker, const PeerHandle peer, bool is_this_peer) override;
-	virtual void Receive(Networker * networker, const PeerHandle peer, const std::vector<uint8_t>& data) override;
+	virtual void Connected(Networker* networker, const PeerHandle peer) override;
+	virtual void Disconnected(Networker* networker, const PeerHandle peer) override;
+	virtual void Receive(Networker* networker, const PeerHandle peer, const std::string& data) override;
 
 	// Inherited via ICommandReceiver
-	virtual void ReceiveCommand(const Command & c) override;
+	virtual void ReceiveCommand(const Command& c) override;
 
 	// Inherited via ICommandSequenceReceiver
-	virtual void ReceiveCommandSequence(const CommandSequence & cs) override;
+	virtual void ReceiveCommandSequence(const CommandSequence& cs) override;
 
 	// Inherited via ICommandSequenceSender
-	virtual void SetCommandSequenceReceiver(ICommandSequenceReceiver * csr) override;
+	virtual void SetCommandSequenceReceiver(ICommandSequenceReceiver* csr) override;
 
 	bool IsEnded() const { return _is_ended; }
-	bool FrameReceived() const { return _highest_frame_received >= _next_frame_required; }
-	void EndFrame() { _next_frame_required++; }
+	bool FrameReceived() const { return _highest_frame_received >= _current_frame + 1; }
+	void EndFrame() { _current_frame++; }
 
 private:
 	Networker* _network;
@@ -36,5 +36,7 @@ private:
 
 	bool _is_ended;
 	int _highest_frame_received;
-	int _next_frame_required;
+	int _current_frame;
+
+	Universe* _universe;
 };

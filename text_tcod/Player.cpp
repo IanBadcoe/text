@@ -9,6 +9,12 @@
 std::vector<TCODColor> Player::s_foreground;
 int Player::s_max_players = 0;
 
+static Entity* CreatePlayer(std::istringstream& in) {
+	return new Player(in);
+}
+
+EntityCreator Player::s_creator(EntityType::Player, CreatePlayer);
+
 float Player::InnerStep()
 {
 	if (!_command_queue.size())
@@ -27,7 +33,7 @@ DisplayChar Player::Disp() const
 	return DisplayChar('@', s_foreground[_id]);
 }
 
-float Player::ExecuteCommand(const Command & cmd)
+float Player::ExecuteCommand(const Command& cmd)
 {
 	World* w = GetWorld();
 	assert(w);
@@ -57,4 +63,8 @@ float Player::ExecuteCommand(const Command & cmd)
 	assert(false);
 
 	return 0.0f;
+}
+
+void Player::SerialiseTo(std::ostringstream& out) const
+{
 }

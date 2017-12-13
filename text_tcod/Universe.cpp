@@ -9,7 +9,7 @@
 
 #include <set>
 
-Universe::Universe() : _local_player_id(0)
+Universe::Universe() : _local_player_id(-1)
 {
     _world = new World(200, 200);
 
@@ -17,29 +17,17 @@ Universe::Universe() : _local_player_id(0)
 
     ct.Apply(_world);
 
-	_players[_local_player_id] = new Player(_local_player_id);
-
-    for (int i = 0; i < 200; i++) {
-        if (_world->IsWalkable(Coord(100, i)))
-        {
-            _world->AddActor(Coord(100, i), _players[_local_player_id]);
-            break;
-        }
-    }
-
 	_input = new InputHandler();
 	_input->SetCommandReceiver(this);
 
 	_queue.AddFutureStep(_input, 0.0f);
-	_queue.AddFutureStep(_players[_local_player_id], 0.5f);
 }
-
 
 Universe::~Universe()
 {
 }
 
-void Universe::ReceiveCommandSequence(const CommandSequence & cs)
+void Universe::ReceiveCommandSequence(const CommandSequence& cs)
 {
 	for (int i = 0; i < cs._commands.size(); i++)
 	{
@@ -47,12 +35,12 @@ void Universe::ReceiveCommandSequence(const CommandSequence & cs)
 	}
 }
 
-void Universe::SetCommandReceiver(ICommandReceiver * csr)
+void Universe::SetCommandReceiver(ICommandReceiver* csr)
 {
     _pass_commands_to = csr;
 }
 
-void Universe::ReceiveCommand(const Command & c)
+void Universe::ReceiveCommand(const Command& c)
 {
 	Command temp(c);
 	temp._player_id = _local_player_id;
@@ -68,22 +56,76 @@ void Universe::ProcessCommand(const Command& cmd)
 	}
 }
 
-bool Universe::ProcessGlobalCommand(const Command & cmd)
+bool Universe::ProcessGlobalCommand(const Command& cmd)
 {
 	return false;
 }
 
-void Universe::SetLocalPlayerId(int id)
+void Universe::SerialiseTo(std::ostringstream& out) const
 {
-	Player* p = _players[_local_player_id];
+	assert(_world);
 
-	_players.erase(_local_player_id);
+	_world->SerialiseTo(out);
 
-	p->SetId(id);
+	_queue.SerialiseTo(out);
 
-	_local_player_id = id;
+	out <<= _players.size();
 
-	_players[_local_player_id] = p;
+	for (auto it = _players.begin(); it != _players.end(); it++) {
+		out <<= it->first;
+		out <<= it->second->GetPos();
+	}
+}
+
+void Universe::SerialiseFrom(std::istringstream& in)
+{
+	assert(_world);
+
+	_world->SerialiseFrom(in);
+
+	_queue.SerialiseFrom(in, _world);
+
+	int num_players;
+
+	in >>= num_players;
+
+	for (int i = 0; i < num_players; i++)
+	{
+		int id;
+		in >>= id;
+		Coord p;
+		in >>= p;
+
+		assert(dynamic_cast<Player*>(_world->GetActor(p)));
+
+		_players[id] = static_cast<Player*>(_world->GetActor(p));
+	}
+}
+
+void Universe::EnsurePlayer(int player_id, bool is_local)
+{
+	if (GetPlayer(player_id))
+		return;
+
+	_players[player_id] = new Player(player_id);
+
+	for (int i = 0; i < 200; i++) {
+		Coord try_pos(100, i);
+
+		if (_world->IsWalkable(try_pos) && !_world->GetActor(try_pos))
+		{
+			_world->AddActor(try_pos, _players[player_id]);
+			break;
+		}
+	}
+
+	_queue.AddFutureStep(_players[player_id], 0.5f);
+
+	if (is_local)
+	{
+		assert(_local_player_id == -1);
+		_local_player_id = player_id;
+	}
 }
 
 Player* Universe::GetPlayer(int i)

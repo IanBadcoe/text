@@ -118,6 +118,7 @@ copy ..\libtcod-msvs-x64\data\fonts\dejavu16x16_gs_tc.png $(OutputPath)</Command
     <ClInclude Include="DisplayChar.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Floor.h" />
+    <ClInclude Include="ISerialisable.h" />
     <ClInclude Include="Messages.h" />
     <ClInclude Include="InputHandler.h" />
     <ClInclude Include="Map.h" />

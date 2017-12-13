@@ -84,3 +84,81 @@ void World::ClearEntity(Coord pos)
 	_actors[idx(pos)] = nullptr;
 }
 
+void World::Clear()
+{
+	for (int i = 0; i < _width; i++)
+	{
+		for (int j = 0; j < _height; j++)
+		{
+			Coord p(i, j);
+
+			ClearEntity(p);
+			ClearTerrain(p);
+		}
+	}
+}
+
+void World::SerialiseTo(std::ostringstream& out) const
+{
+	out <<= _width;
+	out <<= _height;
+
+	int num_actors = 0;
+	int num_terrains = 0;
+
+	for (int i = 0; i < _width * _height; i++) {
+		if (_actors[i]) num_actors++;
+		if (_terrain[i]) num_terrains++;
+	}
+
+	out <<= num_actors;
+	out <<= num_terrains;
+
+	for (int i = 0; i < _width * _height; i++) {
+		if (_actors[i])
+		{
+			_actors[i]->SerialiseTo(out);
+		}
+	}
+
+	for (int i = 0; i < _width * _height; i++) {
+		if (_terrain[i])
+		{
+			_terrain[i]->SerialiseTo(out);
+		}
+	}
+}
+
+void World::SerialiseFrom(std::istringstream& in)
+{
+	Clear();
+
+	in >>= _width;
+	in >>= _height;
+
+	int num_actors;
+	int num_terrains;
+
+	in >>= num_actors;
+	in >>= num_terrains;
+
+	for (int i = 0; i < num_actors; i++) {
+		Entity* entity = EntityCreator::VirtualSerialiseFrom(in);
+
+		assert(dynamic_cast<Actor*>(entity));
+
+		AddActor(entity->GetPos(), static_cast<Actor*>(entity));
+	}
+
+	for (int i = 0; i < _width * _height; i++) {
+		if (_terrain[i])
+		{
+			Entity* entity = EntityCreator::VirtualSerialiseFrom(in);
+
+			assert(dynamic_cast<Terrain*>(entity));
+
+			SetTerrain(entity->GetPos(), static_cast<Terrain*>(entity));
+		}
+	}
+}
+

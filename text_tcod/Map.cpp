@@ -36,6 +36,9 @@ void Map::SetChar(Coord pos, const Entity* entity, const Terrain* terrain) {
 }
 
 void Map::Draw(TCODConsole* console) {
+	if (!_p)
+		return;
+
     SetWorld(_p->GetWorld());
 
     Coord screen_size(console->getWidth(), console->getHeight());

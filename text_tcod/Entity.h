@@ -3,18 +3,29 @@
 #include <assert.h>
 
 #include "Coord.h"
+#include "ISerialisable.h"
+
+#include <sstream>
 
 class World;
 class DisplayChar;
 
 enum class EntityType {
+	Unknwown,
 	Player,
 	Wall,
 	Floor
 };
 
+class EntityCreator;
+
 class Entity {
 public:
+	Entity(std::istringstream& in) : _w(nullptr)
+	{
+		in >>= _type;
+		in >>= _pos;
+	}
 	Entity(EntityType t) : _type(t), _pos(0, 0), _w(nullptr) {}
 
 	virtual DisplayChar Disp() const = 0;
@@ -35,14 +46,35 @@ public:
 		_w = w;
 	}
 
+	virtual void SerialiseTo(std::ostringstream& out) const = 0;
+
 private:
 	EntityType _type;
 	Coord _pos;
 	World* _w;
 };
 
+class EntityCreator {
+public:
+	typedef Entity* (*CreateFunc)(std::istringstream& in);
+
+	EntityCreator(EntityType type, CreateFunc func) : _type(type), _func(func)
+	{
+		RegisterCreator(this);
+	}
+
+	EntityType _type;
+	CreateFunc _func;
+
+	static std::map<EntityType, EntityCreator::CreateFunc> s_creation_map;
+
+	static Entity* VirtualSerialiseFrom(std::istringstream& in);
+	static void RegisterCreator(const EntityCreator* ac);
+};
+
 class Terrain : public Entity {
 public:
+	Terrain(std::istringstream& in);
 	Terrain(EntityType et, bool is_walkable, bool is_transparent) :
 		Entity(et),
 		_is_walkable(is_walkable),
@@ -50,6 +82,9 @@ public:
 
 	bool IsWalkable() const { return _is_walkable; }
 	bool IsTransparent() const { return _is_transparent; }
+
+	// Inherited via ISerialisable
+	virtual void SerialiseTo(std::ostringstream& out) const override = 0;
 
 private:
 	bool _is_walkable;

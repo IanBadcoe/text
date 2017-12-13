@@ -20,6 +20,7 @@ struct Command {
     Coord::Dir _dir;
 
 	int _player_id;
+	int _from_frame;
 };
 
 struct CommandSequence {

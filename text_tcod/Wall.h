@@ -22,6 +22,9 @@ public:
 
 	int GetStr() const { return _str; }
 
+	// Inherited via Terrain
+	virtual void SerialiseTo(std::ostringstream& out) const override;
+
 private:
 	int _str;
 

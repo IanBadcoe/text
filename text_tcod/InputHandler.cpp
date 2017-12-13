@@ -4,10 +4,20 @@
 
 #include "sys.hpp"
 
+static int s_create_guard = 0;
+
 InputHandler::InputHandler() :
 	Stepable(1.0f),
 	_command_dest(nullptr)
 {
+	assert(!s_create_guard);
+	s_create_guard++;
+}
+
+InputHandler::~InputHandler()
+{
+	assert(s_create_guard == 1);
+	s_create_guard--;
 }
 
 float InputHandler::InnerStep()

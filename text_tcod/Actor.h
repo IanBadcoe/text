@@ -2,6 +2,8 @@
 
 #include "Entity.h"
 
+#include "ISerialisable.h"
+
 #include <queue>
 
 class StepableQueue;
@@ -9,13 +11,24 @@ class StepableQueue;
 class Stepable {
 public:
 	Stepable(float speed) : _speed(speed) {}
+	~Stepable();
 
 	void Step(StepableQueue* queue, float time);
 	// returns time of next step or zero for none
 	virtual float InnerStep() = 0;
 
+	void SerialiseStepableTo(std::ostringstream& out) const;
+	void SerialiseStepableFrom(std::istringstream& in);
+
+	void SetQueue(StepableQueue* queue) {
+		assert(_queue == nullptr || _queue == queue);
+
+		_queue = queue;
+	}
+
 private:
 	float _speed;
+	StepableQueue* _queue;
 };
 
 class StepableQueue {
@@ -28,6 +41,25 @@ public:
 
 	void AddFutureStep(Stepable* s, float t) {
 		_queue.push(QueueEntry(s, t));
+	}
+
+	void SerialiseTo(std::ostringstream& out) const;
+	void SerialiseFrom(std::istringstream& in, const World* world);
+
+	void Remove(const Stepable* s) {
+		std::priority_queue<QueueEntry> temp;
+
+		while (_queue.size())
+		{
+			QueueEntry qe = _queue.top();
+
+			if (qe._s != s)
+			{
+				temp.push(qe);
+			}
+
+			_queue = temp;
+		}
 	}
 
 private:
@@ -53,5 +85,7 @@ public:
 	Actor(EntityType et, float speed) :
 		Entity(et), Stepable(speed) {
 	}
-};
 
+	// Inherited via ISerialisable
+	virtual void SerialiseTo(std::ostringstream& out) const = 0;
+};

@@ -33,10 +33,14 @@ int main(int argc, char* argv[]) {
 
 	Universe u;
 
-	Map map(u.GetPlayer(0));
+	Map map;
 
     if (argc == 2 && std::string("-nn") == argv[1])
     {
+		// create local player object
+		u.EnsurePlayer(0, true);
+		map.SetPlayer(u.GetPlayer(0));
+
 		CommandCollator cc;
 
 		cc.SetCommandSequenceReceiver(&u);
@@ -71,7 +75,11 @@ int main(int argc, char* argv[]) {
 
 	if (network.IsServer())
 	{
-		Server server(&network);
+		// create local player object
+		u.EnsurePlayer(0, true);
+		map.SetPlayer(u.GetPlayer(0));
+
+		Server server(&network, &u);
 
 		// universe sends commands to server
 		u.SetCommandReceiver(&server);
@@ -82,6 +90,7 @@ int main(int argc, char* argv[]) {
 
 		while (!server.IsEnded())
 		{
+			// processing received events for Universe::_current_frame
 			while (u.Step())
 				;
 
@@ -96,6 +105,8 @@ int main(int argc, char* argv[]) {
 			// server services network events, including incoming commands
 			network.SendEvents(&server);
 
+			// increment the frame number and send accumulated commands to local universe
+			// and peers
 			server.EndFrame();
 
 			map.Draw(TCODConsole::root);
@@ -105,12 +116,14 @@ int main(int argc, char* argv[]) {
 	}
 	else
 	{
-		Client client(&network);
+		Client client(&network, &u);
 
 		// universe sends commands to server
 		u.SetCommandReceiver(&client);
 		// client sends command sequences to our local universe
 		client.SetCommandSequenceReceiver(&u);
+
+		bool first_frame = true;
 
 		while (!client.IsEnded())
 		{
@@ -120,6 +133,12 @@ int main(int argc, char* argv[]) {
 
 				// client services network events, including incoming command sequences
 				network.SendEvents(&client);
+			}
+
+			if (first_frame)
+			{
+				// once we've had the first frame events, the universe is initialised and will have our player object
+				map.SetPlayer(u.GetLocalPlayer());
 			}
 
 			while (u.Step())

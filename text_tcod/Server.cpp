@@ -3,42 +3,51 @@
 #include "Server.h"
 
 #include "Messages.h"
+#include "Universe.h"
 
 #include <set>
 
-void Server::Connected(Networker * networker, const PeerHandle peer, bool is_this_peer)
+void Server::Connected(Networker* networker, const PeerHandle peer)
 {
-	printf("Server: Connection from: %p (%s)\n", peer, is_this_peer ? "local" : "remote");
+	printf("Server: Connection, peer=%p\n", peer);
 
-	if (is_this_peer)
-	{
-		assert(!_this_peer || _this_peer);
+	int player_id = AddPeer(peer);
 
-		_this_peer = peer;
-	}
+	_universe->EnsurePlayer(player_id, false);
 
-	PeerJoined pj;
-	pj._player_num = AddPeer(peer);
+	UniverseMessage em(_universe);
+
+	_network->SendToPeer(peer, em);
+
+	PeerJoinedMessage pj(player_id, _current_frame);
 
 	_network->SendToAllPeers(pj);
 }
 
-void Server::Disconnected(Networker * networker, const PeerHandle peer, bool is_this_peer)
+void Server::Disconnected(Networker* networker, const PeerHandle peer)
 {
-	printf("Server: Disconnection from: %p (%s)\n", peer, is_this_peer ? "local" : "remote");
+	printf("Server: Disconnection, peer=%p\n", peer);
 
+	int player_id = RemovePeer(peer);
+
+	// if we wanted to do anything to the player object to adjust for it not having a human player, we could here...
+	// for the moment just let it freeze
+
+	PeerLeftMessage pl(player_id);
+
+	_network->SendToAllPeers(pl);
 }
 
-void Server::Receive(Networker * networker, const PeerHandle peer, const std::vector<uint8_t>& data)
+void Server::Receive(Networker* networker, const PeerHandle peer, const std::string& data)
 {
 }
 
-void Server::ReceiveCommand(const Command & c)
+void Server::ReceiveCommand(const Command& c)
 {
 	_collator.ReceiveCommand(c);
 }
 
-void Server::SetCommandSequenceReceiver(ICommandSequenceReceiver * csr)
+void Server::SetCommandSequenceReceiver(ICommandSequenceReceiver* csr)
 {
 	_collator.SetCommandSequenceReceiver(csr);
 }
@@ -73,4 +82,17 @@ int Server::AddPeer(PeerHandle peer)
 	_peer_to_player_id_map[peer] = found;
 
 	return found;
+}
+
+int Server::RemovePeer(PeerHandle peer)
+{
+	auto it = _peer_to_player_id_map.find(peer);
+
+	assert(it != _peer_to_player_id_map.end());
+
+	int ret = it->second;
+
+	_peer_to_player_id_map.erase(it);
+
+	return ret;
 }

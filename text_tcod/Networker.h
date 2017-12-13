@@ -1,8 +1,8 @@
 #pragma once
 
-#include "concrt.h"
-
 #include "enet/enet.h"
+
+#include "Messages.h"
 
 #include <vector>
 
@@ -15,9 +15,9 @@ typedef PeerDummy* PeerHandle;
 
 class INetworkHandler {
 public:
-	virtual void Connected(Networker* networker, const PeerHandle peer, bool is_this_peer) = 0;
-	virtual void Disconnected(Networker* networker, const PeerHandle peer, bool is_this_peer) = 0;
-	virtual void Receive(Networker* networker, const PeerHandle peer, const std::vector<uint8_t>& data) = 0;
+	virtual void Connected(Networker* networker, const PeerHandle peer) = 0;
+	virtual void Disconnected(Networker* networker, const PeerHandle peer) = 0;
+	virtual void Receive(Networker* networker, const PeerHandle peer, const std::string& data) = 0;
 };
 
 class Networker {
@@ -32,8 +32,8 @@ public:
 	void SetTerminate();
 	bool IsTerminated();
 
-	template <typename T> void SendToPeer(PeerHandle peer, const T& msg);
-	template <typename T> void SendToAllPeers(const T& msg);
+	void SendToPeer(PeerHandle peer, const Message& msg);
+	void SendToAllPeers(const Message& msg);
 	void SendToPeer(PeerHandle peer, const uint8_t* data, size_t size);
 	void SendToAllPeers(const uint8_t* data, size_t size);
 
@@ -56,14 +56,24 @@ private:
     NetworkData* _data;
 };
 
-template<typename T>
-inline void Networker::SendToPeer(PeerHandle peer, const T& msg)
+inline void Networker::SendToPeer(PeerHandle peer, const Message& msg)
 {
-	SendToPeer(peer, reinterpret_cast<const uint8_t*>(&msg), sizeof(T));
+	std::ostringstream str;
+
+	msg.ToBytes(str);
+
+	std::string s = str.str();
+
+	SendToPeer(peer, reinterpret_cast<const uint8_t*>(s.data()), s.size());
 }
 
-template<typename T>
-inline void Networker::SendToAllPeers(const T& msg)
+inline void Networker::SendToAllPeers(const Message& msg)
 {
-	SendToAllPeers(reinterpret_cast<const uint8_t*>(&msg), sizeof(T));
+	std::ostringstream str;
+
+	msg.ToBytes(str);
+
+	std::string s = str.str();
+
+	SendToAllPeers(reinterpret_cast<const uint8_t*>(s.data()), s.size());
 }
