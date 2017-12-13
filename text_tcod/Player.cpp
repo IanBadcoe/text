@@ -15,6 +15,38 @@ static Entity* CreatePlayer(std::istringstream& in) {
 
 EntityCreator Player::s_creator(EntityType::Player, CreatePlayer);
 
+Player::Player(std::istringstream& in) : Actor(in) {
+    in >>= _id;
+
+    int queue_size;
+    in >>= queue_size;
+
+    for (int i = 0; i < queue_size; i++)
+    {
+        Command c;
+
+        in >>= c;
+        _command_queue.push(c);
+    }
+}
+
+void Player::SerialiseTo(std::ostringstream& out) const
+{
+    Actor::SerialiseTo(out);
+
+    out <<= _id;
+
+    out <<= _command_queue.size();
+
+    std::queue<Command> temp = _command_queue;
+
+    while (temp.size())
+    {
+        out <<= temp.front();
+        temp.pop();
+    }
+}
+
 float Player::InnerStep()
 {
 	if (!_command_queue.size())
@@ -63,8 +95,4 @@ float Player::ExecuteCommand(const Command& cmd)
 	assert(false);
 
 	return 0.0f;
-}
-
-void Player::SerialiseTo(std::ostringstream& out) const
-{
 }

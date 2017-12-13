@@ -38,10 +38,10 @@ public:
 	// true -> end of frame
 	// false -> more to process
 	bool Step() {
-		if (!_queue.AnythingToStep())
+		if (!_stepable_queue.AnythingToStep())
 			return true;
 
-		return _queue.Step();
+		return _stepable_queue.Step();
 	}
 
 	Player* GetPlayer(int i);
@@ -62,7 +62,7 @@ private:
 
 	InputHandler* _input;
 
-	StepableQueue _queue;
+	StepableQueue _stepable_queue;
 
 	std::map<int, Player*> _players;
 	int _local_player_id;

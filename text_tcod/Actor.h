@@ -10,6 +10,7 @@ class StepableQueue;
 
 class Stepable {
 public:
+    Stepable(std::istringstream& in);
 	Stepable(float speed) : _speed(speed) {}
 	~Stepable();
 
@@ -17,18 +18,17 @@ public:
 	// returns time of next step or zero for none
 	virtual float InnerStep() = 0;
 
-	void SerialiseStepableTo(std::ostringstream& out) const;
-	void SerialiseStepableFrom(std::istringstream& in);
+	void SerialiseTo(std::ostringstream& out) const;
 
-	void SetQueue(StepableQueue* queue) {
-		assert(_queue == nullptr || _queue == queue);
+	void SetQueue(StepableQueue* queue) const {
+		assert(_in_queue == nullptr || queue == nullptr || _in_queue == queue);
 
-		_queue = queue;
+		_in_queue = queue;
 	}
 
 private:
 	float _speed;
-	StepableQueue* _queue;
+	mutable StepableQueue* _in_queue;
 };
 
 class StepableQueue {
@@ -40,6 +40,7 @@ public:
 	bool AnythingToStep() { return _queue.size() > 0; }
 
 	void AddFutureStep(Stepable* s, float t) {
+        s->SetQueue(this);
 		_queue.push(QueueEntry(s, t));
 	}
 
@@ -60,6 +61,8 @@ public:
 
 			_queue = temp;
 		}
+
+        s->SetQueue(nullptr);
 	}
 
 private:
@@ -82,10 +85,11 @@ private:
 
 class Actor : public Entity, public Stepable {
 public:
+    Actor(std::istringstream& in) : Entity(in), Stepable(in) {}
 	Actor(EntityType et, float speed) :
 		Entity(et), Stepable(speed) {
 	}
 
 	// Inherited via ISerialisable
-	virtual void SerialiseTo(std::ostringstream& out) const = 0;
+	virtual void SerialiseTo(std::ostringstream& out) const;
 };

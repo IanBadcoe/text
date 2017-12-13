@@ -8,6 +8,7 @@
 
 class Floor : public Terrain {
 public:
+    Floor(std::istringstream& in) : Terrain(in) {}
 	Floor() : Terrain(EntityType::Floor, true, true) {}
 
 	virtual DisplayChar Disp() const {
@@ -21,4 +22,6 @@ private:
 	static DisplayChar s_floor;
 	static TCODColor s_floor_foreground;
 	static TCODColor s_floor_background;
+
+    static EntityCreator s_creator;
 };

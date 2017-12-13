@@ -20,7 +20,7 @@ Universe::Universe() : _local_player_id(-1)
 	_input = new InputHandler();
 	_input->SetCommandReceiver(this);
 
-	_queue.AddFutureStep(_input, 0.0f);
+	_stepable_queue.AddFutureStep(_input, 0.0f);
 }
 
 Universe::~Universe()
@@ -67,7 +67,7 @@ void Universe::SerialiseTo(std::ostringstream& out) const
 
 	_world->SerialiseTo(out);
 
-	_queue.SerialiseTo(out);
+	_stepable_queue.SerialiseTo(out);
 
 	out <<= _players.size();
 
@@ -83,7 +83,7 @@ void Universe::SerialiseFrom(std::istringstream& in)
 
 	_world->SerialiseFrom(in);
 
-	_queue.SerialiseFrom(in, _world);
+	_stepable_queue.SerialiseFrom(in, _world);
 
 	int num_players;
 
@@ -119,7 +119,7 @@ void Universe::EnsurePlayer(int player_id, bool is_local)
 		}
 	}
 
-	_queue.AddFutureStep(_players[player_id], 0.5f);
+	_stepable_queue.AddFutureStep(_players[player_id], 0.5f);
 
 	if (is_local)
 	{

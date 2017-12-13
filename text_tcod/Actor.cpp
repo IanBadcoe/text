@@ -6,6 +6,19 @@
 #include "ISerialisable.h"
 #include "InputHandler.h"
 
+
+Stepable::Stepable(std::istringstream& in)
+{
+    in >>= _speed;
+}
+
+Stepable::~Stepable() {
+    if (_in_queue)
+    {
+        _in_queue->Remove(this);
+    }
+}
+
 void Stepable::Step(StepableQueue* queue, float time)
 {
 	float duration = InnerStep();
@@ -14,6 +27,11 @@ void Stepable::Step(StepableQueue* queue, float time)
 	{
 		queue->AddFutureStep(this, time + duration / _speed);
 	}
+}
+
+void Stepable::SerialiseTo(std::ostringstream & out) const
+{
+    out <<= _speed;
 }
 
 bool StepableQueue::Step()
@@ -32,6 +50,7 @@ bool StepableQueue::Step()
 	{
 		_queue.pop();
 
+        qe._s->SetQueue(nullptr);
 		qe._s->Step(this, new_time);
 	}
 
@@ -114,12 +133,12 @@ void StepableQueue::SerialiseFrom(std::istringstream& in, const World* world)
 			s = new InputHandler();
 		}
 
-		QueueEntry qe(s, time);
-		_queue.push(qe);
+        AddFutureStep(s, time);
 	}
 }
 
-Stepable::~Stepable() {
-	if (_queue)
-		_queue->Remove(this);
+void Actor::SerialiseTo(std::ostringstream& out) const
+{
+    Entity::SerialiseTo(out);
+    Stepable::SerialiseTo(out);
 }
