@@ -78,7 +78,7 @@ copy ..\libtcod-msvs-x64\data\fonts\dejavu16x16_gs_tc.png $(OutputPath)</Command
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(OutDir);..\libtcod-msvs-x64\build\msvs\libtcod_sdl\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>enet.lib;libtcod.lib;enet.lib;Ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>enet.lib;libtcod.lib;Ws2_32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy ..\libtcod-msvs-x64\build\msvs\libtcod_sdl\x64\Release\libtcod.dll $(OutputPath)

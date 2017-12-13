@@ -22,7 +22,7 @@ public:
 
 class Networker {
 public:
-	Networker(enet_uint16 port, int max_players);
+	Networker(enet_uint16 port, int max_players, bool force_no_client);
 	~Networker();
 
 	bool IsReady();

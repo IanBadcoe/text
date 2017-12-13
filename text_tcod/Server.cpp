@@ -8,6 +8,8 @@
 
 void Server::Connected(Networker * networker, const PeerHandle peer, bool is_this_peer)
 {
+	printf("Server: Connection from: %p (%s)\n", peer, is_this_peer ? "local" : "remote");
+
 	if (is_this_peer)
 	{
 		assert(!_this_peer || _this_peer);
@@ -23,6 +25,8 @@ void Server::Connected(Networker * networker, const PeerHandle peer, bool is_thi
 
 void Server::Disconnected(Networker * networker, const PeerHandle peer, bool is_this_peer)
 {
+	printf("Server: Disconnection from: %p (%s)\n", peer, is_this_peer ? "local" : "remote");
+
 }
 
 void Server::Receive(Networker * networker, const PeerHandle peer, const std::vector<uint8_t>& data)

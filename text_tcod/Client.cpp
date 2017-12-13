@@ -5,10 +5,12 @@
 
 void Client::Connected(Networker * networker, const PeerHandle peer, bool is_this_peer)
 {
+	printf("Client: Connection from: %p (%s)\n", peer, is_this_peer ? "local" : "remote");
 }
 
 void Client::Disconnected(Networker * networker, const PeerHandle peer, bool is_this_peer)
 {
+	printf("Client: Disconnection from: %p (%s)\n", peer, is_this_peer ? "local" : "remote");
 }
 
 void Client::Receive(Networker * networker, const PeerHandle peer, const std::vector<uint8_t>& data)

@@ -57,7 +57,14 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    Networker network(55555, MAX_PLAYERS);
+	bool force_no_client = false;
+
+	if (argc == 2 && std::string("-fnc") == argv[1])
+	{
+		force_no_client = true;
+	}
+
+    Networker network(1234, MAX_PLAYERS, force_no_client);
 
 	while (!network.IsReady())
 		;

@@ -9,7 +9,7 @@
 
 class NetworkData {
 public:
-	NetworkData(enet_uint16 port, int max_players) :
+	NetworkData(enet_uint16 port, int max_players, bool force_no_client) :
 		_port(port),
 		_ready(false),
 		_failed(false),
@@ -18,7 +18,8 @@ public:
         _enet_peer(nullptr),
         _terminate(false),
         _terminated(false),
-		_max_players(max_players) {}
+		_max_players(max_players),
+		_force_no_client(force_no_client) {}
 
 	void SetReady();
 	void SetFailed();
@@ -44,6 +45,7 @@ public:
     HANDLE _thread;
 
 	const int _max_players;
+	const bool _force_no_client;
 
 private:
 	mutable Concurrency::critical_section _cs;
@@ -58,8 +60,8 @@ private:
 	std::vector<ENetEvent> _event_queue;
 };
 
-Networker::Networker(enet_uint16 port, int max_players) :
-    _data(new NetworkData(port, max_players))
+Networker::Networker(enet_uint16 port, int max_players, bool force_no_client) :
+    _data(new NetworkData(port, max_players, force_no_client))
 {
     _data->_thread = CreateThread(nullptr, 0, NetworkThreadFunc, this, 0, nullptr);
 }
@@ -223,6 +225,8 @@ void NetworkData::SendEvents(Networker* n, INetworkHandler * nh)
 		}
 		}
 	}
+
+	_event_queue.clear();
 }
 
 void NetworkData::StoreEvent(const ENetEvent & event)
@@ -245,7 +249,8 @@ bool Networker::TryFindHost()
 		NULL	/* create a client host */,
 		1		/* only allow 1 outgoing connection */,
 		2		/* #channels */,
-		0, 0    /* no throttling */);
+		57600 / 8 /* 56K modem with 56 Kbps downstream bandwidth */,
+		14400 / 8 /* 56K modem with 14 Kbps upstream bandwidth */);
 
     if (!_data->_enet_host)
 	{
@@ -259,7 +264,7 @@ bool Networker::TryFindHost()
     address.port = _data->_port;
 
     /* Initiate the connection, allocating the two channels 0 and 1. */
-    _data->_enet_peer = enet_host_connect(_data->_enet_host, &address, 1, 0);
+    _data->_enet_peer = enet_host_connect(_data->_enet_host, &address, 2, 0);
 
     if (_data->_enet_peer == NULL)
     {
@@ -302,7 +307,7 @@ bool Networker::TryCreateHost()
 	address.host = ENET_HOST_ANY;
 //	int ret = enet_address_set_host(&address, "10.7.9.30");
 	/* Bind the server to port 1234. */
-	address.port = 1234;
+	address.port = _data->_port;
 	_data->_enet_host = enet_host_create(
 		&address				/* the address to bind the server host to */,
 		32, //_data->_max_players		/* #clients */,
@@ -390,7 +395,7 @@ void Networker::InnerThreadFunction()
 		return;
 	}
 
-	if (TryFindHost())
+	if (!_data->_force_no_client && TryFindHost())
 	{
 		_data->SetReady();
 	}
@@ -423,8 +428,7 @@ void Networker::InnerThreadFunction()
 
 		ENetEvent event;
 
-		int ret = enet_host_service(_data->_enet_host, &event, 5);
-		printf("enet service\n");
+		int ret = enet_host_service(_data->_enet_host, &event, 1000);
 
 		if (ret < 0)
 		{
