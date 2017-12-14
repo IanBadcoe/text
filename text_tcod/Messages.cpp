@@ -71,3 +71,37 @@ void UniverseMessage::FromBytes(std::istringstream& in)
 
 	_universe->SerialiseFrom(in);
 }
+
+void CommandSequenceMessage::ToBytes(std::ostringstream & out) const
+{
+	ToBytesBase(out);
+
+	out <<= _sequence._frame;
+
+	out <<= (int)_sequence._commands.size();
+
+	for (int i = 0; i < _sequence._commands.size(); i++)
+	{
+		out <<= _sequence._commands[i];
+	}
+}
+
+void CommandSequenceMessage::FromBytes(std::istringstream & in)
+{
+	FromBytesBase(in);
+
+	in >>= _sequence._frame;
+
+	int num_commands;
+
+	in >>= num_commands;
+
+	for (int i = 0; i < num_commands; i++)
+	{
+		Command c;
+
+		in >>= c;
+
+		_sequence._commands.push_back(c);
+	}
+}

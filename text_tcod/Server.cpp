@@ -19,7 +19,7 @@ void Server::Connected(Networker* networker, const PeerHandle peer)
 
 	_network->SendToPeer(peer, em);
 
-	PeerJoinedMessage pj(player_id, _current_frame);
+	PeerJoinedMessage pj(player_id, _collator.GetFrame());
 
 	_network->SendToAllPeers(pj);
 }
@@ -40,16 +40,42 @@ void Server::Disconnected(Networker* networker, const PeerHandle peer)
 
 void Server::Receive(Networker* networker, const PeerHandle peer, const std::string& data)
 {
+	Message::Type t = *reinterpret_cast<const Message::Type*>(data.data());
+
+	std::istringstream str;
+	str.str(data);
+
+	switch (t)
+	{
+	case Message::Type::Command:
+	{
+		CommandMessage cm;
+		cm.FromBytes(str);
+
+		ReceiveCommand(cm._command);
+
+		break;
+	}
+
+	case Message::Type::JoinResponse:
+	{
+		assert(false);
+
+		break;
+	}
+
+	case Message::Type::Universe:
+	{
+		assert(false);
+
+		break;
+	}
+	}
 }
 
 void Server::ReceiveCommand(const Command& c)
 {
 	_collator.ReceiveCommand(c);
-}
-
-void Server::SetCommandSequenceReceiver(ICommandSequenceReceiver* csr)
-{
-	_collator.SetCommandSequenceReceiver(csr);
 }
 
 int Server::AddPeer(PeerHandle peer)
@@ -95,4 +121,13 @@ int Server::RemovePeer(PeerHandle peer)
 	_peer_to_player_id_map.erase(it);
 
 	return ret;
+}
+
+void Server::ReceiveCommandSequence(const CommandSequence& cs)
+{
+	_universe->ReceiveCommandSequence(cs);
+	
+	CommandSequenceMessage csm(cs);
+
+	_network->SendToAllPeers(csm);
 }

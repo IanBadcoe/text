@@ -151,14 +151,11 @@ void World::SerialiseFrom(std::istringstream& in)
 	}
 
 	for (int i = 0; i < _width * _height; i++) {
-		if (_terrain[i])
-		{
-			Entity* entity = EntityCreator::VirtualSerialiseFrom(in);
+		Entity* entity = EntityCreator::VirtualSerialiseFrom(in);
 
-			assert(dynamic_cast<Terrain*>(entity));
+		assert(dynamic_cast<Terrain*>(entity));
 
-			SetTerrain(entity->GetPos(), static_cast<Terrain*>(entity));
-		}
+		SetTerrain(entity->GetPos(), static_cast<Terrain*>(entity));
 	}
 }
 

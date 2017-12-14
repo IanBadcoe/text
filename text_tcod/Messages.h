@@ -13,6 +13,7 @@ struct Message {
 		Unknwown,
 		JoinResponse,
 		Command,
+		CommandSequence,			// AKA frame data
 		Universe
 	};
 
@@ -61,6 +62,17 @@ struct CommandMessage : public Message {
 	CommandMessage(const Command& cmd) : Message(Message::Type::Command), _command(cmd) {}
 
 	Command _command;
+
+	// Inherited via Message
+	virtual void ToBytes(std::ostringstream& out) const override;
+	virtual void FromBytes(std::istringstream& in) override;
+};
+
+struct CommandSequenceMessage : public Message {
+	CommandSequenceMessage() {}
+	CommandSequenceMessage(const CommandSequence& cs) : Message(Message::Type::CommandSequence), _sequence(cs) {}
+
+	CommandSequence _sequence;
 
 	// Inherited via Message
 	virtual void ToBytes(std::ostringstream& out) const override;

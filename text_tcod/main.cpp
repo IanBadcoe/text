@@ -75,16 +75,20 @@ int main(int argc, char* argv[]) {
 
 	if (network.IsServer())
 	{
+		Server server(&network, &u);
+
 		// create local player object
+		// use a nullptr peer to reserve an id for the local player
+		int id = server.AddPeer(nullptr);
+
+		// we are assuming that the first player is id zero is not the local player
+		assert(id == 0);
 		u.EnsurePlayer(0, true);
 		map.SetPlayer(u.GetPlayer(0));
 
-		Server server(&network, &u);
 
 		// universe sends commands to server
 		u.SetCommandReceiver(&server);
-		// server sends command sequences to our local universe and also via Network to all others
-		server.SetCommandSequenceReceiver(&u);
 
 		DWORD _end_frame = timeGetTime() + DESIRED_FRAMETIME;
 

@@ -32,6 +32,8 @@ public:
 	void SetTerminate();
 	bool IsTerminated();
 
+	void SendToServer(const Message& msg);
+
 	void SendToPeer(PeerHandle peer, const Message& msg);
 	void SendToAllPeers(const Message& msg);
 	void SendToPeer(PeerHandle peer, const uint8_t* data, size_t size);
@@ -59,6 +61,9 @@ private:
 inline void Networker::SendToPeer(PeerHandle peer, const Message& msg)
 {
 	std::ostringstream str;
+	std::string buffer;
+	buffer.reserve(1000);
+	str.str(buffer);
 
 	msg.ToBytes(str);
 

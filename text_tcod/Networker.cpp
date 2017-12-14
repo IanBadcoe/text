@@ -103,6 +103,14 @@ bool Networker::IsTerminated()
 	return _data->IsTerminated();
 }
 
+void Networker::SendToServer(const Message& msg)
+{
+	assert(_data);
+	assert(_data->_enet_peer);
+
+	SendToPeer(reinterpret_cast<PeerHandle>(_data->_enet_peer), msg);
+}
+
 void Networker::SendToPeer(PeerHandle peer, const uint8_t* data, size_t size)
 {
 	ENetPacket* packet = enet_packet_create(data,

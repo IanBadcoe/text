@@ -36,7 +36,7 @@ void Player::SerialiseTo(std::ostringstream& out) const
 
     out <<= _id;
 
-    out <<= _command_queue.size();
+    out <<= (int)_command_queue.size();
 
     std::queue<Command> temp = _command_queue;
 

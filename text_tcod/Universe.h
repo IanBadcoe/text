@@ -21,6 +21,7 @@ public:
     ~Universe();
 
     const World* GetWorld() const { return _world; }
+	const InputHandler* GetInputHandler() const { return _input; }
 
     // Inherited via ICommandSequenceReceiver
     virtual void ReceiveCommandSequence(const CommandSequence& cs) override;

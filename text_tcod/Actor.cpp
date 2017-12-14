@@ -3,6 +3,7 @@
 #include "Actor.h"
 
 #include "World.h"
+#include "Universe.h"
 #include "ISerialisable.h"
 #include "InputHandler.h"
 
@@ -29,7 +30,7 @@ void Stepable::Step(StepableQueue* queue, float time)
 	}
 }
 
-void Stepable::SerialiseTo(std::ostringstream & out) const
+void Stepable::SerialiseTo(std::ostringstream& out) const
 {
     out <<= _speed;
 }
@@ -67,7 +68,7 @@ void StepableQueue::SerialiseTo(std::ostringstream& out) const
 {
 	out <<= _last_frame;
 
-	out <<= _queue.size();
+	out <<= (int)_queue.size();
 
 	std::priority_queue<QueueEntry> temp(_queue);
 
@@ -97,7 +98,7 @@ void StepableQueue::SerialiseTo(std::ostringstream& out) const
 	}
 }
 
-void StepableQueue::SerialiseFrom(std::istringstream& in, const World* world)
+void StepableQueue::SerialiseFrom(std::istringstream& in, const Universe* u)
 {
 	in >>= _last_frame;
 
@@ -110,9 +111,6 @@ void StepableQueue::SerialiseFrom(std::istringstream& in, const World* world)
 
 		in >>= time;
 
-		Coord pos;
-		in >>= pos;
-
 		char b;
 		in >>= b;
 
@@ -120,17 +118,19 @@ void StepableQueue::SerialiseFrom(std::istringstream& in, const World* world)
 
 		if (b)
 		{
-			Entity* e = const_cast<Actor*>(world->GetActor(pos));
+			Coord pos;
+			in >>= pos;
+
+			Entity* e = const_cast<Actor*>(u->GetWorld()->GetActor(pos));
 			assert(e);
 
 			s = dynamic_cast<Stepable*>(e);
 			assert(s);
-
 		}
 		else
 		{
 			// the only non-entity we have at the moment...
-			s = new InputHandler();
+			s = const_cast<InputHandler*>(u->GetInputHandler());
 		}
 
         AddFutureStep(s, time);

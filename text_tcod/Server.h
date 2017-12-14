@@ -9,13 +9,15 @@ class Universe;
 class Server :
 	public INetworkHandler,
 	public ICommandReceiver,
-	public ICommandSequenceSender
+	public ICommandSequenceReceiver
 {
 public:
 	Server(Networker* network, Universe* universe) :
 		_network(network),
-		_universe(universe),
-		_current_frame(0) {}
+		_universe(universe)
+	{
+		_collator.SetCommandSequenceReceiver(this);
+	}
 
 	// Inherited via INetworkHandler
 	virtual void Connected(Networker* networker, const PeerHandle peer) override;
@@ -25,14 +27,17 @@ public:
 	// Inherited via ICommandReceiver
 	virtual void ReceiveCommand(const Command& c) override;
 
-	// Inherited via ICommandSequenceSender
-	virtual void SetCommandSequenceReceiver(ICommandSequenceReceiver* csr) override;
+	// Inherited via ICommandReceiver
+	virtual void ReceiveCommandSequence(const CommandSequence& cs) override;
 
 	bool IsEnded() const { return _collator.IsEnded(); }
-	void EndFrame() { _collator.EndFrame(); }
+	void EndFrame() {
+		_collator.EndFrame();
+	}
 
 	int AddPeer(PeerHandle peer);
 	int RemovePeer(PeerHandle peer);
+
 
 private:
 	Networker* _network;
@@ -41,6 +46,4 @@ private:
 	std::map<PeerHandle, int> _peer_to_player_id_map;
 
 	Universe* _universe;
-
-	int _current_frame;
 };

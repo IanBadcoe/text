@@ -7,6 +7,7 @@
 #include <queue>
 
 class StepableQueue;
+class Universe;
 
 class Stepable {
 public:
@@ -45,7 +46,7 @@ public:
 	}
 
 	void SerialiseTo(std::ostringstream& out) const;
-	void SerialiseFrom(std::istringstream& in, const World* world);
+	void SerialiseFrom(std::istringstream& in, const Universe* world);
 
 	void Remove(const Stepable* s) {
 		std::priority_queue<QueueEntry> temp;

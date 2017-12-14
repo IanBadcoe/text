@@ -11,7 +11,7 @@ class World;
 class DisplayChar;
 
 enum class EntityType {
-	Unknwown,
+	Unknown,
 	Player,
 	Wall,
 	Floor

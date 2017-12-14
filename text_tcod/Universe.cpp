@@ -35,6 +35,14 @@ void Universe::ReceiveCommandSequence(const CommandSequence& cs)
 	}
 }
 
+void Universe::ProcessCommand(const Command& cmd)
+{
+	if (!ProcessGlobalCommand(cmd))
+	{
+		GetPlayer(cmd._player_id)->ReceiveCommand(cmd);
+	}
+}
+
 void Universe::SetCommandReceiver(ICommandReceiver* csr)
 {
     _pass_commands_to = csr;
@@ -46,14 +54,6 @@ void Universe::ReceiveCommand(const Command& c)
 	temp._player_id = _local_player_id;
 
 	_pass_commands_to->ReceiveCommand(temp);
-}
-
-void Universe::ProcessCommand(const Command& cmd)
-{
-	if (!ProcessGlobalCommand(cmd))
-	{
-		GetPlayer(cmd._player_id)->ReceiveCommand(cmd);
-	}
 }
 
 bool Universe::ProcessGlobalCommand(const Command& cmd)
@@ -69,7 +69,7 @@ void Universe::SerialiseTo(std::ostringstream& out) const
 
 	_stepable_queue.SerialiseTo(out);
 
-	out <<= _players.size();
+	out <<= (int)_players.size();
 
 	for (auto it = _players.begin(); it != _players.end(); it++) {
 		out <<= it->first;
@@ -83,7 +83,7 @@ void Universe::SerialiseFrom(std::istringstream& in)
 
 	_world->SerialiseFrom(in);
 
-	_stepable_queue.SerialiseFrom(in, _world);
+	_stepable_queue.SerialiseFrom(in, this);
 
 	int num_players;
 
@@ -104,22 +104,22 @@ void Universe::SerialiseFrom(std::istringstream& in)
 
 void Universe::EnsurePlayer(int player_id, bool is_local)
 {
-	if (GetPlayer(player_id))
-		return;
+	if (!GetPlayer(player_id))
+	{
+		_players[player_id] = new Player(player_id);
 
-	_players[player_id] = new Player(player_id);
+		for (int i = 0; i < 200; i++) {
+			Coord try_pos(100, i);
 
-	for (int i = 0; i < 200; i++) {
-		Coord try_pos(100, i);
-
-		if (_world->IsWalkable(try_pos) && !_world->GetActor(try_pos))
-		{
-			_world->AddActor(try_pos, _players[player_id]);
-			break;
+			if (_world->IsWalkable(try_pos) && !_world->GetActor(try_pos))
+			{
+				_world->AddActor(try_pos, _players[player_id]);
+				break;
+			}
 		}
-	}
 
-	_stepable_queue.AddFutureStep(_players[player_id], 0.5f);
+		_stepable_queue.AddFutureStep(_players[player_id], 0.5f);
+	}
 
 	if (is_local)
 	{

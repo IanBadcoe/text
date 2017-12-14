@@ -37,6 +37,9 @@ public:
 
 	bool IsEnded() const { return _is_ended; }
 
+	int GetFrame() const { return _wip._frame; }
+	void SetFrame(int i) { _wip._frame = i; }
+
 private:
     CommandSequence _wip;
     ICommandSequenceReceiver*  _destination;

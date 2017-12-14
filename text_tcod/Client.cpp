@@ -27,6 +27,7 @@ void Client::Receive(Networker* networker, const PeerHandle peer, const std::str
 	case Message::Type::Command:
 	{
 		assert(false);
+
 		break;
 	}
 
@@ -37,12 +38,34 @@ void Client::Receive(Networker* networker, const PeerHandle peer, const std::str
 
 		_universe->EnsurePlayer(pj._player_id, true);
 		_current_frame = pj._frame_number;
+
+		break;
 	}
 
 	case Message::Type::Universe:
 	{
 		UniverseMessage um(_universe);
 		um.FromBytes(str);
+
+		break;
+	}
+
+	case Message::Type::CommandSequence:
+	{
+		CommandSequenceMessage csm;
+		csm.FromBytes(str);
+
+		assert(csm._sequence._frame > _highest_frame_received);
+		_highest_frame_received = csm._sequence._frame;
+
+		_universe->ReceiveCommandSequence(csm._sequence);
+
+		break;
+	}
+
+	default:
+	{
+		assert(0 == "unrecognised message");
 	}
 	}
 }
@@ -54,7 +77,7 @@ void Client::ReceiveCommand(const Command& c)
 
 	CommandMessage cm(c);
 
-//	_network->
+	_network->SendToServer(cm);
 }
 
 void Client::ReceiveCommandSequence(const CommandSequence& cs)
@@ -64,40 +87,3 @@ void Client::ReceiveCommandSequence(const CommandSequence& cs)
 void Client::SetCommandSequenceReceiver(ICommandSequenceReceiver* csr)
 {
 }
-
-/*void Universe::Connected(Networker* networker, const PeerHandle peer)
-{
-	// Pause all clients
-
-	int peer_id = AddPeer(peer);
-
-	JoinResponseMessage jrm;
-	jrm._player_num = peer_id;
-
-	networker->SendToPeer(peer, jrm);
-}
-
-void Universe::Disconnected(Networker* networker, const PeerHandle peer)
-{
-}
-
-void Universe::Receive(Networker* networker, const PeerHandle peer, const std::vector<uint8_t>& data)
-{
-	const Message* temp = reinterpret_cast<const Message*>(data.data());
-
-	switch (temp->_type)
-	{
-	case Message::Type::JoinResponse:
-	{
-		JoinResponseMessage jrm;
-		CrackMessage(data.data(), data.size(), jrm);
-
-		/// or could not make Player until now?
-		SetLocalPlayerId(jrm._player_num);
-
-		break;
-	}
-	}
-}
-
-*/
