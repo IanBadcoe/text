@@ -53,7 +53,5 @@ private:
     static DWORD WINAPI NetworkThreadFunc(_In_ LPVOID lpParameter);
     void InnerThreadFunction();
 
-	void StoreEvent(const ENetEvent& event);
-
     NetworkData* _data;
 };

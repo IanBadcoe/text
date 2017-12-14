@@ -34,11 +34,12 @@ public:
 	bool IsTerminated() const;
 
 	void SendEvents(Networker* n, INetworkHandler* nh);
-	void StoreEvent(const ENetEvent& event);
 
 	void SendToServer(const uint8_t* data, size_t size);
 	void SendToPeer(ENetPeer* peer, const uint8_t* data, size_t size);
 	void SendToAllPeers(const uint8_t* data, size_t size);
+
+	void Service();
 
 	// accessed only from this thread...
 	const enet_uint16 _port;
@@ -52,6 +53,8 @@ public:
 	const bool _force_no_client;
 
 private:
+	void StoreEvent(const ENetEvent& event);
+
 	mutable Concurrency::critical_section _cs;
 
 	// the parts that get accessed in and out of our thread and thus need the critical section
@@ -107,13 +110,6 @@ bool Networker::IsTerminated()
 	return _data->IsTerminated();
 }
 
-void Networker::StoreEvent(const ENetEvent& event)
-{
-	assert(_data);
-
-	_data->StoreEvent(event);
-}
-
 void Networker::SendEvents(INetworkHandler* nh)
 {
 	assert(_data);
@@ -123,6 +119,7 @@ void Networker::SendEvents(INetworkHandler* nh)
 
 bool Networker::TryFindHost()
 {
+	// no critical section here, but main program should be waiting for us to be ready...
 	assert(_data);
 
 	assert(!_data->_enet_host);
@@ -163,7 +160,8 @@ bool Networker::TryFindHost()
 
 	if (ret > 0 && event.type == ENET_EVENT_TYPE_CONNECT)
 	{
-		StoreEvent(event);
+		// don't actually use this on an client...
+//		_data->StoreEvent(event);
 		return true;
 	}
 
@@ -177,6 +175,7 @@ bool Networker::TryFindHost()
 
 bool Networker::TryCreateHost()
 {
+	// no critical section here, but main program should be waiting for us to be ready...
 	assert(_data);
 
 	assert(!_data->_enet_host);
@@ -309,18 +308,8 @@ void Networker::InnerThreadFunction()
 			break;
 		}
 
-		ENetEvent event;
 
-		int ret = enet_host_service(_data->_enet_host, &event, 5);
-
-		if (ret < 0)
-		{
-			_data->SetTerminate();
-		}
-		else if (ret > 0)
-		{
-			StoreEvent(event);
-		}
+		_data->Service();
 	}
 }
 
@@ -458,11 +447,18 @@ bool NetworkData::IsTerminated() const
 
 void NetworkData::SendEvents(Networker* n, INetworkHandler* nh)
 {
-	Concurrency::critical_section::scoped_lock sl(_cs);
-
-	for (int i = 0; i < _event_queue.size(); i++)
+	std::vector<ENetEvent> temp;
 	{
-		ENetEvent event = _event_queue[i];
+		Concurrency::critical_section::scoped_lock sl(_cs);
+
+		temp = _event_queue;
+
+		_event_queue.clear();
+	}
+
+	for (int i = 0; i < temp.size(); i++)
+	{
+		ENetEvent event = temp[i];
 		switch (event.type) {
 		case ENetEventType::ENET_EVENT_TYPE_CONNECT:
 		{
@@ -485,16 +481,11 @@ void NetworkData::SendEvents(Networker* n, INetworkHandler* nh)
 		}
 		}
 	}
-
-	_event_queue.clear();
 }
 
 void NetworkData::StoreEvent(const ENetEvent& event)
 {
-	Concurrency::critical_section::scoped_lock sl(_cs);
-
 	_event_queue.push_back(event);
-
 }
 
 void NetworkData::SendToServer(const uint8_t* data, size_t size)
@@ -532,4 +523,22 @@ void NetworkData::SendToAllPeers(const uint8_t* data, size_t size)
 		ENET_PACKET_FLAG_RELIABLE);
 
 	enet_host_broadcast(_enet_host, 0, packet);
+}
+
+void NetworkData::Service()
+{
+	Concurrency::critical_section::scoped_lock sl(_cs);
+
+	ENetEvent event;
+
+	int ret = enet_host_service(_enet_host, &event, 5);
+
+	if (ret < 0)
+	{
+		SetTerminate();
+	}
+	else if (ret > 0)
+	{
+		StoreEvent(event);
+	}
 }

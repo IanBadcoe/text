@@ -140,6 +140,9 @@ int main(int argc, char* argv[]) {
 
 			while (!client.FrameReceived())
 			{
+				// do not hog the networking critical_section
+				Sleep(1);
+
 				// client services network events, including incoming command sequences
 				network.SendEvents(&client);
 			}
