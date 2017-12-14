@@ -5,6 +5,7 @@
 #include "ISerialisable.h"
 
 #include <queue>
+#include <set>
 
 class StepableQueue;
 class Universe;
@@ -34,36 +35,22 @@ private:
 
 class StepableQueue {
 public:
-	StepableQueue() : _last_frame(0) {}
+	StepableQueue() { Clear(); }
 	// returns false at the end of a frame, e.g. when time passes a whole number
 	bool Step();
 
 	bool AnythingToStep() { return _queue.size() > 0; }
 
-	void AddFutureStep(Stepable* s, float t) {
-        s->SetQueue(this);
-		_queue.push(QueueEntry(s, t));
-	}
+	void AddFutureStep(Stepable* s, float t);
 
 	void SerialiseTo(std::ostringstream& out) const;
 	void SerialiseFrom(std::istringstream& in, const Universe* world);
 
-	void Remove(const Stepable* s) {
-		std::priority_queue<QueueEntry> temp;
+	void Remove(const Stepable* s);
+	void Clear();
 
-		while (_queue.size())
-		{
-			QueueEntry qe = _queue.top();
-
-			if (qe._s != s)
-			{
-				temp.push(qe);
-			}
-
-			_queue = temp;
-		}
-
-        s->SetQueue(nullptr);
+	bool Contains(const Stepable* s) {
+		return _contains.find(s) != _contains.end();
 	}
 
 private:
@@ -80,8 +67,13 @@ private:
 	};
 
 	std::priority_queue<QueueEntry> _queue;
+	std::set<const Stepable*> _contains;
 
 	int _last_frame;
+
+#if _DEBUG
+	float _last_time;
+#endif
 };
 
 class Actor : public Entity, public Stepable {

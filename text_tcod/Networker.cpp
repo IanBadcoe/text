@@ -36,6 +36,10 @@ public:
 	void SendEvents(Networker* n, INetworkHandler* nh);
 	void StoreEvent(const ENetEvent& event);
 
+	void SendToServer(const uint8_t* data, size_t size);
+	void SendToPeer(ENetPeer* peer, const uint8_t* data, size_t size);
+	void SendToAllPeers(const uint8_t* data, size_t size);
+
 	// accessed only from this thread...
 	const enet_uint16 _port;
 
@@ -103,33 +107,6 @@ bool Networker::IsTerminated()
 	return _data->IsTerminated();
 }
 
-void Networker::SendToServer(const Message& msg)
-{
-	assert(_data);
-	assert(_data->_enet_peer);
-
-	SendToPeer(reinterpret_cast<PeerHandle>(_data->_enet_peer), msg);
-}
-
-void Networker::SendToPeer(PeerHandle peer, const uint8_t* data, size_t size)
-{
-	ENetPacket* packet = enet_packet_create(data,
-		size,
-		ENET_PACKET_FLAG_RELIABLE);
-
-	enet_peer_send(reinterpret_cast<ENetPeer*>(peer), 0, packet);
-}
-
-void Networker::SendToAllPeers(const uint8_t* data, size_t size)
-{
-	ENetPacket* packet = enet_packet_create(data,
-		size,
-		ENET_PACKET_FLAG_RELIABLE);
-
-	enet_host_broadcast(_data->_enet_host, 0, packet);
-}
-
-
 void Networker::StoreEvent(const ENetEvent& event)
 {
 	assert(_data);
@@ -143,6 +120,271 @@ void Networker::SendEvents(INetworkHandler* nh)
 
 	_data->SendEvents(this, nh);
 }
+
+bool Networker::TryFindHost()
+{
+	assert(_data);
+
+	assert(!_data->_enet_host);
+	assert(!_data->_enet_peer);
+	assert(!_data->IsReady());
+
+	_data->_enet_host = enet_host_create(
+		NULL	/* create a client host */,
+		1		/* only allow 1 outgoing connection */,
+		2		/* #channels */,
+		0, 0	/* no throttling */);
+
+	if (!_data->_enet_host)
+	{
+		return false;
+	}
+
+	int ret;
+	ENetAddress address;
+	//    ret = enet_address_set_host(&addr, "10.7.9.30");
+	address.host = ENET_HOST_BROADCAST;
+	address.port = _data->_port;
+
+	/* Initiate the connection, allocating the two channels 0 and 1. */
+	_data->_enet_peer = enet_host_connect(_data->_enet_host, &address, 2, 0);
+
+	if (_data->_enet_peer == NULL)
+	{
+		DestroyHost();
+
+		return false;
+	}
+
+	ENetEvent event;
+
+	/* Wait up to 5 seconds for the connection attempt to succeed. */
+	ret = enet_host_service(_data->_enet_host, &event, 5000);
+
+	if (ret > 0 && event.type == ENET_EVENT_TYPE_CONNECT)
+	{
+		StoreEvent(event);
+		return true;
+	}
+
+	enet_peer_reset(_data->_enet_peer);
+	_data->_enet_peer = nullptr;
+
+	DestroyHost();
+
+	return false;
+}
+
+bool Networker::TryCreateHost()
+{
+	assert(_data);
+
+	assert(!_data->_enet_host);
+	assert(!_data->_enet_peer);
+	assert(!_data->IsReady());
+
+	ENetAddress address;
+
+	/* A specific host address can be specified by   */
+	/* enet_address_set_host (& address, "x.x.x.x"); */
+	address.host = ENET_HOST_ANY;
+	//	int ret = enet_address_set_host(&address, "10.7.9.30");
+	/* Bind the server to port 1234. */
+	address.port = _data->_port;
+	_data->_enet_host = enet_host_create(
+		&address				/* the address to bind the server host to */,
+		32, //_data->_max_players		/* #clients */,
+		2						/* #channels */,
+		0, 0					/* no throttling */);
+
+	if (_data->_enet_host == NULL)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+void Networker::DestroyHost()
+{
+	if (_data->_enet_host)
+	{
+		enet_host_destroy(_data->_enet_host);
+	}
+
+	_data->_enet_host = nullptr;
+}
+
+void Networker::TerminateThread()
+{
+	assert(_data);
+
+	_data->SetTerminate();
+
+	WaitForSingleObject(_data->_thread, INFINITE);
+
+	_data->SetTerminated();
+}
+
+DWORD Networker::NetworkThreadFunc(LPVOID lpParameter)
+{
+	Networker* me = reinterpret_cast<Networker*>(lpParameter);
+
+	me->InnerThreadFunction();
+
+	return 0;
+}
+
+void Networker::LeaveSession() {
+	if (!_data->_enet_peer)
+		return;
+
+	assert(_data->_enet_host);
+
+	ENetEvent event;
+	enet_peer_disconnect(_data->_enet_peer, 0);
+
+	/* Allow up to 3 seconds for the disconnect to succeed
+	* and drop any packets received packets.
+	*/
+	while (enet_host_service(_data->_enet_host, &event, 3000) > 0)
+	{
+		switch (event.type)
+		{
+		case ENET_EVENT_TYPE_RECEIVE:
+			enet_packet_destroy(event.packet);
+			break;
+		case ENET_EVENT_TYPE_DISCONNECT:
+			_data->_enet_peer = nullptr;
+
+			return;
+		}
+	}
+
+	/* We've arrived here, so the disconnect attempt didn't */
+	/* succeed yet.  Force the connection down.             */
+	enet_peer_reset(_data->_enet_peer);
+	_data->_enet_peer = nullptr;
+}
+
+
+void Networker::InnerThreadFunction()
+{
+	if (enet_initialize() != 0)
+	{
+		_data->SetFailed();
+		_data->SetReady();
+
+		return;
+	}
+
+	if (!_data->_force_no_client && TryFindHost())
+	{
+		_data->SetReady();
+	}
+	else if (TryCreateHost())
+	{
+		_data->SetServer();
+		_data->SetReady();
+	}
+	else
+	{
+		_data->SetFailed();
+		_data->SetReady();
+
+		return;
+	}
+
+	while (true) {
+		if (_data->IsTerminate())
+		{
+			if (_data->_enet_peer)
+			{
+				LeaveSession();
+			}
+
+			DestroyHost();
+			enet_deinitialize();
+
+			break;
+		}
+
+		ENetEvent event;
+
+		int ret = enet_host_service(_data->_enet_host, &event, 5);
+
+		if (ret < 0)
+		{
+			_data->SetTerminate();
+		}
+		else if (ret > 0)
+		{
+			StoreEvent(event);
+		}
+	}
+}
+
+void Networker::SendToServer(const Message & msg)
+{
+	std::ostringstream str;
+	std::string buffer;
+	buffer.reserve(1000);
+	str.str(buffer);
+
+	msg.ToBytes(str);
+
+	std::string s = str.str();
+
+	SendToServer(reinterpret_cast<const uint8_t*>(s.data()), s.size());
+}
+
+void Networker::SendToServer(const uint8_t * data, size_t size)
+{
+	assert(_data);
+
+	_data->SendToServer(data, size);
+}
+
+void Networker::SendToPeer(PeerHandle peer, const Message& msg)
+{
+	std::ostringstream str;
+	std::string buffer;
+	buffer.reserve(1000);
+	str.str(buffer);
+
+	msg.ToBytes(str);
+
+	std::string s = str.str();
+
+	SendToPeer(peer, reinterpret_cast<const uint8_t*>(s.data()), s.size());
+}
+
+void Networker::SendToAllPeers(const Message& msg)
+{
+	std::ostringstream str;
+
+	msg.ToBytes(str);
+
+	std::string s = str.str();
+
+	SendToAllPeers(reinterpret_cast<const uint8_t*>(s.data()), s.size());
+}
+
+void Networker::SendToPeer(PeerHandle peer, const uint8_t * data, size_t size)
+{
+	assert(_data);
+	
+	_data->SendToPeer(reinterpret_cast<ENetPeer*>(peer), data, size);
+}
+
+void Networker::SendToAllPeers(const uint8_t * data, size_t size)
+{
+	assert(_data);
+
+	_data->SendToAllPeers(data, size);
+}
+
+// -- NetworkData
 
 void NetworkData::SetReady()
 {
@@ -255,205 +497,39 @@ void NetworkData::StoreEvent(const ENetEvent& event)
 
 }
 
-bool Networker::TryFindHost()
+void NetworkData::SendToServer(const uint8_t* data, size_t size)
 {
-    assert(_data);
-	
-	assert(!_data->_enet_host);
-    assert(!_data->_enet_peer);
-	assert(!_data->IsReady());
+	Concurrency::critical_section::scoped_lock sl(_cs);
 
-	_data->_enet_host = enet_host_create(
-		NULL	/* create a client host */,
-		1		/* only allow 1 outgoing connection */,
-		2		/* #channels */,
-		0, 0	/* no throttling */);
+	assert(_enet_peer);
 
-    if (!_data->_enet_host)
-	{
-        return false;
-    }
+	ENetPacket* packet = enet_packet_create(data,
+		size,
+		ENET_PACKET_FLAG_RELIABLE);
 
-	int ret;
-    ENetAddress address;
-//    ret = enet_address_set_host(&addr, "10.7.9.30");
-	address.host = ENET_HOST_BROADCAST;
-    address.port = _data->_port;
-
-    /* Initiate the connection, allocating the two channels 0 and 1. */
-    _data->_enet_peer = enet_host_connect(_data->_enet_host, &address, 2, 0);
-
-    if (_data->_enet_peer == NULL)
-    {
-        DestroyHost();
-
-        return false;
-    }
-
-    ENetEvent event;
-
-    /* Wait up to 5 seconds for the connection attempt to succeed. */
-	ret = enet_host_service(_data->_enet_host, &event, 5000);
-
-    if (ret > 0 && event.type == ENET_EVENT_TYPE_CONNECT)
-    {
-		StoreEvent(event);
-		return true;
-    }
-
-	enet_peer_reset(_data->_enet_peer);
-	_data->_enet_peer = nullptr;
-
-    DestroyHost();
-
-    return false;
+	enet_peer_send(_enet_peer, 0, packet);
 }
 
-bool Networker::TryCreateHost()
+void NetworkData::SendToPeer(ENetPeer* peer, const uint8_t* data, size_t size)
 {
-	assert(_data);
+	Concurrency::critical_section::scoped_lock sl(_cs);
 
-	assert(!_data->_enet_host);
-	assert(!_data->_enet_peer);
-	assert(!_data->IsReady());
+	ENetPacket* packet = enet_packet_create(data,
+		size,
+		ENET_PACKET_FLAG_RELIABLE);
 
-	ENetAddress address;
-
-	/* A specific host address can be specified by   */
-	/* enet_address_set_host (& address, "x.x.x.x"); */
-	address.host = ENET_HOST_ANY;
-//	int ret = enet_address_set_host(&address, "10.7.9.30");
-	/* Bind the server to port 1234. */
-	address.port = _data->_port;
-	_data->_enet_host = enet_host_create(
-		&address				/* the address to bind the server host to */,
-		32, //_data->_max_players		/* #clients */,
-		2						/* #channels */,
-		0, 0					/* no throttling */);
-
-	if (_data->_enet_host == NULL)
-	{
-		return false;
-	}
-
-	return true;
+	enet_peer_send(peer, 0, packet);
 }
 
-void Networker::DestroyHost()
+void NetworkData::SendToAllPeers(const uint8_t* data, size_t size)
 {
-	if (_data->_enet_host)
-	{
-		enet_host_destroy(_data->_enet_host);
-	}
+	Concurrency::critical_section::scoped_lock sl(_cs);
 
-    _data->_enet_host = nullptr;
-}
+	assert(_enet_host);
 
-void Networker::TerminateThread()
-{
-	assert(_data);
+	ENetPacket* packet = enet_packet_create(data,
+		size,
+		ENET_PACKET_FLAG_RELIABLE);
 
-	_data->SetTerminate();
-
-    WaitForSingleObject(_data->_thread, INFINITE);
-
-    _data->SetTerminated();
-}
-
-DWORD Networker::NetworkThreadFunc(LPVOID lpParameter)
-{
-    Networker* me = reinterpret_cast<Networker*>(lpParameter);
-
-    me->InnerThreadFunction();
-
-    return 0;
-}
-
-void Networker::LeaveSession() {
-	if (!_data->_enet_peer)
-		return;
-
-	assert(_data->_enet_host);
-
-	ENetEvent event;
-	enet_peer_disconnect(_data->_enet_peer, 0);
-
-	/* Allow up to 3 seconds for the disconnect to succeed
-	* and drop any packets received packets.
-	*/
-	while (enet_host_service(_data->_enet_host, &event, 3000) > 0)
-	{
-		switch (event.type)
-		{
-		case ENET_EVENT_TYPE_RECEIVE:
-			enet_packet_destroy(event.packet);
-			break;
-		case ENET_EVENT_TYPE_DISCONNECT:
-			_data->_enet_peer = nullptr;
-
-			return;
-		}
-	}
-
-	/* We've arrived here, so the disconnect attempt didn't */
-	/* succeed yet.  Force the connection down.             */
-	enet_peer_reset(_data->_enet_peer);
-	_data->_enet_peer = nullptr;
-}
-
-
-void Networker::InnerThreadFunction()
-{
-	if (enet_initialize() != 0)
-	{
-		_data->SetFailed();
-		_data->SetReady();
-
-		return;
-	}
-
-	if (!_data->_force_no_client && TryFindHost())
-	{
-		_data->SetReady();
-	}
-	else if (TryCreateHost())
-	{
-		_data->SetServer();
-		_data->SetReady();
-	}
-	else
-	{
-		_data->SetFailed();
-		_data->SetReady();
-
-		return;
-	}
-
-	while (true) {
-		if (_data->IsTerminate())
-		{
-			if (_data->_enet_peer)
-			{
-				LeaveSession();
-			}
-
-			DestroyHost();
-			enet_deinitialize();
-
-			break;
-		}
-
-		ENetEvent event;
-
-		int ret = enet_host_service(_data->_enet_host, &event, 5);
-
-		if (ret < 0)
-		{
-			_data->SetTerminate();
-		}
-		else if (ret > 0)
-		{
-			StoreEvent(event);
-		}
-	}
+	enet_host_broadcast(_enet_host, 0, packet);
 }

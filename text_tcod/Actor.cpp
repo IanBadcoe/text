@@ -40,6 +40,10 @@ bool StepableQueue::Step()
 	assert(_queue.size());
 
 	QueueEntry qe = _queue.top();
+#if _DEBUG
+	assert(qe._time >= _last_time);
+	_last_time = qe._time;
+#endif
 
 	float new_time = qe._time;
 
@@ -50,6 +54,7 @@ bool StepableQueue::Step()
 	if (new_frame - _last_frame < 2)
 	{
 		_queue.pop();
+		_contains.erase(qe._s);
 
         qe._s->SetQueue(nullptr);
 		qe._s->Step(this, new_time);
@@ -62,6 +67,14 @@ bool StepableQueue::Step()
 	}
 
 	return true;
+}
+
+inline void StepableQueue::AddFutureStep(Stepable* s, float t) {
+	assert(!Contains(s));
+
+	s->SetQueue(this);
+	_queue.push(QueueEntry(s, t));
+	_contains.insert(s);
 }
 
 void StepableQueue::SerialiseTo(std::ostringstream& out) const
@@ -100,6 +113,8 @@ void StepableQueue::SerialiseTo(std::ostringstream& out) const
 
 void StepableQueue::SerialiseFrom(std::istringstream& in, const Universe* u)
 {
+	Clear();
+
 	in >>= _last_frame;
 
 	int num_entries;
@@ -135,6 +150,38 @@ void StepableQueue::SerialiseFrom(std::istringstream& in, const Universe* u)
 
         AddFutureStep(s, time);
 	}
+}
+
+inline void StepableQueue::Remove(const Stepable* s) {
+	if (!Contains(s))
+		return;
+
+	std::priority_queue<QueueEntry> temp;
+
+	while (_queue.size())
+	{
+		QueueEntry qe = _queue.top();
+
+		if (qe._s != s)
+		{
+			temp.push(qe);
+		}
+
+		_queue = temp;
+	}
+
+	s->SetQueue(nullptr);
+	_contains.erase(s);
+}
+
+void StepableQueue::Clear()
+{
+	_queue = std::priority_queue<QueueEntry>();
+	_contains.clear();
+	_last_frame = 0;
+#if _DEBUG
+	_last_time = -1.0f;
+#endif
 }
 
 void Actor::SerialiseTo(std::ostringstream& out) const

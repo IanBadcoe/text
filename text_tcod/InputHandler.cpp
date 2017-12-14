@@ -39,6 +39,8 @@ float InputHandler::InnerStep()
 		cmd._dir = d;
 
 		_command_dest->ReceiveCommand(cmd);
+
+		return 150.0;
 	}
 
 	if (key.vk == TCODK_ESCAPE)
