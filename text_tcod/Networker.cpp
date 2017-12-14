@@ -445,7 +445,7 @@ void Networker::InnerThreadFunction()
 
 		ENetEvent event;
 
-		int ret = enet_host_service(_data->_enet_host, &event, 1000);
+		int ret = enet_host_service(_data->_enet_host, &event, 5);
 
 		if (ret < 0)
 		{

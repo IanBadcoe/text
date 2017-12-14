@@ -101,10 +101,14 @@ int main(int argc, char* argv[]) {
 			DWORD now = timeGetTime();
 			if (now < _end_frame)
 			{
-				Sleep(_end_frame - timeGetTime());
+				Sleep(_end_frame - now);
+				_end_frame = timeGetTime() + DESIRED_FRAMETIME;
+			}
+			else
+			{
+				_end_frame = now + DESIRED_FRAMETIME;
 			}
 
-			_end_frame = now + DESIRED_FRAMETIME;
 
 			// server services network events, including incoming commands
 			network.SendEvents(&server);
@@ -131,10 +135,11 @@ int main(int argc, char* argv[]) {
 
 		while (!client.IsEnded())
 		{
+			while (u.Step())
+				;
+
 			while (!client.FrameReceived())
 			{
-				Sleep(1);
-
 				// client services network events, including incoming command sequences
 				network.SendEvents(&client);
 			}
@@ -144,9 +149,6 @@ int main(int argc, char* argv[]) {
 				// once we've had the first frame events, the universe is initialised and will have our player object
 				map.SetPlayer(u.GetLocalPlayer());
 			}
-
-			while (u.Step())
-				;
 
 			map.Draw(TCODConsole::root);
 			TCODConsole::flush();
