@@ -1,135 +1,126 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="src">
+      <UniqueIdentifier>{4d158b53-f6e1-47f4-ab71-c82ab09af8e4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Entity.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Floor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Map.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Wall.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="World.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Template.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Player.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Coord.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Actor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Networker.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CommandCollator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Universe.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="InputHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="precompiled.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Messages.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Server.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Client.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClInclude Include="src\DisplayChar.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Entity.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Floor.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\InputHandler.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ISerialisable.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Map.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Messages.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Networker.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Player.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\precompiled.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Server.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Template.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Universe.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Wall.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\World.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Actor.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Client.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Command.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CommandCollator.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Coord.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Entity.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Floor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Map.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Wall.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="World.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Template.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Coord.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Actor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Networker.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CommandCollator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Command.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Universe.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InputHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="precompiled.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Messages.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DisplayChar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Server.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Client.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ISerialisable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    <ClCompile Include="src\Entity.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Floor.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\InputHandler.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Map.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Messages.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Networker.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Player.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\precompiled.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Server.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Template.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Universe.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Wall.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\World.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Actor.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Client.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CommandCollator.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Coord.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

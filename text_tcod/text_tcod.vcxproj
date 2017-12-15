@@ -10,6 +10,51 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Actor.h" />
+    <ClInclude Include="src\Client.h" />
+    <ClInclude Include="src\Command.h" />
+    <ClInclude Include="src\CommandCollator.h" />
+    <ClInclude Include="src\Coord.h" />
+    <ClInclude Include="src\DisplayChar.h" />
+    <ClInclude Include="src\Entity.h" />
+    <ClInclude Include="src\Floor.h" />
+    <ClInclude Include="src\InputHandler.h" />
+    <ClInclude Include="src\ISerialisable.h" />
+    <ClInclude Include="src\Map.h" />
+    <ClInclude Include="src\Messages.h" />
+    <ClInclude Include="src\Networker.h" />
+    <ClInclude Include="src\Player.h" />
+    <ClInclude Include="src\precompiled.h" />
+    <ClInclude Include="src\Server.h" />
+    <ClInclude Include="src\Template.h" />
+    <ClInclude Include="src\Universe.h" />
+    <ClInclude Include="src\Wall.h" />
+    <ClInclude Include="src\World.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Actor.cpp" />
+    <ClCompile Include="src\Client.cpp" />
+    <ClCompile Include="src\CommandCollator.cpp" />
+    <ClCompile Include="src\Coord.cpp" />
+    <ClCompile Include="src\Entity.cpp" />
+    <ClCompile Include="src\Floor.cpp" />
+    <ClCompile Include="src\InputHandler.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Map.cpp" />
+    <ClCompile Include="src\Messages.cpp" />
+    <ClCompile Include="src\Networker.cpp" />
+    <ClCompile Include="src\Player.cpp" />
+    <ClCompile Include="src\precompiled.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="src\Server.cpp" />
+    <ClCompile Include="src\Template.cpp" />
+    <ClCompile Include="src\Universe.cpp" />
+    <ClCompile Include="src\Wall.cpp" />
+    <ClCompile Include="src\World.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B35291B7-8CB7-440E-A508-74C2DC2ECADE}</ProjectGuid>
     <RootNamespace>text_tcod</RootNamespace>
@@ -86,51 +131,6 @@ copy ..\libtcod-msvs-x64\SDL2.dll $(OutputPath)
 copy ..\libtcod-msvs-x64\data\fonts\dejavu16x16_gs_tc.png $(OutputPath)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Actor.cpp" />
-    <ClCompile Include="Client.cpp" />
-    <ClCompile Include="CommandCollator.cpp" />
-    <ClCompile Include="Coord.cpp" />
-    <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="Floor.cpp" />
-    <ClCompile Include="InputHandler.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Map.cpp" />
-    <ClCompile Include="Messages.cpp" />
-    <ClCompile Include="Networker.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="precompiled.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Server.cpp" />
-    <ClCompile Include="Template.cpp" />
-    <ClCompile Include="Universe.cpp" />
-    <ClCompile Include="Wall.cpp" />
-    <ClCompile Include="World.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Actor.h" />
-    <ClInclude Include="Client.h" />
-    <ClInclude Include="CommandCollator.h" />
-    <ClInclude Include="Command.h" />
-    <ClInclude Include="Coord.h" />
-    <ClInclude Include="DisplayChar.h" />
-    <ClInclude Include="Entity.h" />
-    <ClInclude Include="Floor.h" />
-    <ClInclude Include="ISerialisable.h" />
-    <ClInclude Include="Messages.h" />
-    <ClInclude Include="InputHandler.h" />
-    <ClInclude Include="Map.h" />
-    <ClInclude Include="Networker.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="precompiled.h" />
-    <ClInclude Include="Server.h" />
-    <ClInclude Include="Template.h" />
-    <ClInclude Include="Universe.h" />
-    <ClInclude Include="Wall.h" />
-    <ClInclude Include="World.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
