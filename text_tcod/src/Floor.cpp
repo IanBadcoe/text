@@ -18,3 +18,11 @@ void Floor::SerialiseTo(std::ostringstream& out) const
 {
 	Terrain::SerialiseTo(out);
 }
+
+void Floor::CalcDisp(uint8_t code)
+{
+}
+
+bool Floor::DrawCompatWith(const Terrain* other) const {
+	return other->GetType() == EntityType::Floor;
+}

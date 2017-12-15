@@ -4,7 +4,7 @@
 
 #include "Player.h"
 
-World::World(int width, int height) : _width(width), _height(height)
+World::World(int width, int height) : _width(width), _height(height), _dirty_terrain(false)
 {
 	_terrain = new Terrain*[_width * _height];
 	_actors = new Actor*[_width * _height];
@@ -38,6 +38,8 @@ void World::SetTerrain(Coord pos, Terrain* e)
 	if (e) {
 		e->SetPos(pos);
 	}
+
+	_dirty_terrain = true;
 }
 
 void World::AddActor(Coord pos, Actor* e)
@@ -94,6 +96,40 @@ void World::Clear()
 
 			ClearEntity(p);
 			ClearTerrain(p);
+		}
+	}
+}
+
+void World::RecalcTerrainDisps() {
+	if (!_dirty_terrain)
+		return;
+
+	_dirty_terrain = false;
+
+	for (int i = 0; i < _width; i++) {
+		for (int j = 0; j < _width; j++) {
+			Coord pos(i, j);
+
+			Terrain* ter = GetTerrain(pos);
+
+			if (!ter)
+				continue;
+
+			uint8_t code = 0;
+
+			for (int k = 0; k < 8; k++) {
+				Coord t = pos.Step((Coord::Dir)k);
+
+				if (InRange(t)) {
+					Terrain* oth = GetTerrain(t);
+					
+					if (oth && ter->DrawCompatWith(oth)) {
+						code |= 1 << k;
+					}
+				}
+			}
+
+			ter->CalcDisp(code);
 		}
 	}
 }
@@ -157,5 +193,7 @@ void World::SerialiseFrom(std::istringstream& in)
 
 		SetTerrain(entity->GetPos(), static_cast<Terrain*>(entity));
 	}
+
+	RecalcTerrainDisps();
 }
 

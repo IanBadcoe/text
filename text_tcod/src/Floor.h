@@ -8,12 +8,8 @@
 
 class Floor : public Terrain {
 public:
-    Floor(std::istringstream& in) : Terrain(in) {}
-	Floor() : Terrain(EntityType::Floor, true, true) {}
-
-	virtual DisplayChar Disp() const {
-		return s_floor;
-	}
+	Floor(std::istringstream& in) : Terrain(in) { }
+	Floor() : Terrain(EntityType::Floor, true, true) { SetDisplayChar(s_floor); }
 
 	// Inherited via Terrain
 	virtual void SerialiseTo(std::ostringstream& out) const override;
@@ -24,4 +20,10 @@ private:
 	static TCODColor s_floor_background;
 
     static EntityCreator s_creator;
+
+	// Inherited via Terrain
+	virtual void CalcDisp(uint8_t code) override;
+
+	// Inherited via Terrain
+	virtual bool DrawCompatWith(const Terrain* other) const override;
 };

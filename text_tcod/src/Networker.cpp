@@ -4,9 +4,6 @@
 
 #include "enet/enet.h"
 
-#include "assert.h"
-#include "concrt.h"
-
 class NetworkData {
 public:
 	NetworkData() :

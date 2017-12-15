@@ -17,14 +17,14 @@
 #define DESIRED_FRAMETIME 1000 / 30
 
 int main(int argc, char* argv[]) {
-	TCODConsole::setCustomFont("dejavu16x16_gs_tc.png", TCOD_FONT_LAYOUT_TCOD | TCOD_FONT_TYPE_GREYSCALE);
+	TCODConsole::setCustomFont("myfont16x16_gs_ro.png", TCOD_FONT_LAYOUT_ASCII_INROW | TCOD_FONT_TYPE_GREYSCALE);
 	TCODConsole::initRoot(80, 50, "text", false);
 
 	TCODColor player_foregrounds[4] = {
 		TCODColor(128, 32, 32),
 		TCODColor(32, 128, 32),
 		TCODColor(32, 32, 128),
-		TCODColor(32, 128, 128)
+		TCODColor(128, 128, 32)
 	};
 
 	assert(sizeof(player_foregrounds) / sizeof(TCODColor) >= MAX_PLAYERS);

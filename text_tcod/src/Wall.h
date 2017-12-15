@@ -13,20 +13,14 @@ public:
     Wall(std::istringstream& in);
 	Wall(int str) : Terrain(EntityType::Wall, false, false), _str(str) {}
 
-	virtual DisplayChar Disp() const {
-		if (_str > 500) {
-			return s_strong_wall;
-		}
-		else
-		{
-			return s_weak_wall;
-		}
-	}
-
 	int GetStr() const { return _str; }
 
 	// Inherited via Terrain
 	virtual void SerialiseTo(std::ostringstream& out) const override;
+
+	// Inherited via Terrain
+	virtual void CalcDisp(uint8_t code) override;
+	virtual bool DrawCompatWith(const Terrain* other) const override;
 
 private:
 	int _str;
