@@ -26,7 +26,7 @@ void Stepable::Step(StepableQueue* queue, float time)
 
 	if (_speed != 0.0f && duration != 0)
 	{
-		queue->AddFutureStep(this, time + duration / _speed);
+		queue->AddAbsoluteStep(this, time + duration / _speed);
 	}
 }
 
@@ -69,12 +69,28 @@ bool StepableQueue::Step()
 	return true;
 }
 
-inline void StepableQueue::AddFutureStep(Stepable* s, float t) {
+void StepableQueue::AddRelativeStep(Stepable* s, float t) {
+	AddAbsoluteStep(s, _last_time + t);
+}
+
+void StepableQueue::AddAbsoluteStep(Stepable* s, float t) {
 	assert(!Contains(s));
+	assert(t >= _last_time);
 
 	s->SetQueue(this);
 	_queue.push(QueueEntry(s, t));
 	_contains.insert(s);
+
+	std::priority_queue<QueueEntry> temp(_queue);
+
+	float tt = temp.top()._time;
+
+	while (temp.size())
+	{
+		assert(temp.top()._time >= tt);
+		tt = temp.top()._time;
+		temp.pop();
+	}
 }
 
 void StepableQueue::SerialiseTo(std::ostringstream& out) const
@@ -148,7 +164,7 @@ void StepableQueue::SerialiseFrom(std::istringstream& in, const Universe* u)
 			s = const_cast<InputHandler*>(u->GetInputHandler());
 		}
 
-        AddFutureStep(s, time);
+        AddAbsoluteStep(s, time);
 	}
 }
 

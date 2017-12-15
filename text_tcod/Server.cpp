@@ -13,14 +13,15 @@ void Server::Connected(Networker* networker, const PeerHandle peer)
 
 	int player_id = AddPeer(peer);
 
+	// add a player object for the new player
 	_universe->EnsurePlayer(player_id, false);
 
-	UniverseMessage em(_universe);
-
+	// sync their peer with the current game state
+	UniverseMessage em(_universe, player_id);
 	_network->SendToPeer(peer, em);
 
+	// tell everybody else they joined
 	PeerJoinedMessage pj(player_id, _collator.GetFrame());
-
 	_network->SendToAllPeers(pj);
 }
 

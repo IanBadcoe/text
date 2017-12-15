@@ -27,7 +27,7 @@ float InputHandler::InnerStep()
 	TCOD_key_t key;
 	TCOD_event_t ev = TCODSystem::checkForEvent(TCOD_EVENT_KEY, &key, nullptr);
 
-	if (key.vk >= TCODK_KP1 && key.vk <= TCODK_KP9 && key.vk != TCODK_KP5)
+	if (key.vk >= TCODK_KP1 && key.vk <= TCODK_KP9 && key.vk != TCODK_KP5 && key.pressed)
 	{
 		Coord::KeyMapType::iterator it = Coord::KeyMap.find(key.vk);
 		assert(it != Coord::KeyMap.end());
@@ -40,7 +40,7 @@ float InputHandler::InnerStep()
 
 		_command_dest->ReceiveCommand(cmd);
 
-		return 150.0;
+		return 15.0;
 	}
 
 	if (key.vk == TCODK_ESCAPE)

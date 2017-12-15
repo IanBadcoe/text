@@ -42,10 +42,10 @@ public:
 	void SendEvents(INetworkHandler* nh);
 
 private:
-	bool TryFindHost();
-	bool TryCreateHost();
+	bool TryFindServer();
+	bool TryCreateServer();
 
-	void DestroyHost();
+	void DestroyServer();
     void TerminateThread();
 
 	void LeaveSession();
@@ -54,4 +54,9 @@ private:
     void InnerThreadFunction();
 
     NetworkData* _data;
+
+	// accessed only from this thread...
+	const enet_uint16 _port;
+	const int _max_players;
+	const bool _force_no_client;
 };

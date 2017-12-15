@@ -62,14 +62,19 @@ void UniverseMessage::ToBytes(std::ostringstream& out) const
 {
 	ToBytesBase(out);
 
-	_universe->SerialiseTo(out);
+	out <<= _your_player_id;
+	_u->SerialiseTo(out);
 }
 
 void UniverseMessage::FromBytes(std::istringstream& in)
 {
 	FromBytesBase(in);
 
-	_universe->SerialiseFrom(in);
+	in >>= _your_player_id;
+	_u->SerialiseFrom(in);
+
+	// set the local player id
+	_u->EnsurePlayer(_your_player_id, true);
 }
 
 void CommandSequenceMessage::ToBytes(std::ostringstream & out) const

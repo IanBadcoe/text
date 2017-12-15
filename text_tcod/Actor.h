@@ -41,7 +41,8 @@ public:
 
 	bool AnythingToStep() { return _queue.size() > 0; }
 
-	void AddFutureStep(Stepable* s, float t);
+	void AddAbsoluteStep(Stepable* s, float t);
+	void AddRelativeStep(Stepable* s, float t);
 
 	void SerialiseTo(std::ostringstream& out) const;
 	void SerialiseFrom(std::istringstream& in, const Universe* world);

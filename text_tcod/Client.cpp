@@ -36,7 +36,9 @@ void Client::Receive(Networker* networker, const PeerHandle peer, const std::str
 		PeerJoinedMessage pj;
 		pj.FromBytes(str);
 
-		_universe->EnsurePlayer(pj._player_id, true);
+		// if this was us, we area already known as the local player and this does nothing
+		// if it was somebody else, ensure we have a player object for them...
+		_universe->EnsurePlayer(pj._player_id, false);
 		_current_frame = pj._frame_number;
 
 		break;

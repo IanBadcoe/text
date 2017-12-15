@@ -9,17 +9,14 @@
 
 class NetworkData {
 public:
-	NetworkData(enet_uint16 port, int max_players, bool force_no_client) :
-		_port(port),
+	NetworkData() :
 		_ready(false),
 		_failed(false),
 		_server(false),
         _enet_host(nullptr),
         _enet_peer(nullptr),
         _terminate(false),
-        _terminated(false),
-		_max_players(max_players),
-		_force_no_client(force_no_client) {}
+        _terminated(false) {}
 
 	void SetReady();
 	void SetFailed();
@@ -41,16 +38,10 @@ public:
 
 	void Service();
 
-	// accessed only from this thread...
-	const enet_uint16 _port;
-
     ENetHost* _enet_host;
     ENetPeer* _enet_peer;
 
     HANDLE _thread;
-
-	const int _max_players;
-	const bool _force_no_client;
 
 private:
 	void StoreEvent(const ENetEvent& event);
@@ -68,7 +59,10 @@ private:
 };
 
 Networker::Networker(enet_uint16 port, int max_players, bool force_no_client) :
-    _data(new NetworkData(port, max_players, force_no_client))
+	_data(new NetworkData()),
+	_port(port),
+	_max_players(max_players),
+	_force_no_client(force_no_client)
 {
     _data->_thread = CreateThread(nullptr, 0, NetworkThreadFunc, this, 0, nullptr);
 }
@@ -117,7 +111,7 @@ void Networker::SendEvents(INetworkHandler* nh)
 	_data->SendEvents(this, nh);
 }
 
-bool Networker::TryFindHost()
+bool Networker::TryFindServer()
 {
 	// no critical section here, but main program should be waiting for us to be ready...
 	assert(_data);
@@ -129,7 +123,7 @@ bool Networker::TryFindHost()
 	_data->_enet_host = enet_host_create(
 		NULL	/* create a client host */,
 		1		/* only allow 1 outgoing connection */,
-		2		/* #channels */,
+		1		/* #channels */,
 		0, 0	/* no throttling */);
 
 	if (!_data->_enet_host)
@@ -141,14 +135,13 @@ bool Networker::TryFindHost()
 	ENetAddress address;
 	//    ret = enet_address_set_host(&addr, "10.7.9.30");
 	address.host = ENET_HOST_BROADCAST;
-	address.port = _data->_port;
+	address.port = _port;
 
-	/* Initiate the connection, allocating the two channels 0 and 1. */
-	_data->_enet_peer = enet_host_connect(_data->_enet_host, &address, 2, 0);
+	_data->_enet_peer = enet_host_connect(_data->_enet_host, &address, 1, 0);
 
 	if (_data->_enet_peer == NULL)
 	{
-		DestroyHost();
+		DestroyServer();
 
 		return false;
 	}
@@ -168,12 +161,12 @@ bool Networker::TryFindHost()
 	enet_peer_reset(_data->_enet_peer);
 	_data->_enet_peer = nullptr;
 
-	DestroyHost();
+	DestroyServer();
 
 	return false;
 }
 
-bool Networker::TryCreateHost()
+bool Networker::TryCreateServer()
 {
 	// no critical section here, but main program should be waiting for us to be ready...
 	assert(_data);
@@ -189,11 +182,11 @@ bool Networker::TryCreateHost()
 	address.host = ENET_HOST_ANY;
 	//	int ret = enet_address_set_host(&address, "10.7.9.30");
 	/* Bind the server to port 1234. */
-	address.port = _data->_port;
+	address.port = _port;
 	_data->_enet_host = enet_host_create(
 		&address				/* the address to bind the server host to */,
-		32, //_data->_max_players		/* #clients */,
-		2						/* #channels */,
+		_max_players - 1		/* #clients (we are one of the players :-)) */,
+		1						/* #channels */,
 		0, 0					/* no throttling */);
 
 	if (_data->_enet_host == NULL)
@@ -204,7 +197,7 @@ bool Networker::TryCreateHost()
 	return true;
 }
 
-void Networker::DestroyHost()
+void Networker::DestroyServer()
 {
 	if (_data->_enet_host)
 	{
@@ -277,11 +270,12 @@ void Networker::InnerThreadFunction()
 		return;
 	}
 
-	if (!_data->_force_no_client && TryFindHost())
+	// _force_no_client makes us go straight to server creation
+	if (!_force_no_client && TryFindServer())
 	{
 		_data->SetReady();
 	}
-	else if (TryCreateHost())
+	else if (TryCreateServer())
 	{
 		_data->SetServer();
 		_data->SetReady();
@@ -302,7 +296,7 @@ void Networker::InnerThreadFunction()
 				LeaveSession();
 			}
 
-			DestroyHost();
+			DestroyServer();
 			enet_deinitialize();
 
 			break;

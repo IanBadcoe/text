@@ -20,7 +20,7 @@ Universe::Universe() : _local_player_id(-1)
 	_input = new InputHandler();
 	_input->SetCommandReceiver(this);
 
-	_stepable_queue.AddFutureStep(_input, 0.0f);
+	_stepable_queue.AddRelativeStep(_input, 0.0f);
 }
 
 Universe::~Universe()
@@ -118,7 +118,7 @@ void Universe::EnsurePlayer(int player_id, bool is_local)
 			}
 		}
 
-		_stepable_queue.AddFutureStep(_players[player_id], 0.5f);
+		_stepable_queue.AddRelativeStep(_players[player_id], 0.5f);
 	}
 
 	if (is_local)

@@ -80,9 +80,10 @@ struct CommandSequenceMessage : public Message {
 };
 
 struct UniverseMessage : public Message {
-	UniverseMessage(Universe* u) : Message(Message::Type::Universe), _universe(u) {}
+	UniverseMessage(Universe* u, int your_player_id = -1) : Message(Message::Type::Universe), _u(u), _your_player_id(your_player_id) {}
 
-	Universe* _universe;
+	int _your_player_id;
+	Universe* _u;
 
 	// Inherited via Message
 	virtual void ToBytes(std::ostringstream& out) const override;
