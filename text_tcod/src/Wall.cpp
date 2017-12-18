@@ -1,6 +1,8 @@
 #include "precompiled.h"
 
 #include "Wall.h"
+#include "Floor.h"
+#include "ShadedVoid.h"
 
 #include "Map.h"
 
@@ -25,15 +27,33 @@ void Wall::SerialiseTo(std::ostringstream& out) const
 	out <<= _str;
 }
 
-void Wall::CalcDisp(uint8_t code)
+void Wall::CalcDisp(const Terrain* surrounds[8])
 {
-	uint8_t c = GetBlock(code);
+	uint8_t code = 0;
+	TCODColor brightest_bg(0, 0, 0);
+
+	for (int k = 0; k < 8; k++) {
+		if (surrounds[k])
+		{
+			if (DrawCompatWith(surrounds[k])) {
+				code |= 1 << k;
+			}
+	
+			// we take our background from the brightest adjoining floor or empty space
+			if (dynamic_cast<const Floor*>(surrounds[k]) || dynamic_cast<const ShadedVoid*>(surrounds[k]))
+			{
+				brightest_bg = std::max(brightest_bg, surrounds[k]->Disp()._fcol);
+			}
+		}
+	}
+
+	uint8_t c = GetWallCharacter(code);
 
 	if (_str > 500) {
-		SetDisplayChar(DisplayChar(c, TCOD_white));
+		SetDisplayChar(DisplayChar(c, TCOD_white, brightest_bg));
 	}
 	else {
-		SetDisplayChar(DisplayChar(c, TCOD_gray));
+		SetDisplayChar(DisplayChar(c, TCOD_gray, brightest_bg));
 	}
 }
 

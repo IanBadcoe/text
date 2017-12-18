@@ -115,21 +115,17 @@ void World::RecalcTerrainDisps() {
 			if (!ter)
 				continue;
 
-			uint8_t code = 0;
+			const Terrain* surrounds[8] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
 
 			for (int k = 0; k < 8; k++) {
 				Coord t = pos.Step((Coord::Dir)k);
 
 				if (InRange(t)) {
-					Terrain* oth = GetTerrain(t);
-					
-					if (oth && ter->DrawCompatWith(oth)) {
-						code |= 1 << k;
-					}
+					surrounds[k] = GetTerrain(t);
 				}
 			}
 
-			ter->CalcDisp(code);
+			ter->CalcDisp(surrounds);
 		}
 	}
 }

@@ -14,8 +14,8 @@ Universe::Universe() : _local_player_id(-1)
     _world = new World(200, 200);
 
 //	CircleTemplate ct(100, 100, 75, 3);
-//	SkyslandTemplate ct(100, 100, 50, 3);
-	TestTemplate ct;
+	SkyslandTemplate ct(100, 100, 50, 3);
+//	TestTemplate ct;
 
     ct.Apply(_world);
 

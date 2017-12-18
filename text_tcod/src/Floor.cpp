@@ -1,12 +1,11 @@
 #include "precompiled.h"
 
 #include "Floor.h"
+#include "ShadedVoid.h"
 
 #include "Map.h"
 
-TCODColor Floor::s_floor_foreground(64, 64, 64);
-TCODColor Floor::s_floor_background(32, 32, 32);
-DisplayChar Floor::s_floor(L'.', Floor::s_floor_foreground, Floor::s_floor_background);
+TCODColor Floor::s_foreground(32, 32, 32);
 
 static Entity* CreateFloor(std::istringstream& in) {
     return new Floor(in);
@@ -19,10 +18,34 @@ void Floor::SerialiseTo(std::ostringstream& out) const
 	Terrain::SerialiseTo(out);
 }
 
-void Floor::CalcDisp(uint8_t code)
+void Floor::CalcDisp(const Terrain* surrounds[8])
 {
+	uint8_t code = 0;
+	TCODColor brightest_bg(0, 0, 0);
+
+	// for blocks we look only at orthogonals...
+	for (int k = 0; k < 8; k += 2) {
+		if (surrounds[k]) {
+			if (DrawCompatWith(surrounds[k])) {
+				code |= 1 << (k / 2);
+			} else {
+				// we take our background from the brightest adjoining empty space's foreground
+				if (dynamic_cast<const ShadedVoid*>(surrounds[k])) {
+					brightest_bg = std::max(brightest_bg, surrounds[k]->Disp()._fcol);
+				}
+			}
+		}
+	}
+
+	uint8_t c = GetBlockCharacter(code);
+
+	// special case for floor, use tiles for whole squares
+	if (c == 0xfe)
+		c = 0x80;
+
+	SetDisplayChar(DisplayChar(c, s_foreground, brightest_bg));
 }
 
 bool Floor::DrawCompatWith(const Terrain* other) const {
-	return other->GetType() == EntityType::Floor;
+	return other->GetType() != EntityType::ShadedVoid;
 }

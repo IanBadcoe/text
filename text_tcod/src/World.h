@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entity.h"
+#include "Terrain.h"
 
 #include "ISerialisable.h"
 

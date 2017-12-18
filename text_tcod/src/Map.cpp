@@ -2,17 +2,62 @@
 
 #include "Map.h"
 
-#include "Entity.h"
+#include "Terrain.h"
 #include "Actor.h"
 #include "World.h"
 #include "Player.h"
 
 DisplayChar Map::s_void(L' ', TCOD_white);
 
-void Map::SetChar(Coord pos, const Entity* entity, const Terrain* terrain) {
+void Map::SetWorld(const World * world) {
+	if (world == _world)
+		return;
+
+	_world = world;
+
+	ClearWorld();
+
+	_width = _world->GetWidth();
+	_height = _world->GetHeight();
+
+	_terrain = new DisplayChar[_width * _height];
+	_actors = new DisplayChar[_width * _height];
+	_has_actor = new bool[_width * _height];
+	_tcod_map = new TCODMap(_width, _height);
+	_frames = new int64_t[_width * _height];
+
+	memset(_frames, 0, _width * _height * sizeof(uint64_t));
+
+	for (int i = 0; i < _width; i++) {
+		for (int j = 0; j < _height; j++) {
+			_tcod_map->setProperties(i, j, false, false);
+		}
+	}
+}
+
+void Map::ClearWorld() {
+	delete[] _terrain;
+	delete[] _actors;
+	delete[] _has_actor;
+	delete _tcod_map;
+	delete[] _frames;
+
+	_terrain = nullptr;
+	_actors = nullptr;
+	_has_actor = nullptr;
+	_tcod_map = nullptr;
+	_frames = nullptr;
+
+	_width = 0;
+	_height = 0;
+}
+
+void Map::SetChars(Coord pos, const Actor* actor, const Terrain* terrain) {
     SetWorld(_p->GetWorld());
 
-	_map[idx(pos)]._frame = _frame;
+	int index = idx(pos);
+
+	_frames[index] = _frame;
 
 	bool walkable = false;
 	bool transparent = true;
@@ -22,26 +67,25 @@ void Map::SetChar(Coord pos, const Entity* entity, const Terrain* terrain) {
 		transparent = terrain->IsTransparent();
 	}
 
-	if (entity)
+	if (actor)
 	{
-		DisplayChar ent_dc = entity->Disp();
+		DisplayChar ent_dc = actor->Disp();
 
-		_map[idx(pos)]._dc = ent_dc;
+		_actors[index] = ent_dc;
 
-		if (!ent_dc._use_bcol)
-		{
-			_map[idx(pos)]._dc._bcol = terrain->Disp()._bcol;
-		}
+		_has_actor[index] = true;
+	} else {
+		_has_actor[index] = false;
 	}
-	else if (terrain)
+	
+	if (terrain)
 	{
 		DisplayChar dc = terrain->Disp();
-		assert(dc._char <= 0x100);
-		_map[idx(pos)]._dc = dc;
+		_terrain[index] = dc;
 	}
 	else
 	{
-		_map[idx(pos)]._dc = s_void;
+		_terrain[index] = s_void;
 	}
 
 	_tcod_map->setProperties(pos._x, pos._y, transparent, walkable);
@@ -67,19 +111,31 @@ void Map::Draw(TCODConsole* console) {
 		for (int j = 0; j < screen_size._y; j++)
 		{
 			Coord world_pos = Coord(i, j) + map_corner;
-			const MapChar& mc = _map[idx(world_pos)];
-			float fade = (100 - (_frame - mc._frame)) / 100.0f;
+			int index = idx(world_pos);
 
-			if (fade < 0.0)
+			if (_frames[index] > 0)
 			{
-				console->putCharEx(i, j, ' ', TCOD_white, TCOD_black);
-			}
-			else
-			{
-				DisplayChar dc = _map[idx(world_pos)]._dc;
-				assert(dc._char < 0x100);
+				float fade = (200 - (_frame - _frames[index])) / 200.0f;
+				fade = std::max(0.25f, fade);
+
+				DisplayChar bg_dc = _terrain[index];
 				console->putCharEx(i, screen_size._y - j - 1,
-					dc._char, dc._fcol * fade, dc._bcol * fade);
+					bg_dc._char, bg_dc._fcol * fade, bg_dc._bcol * fade);
+
+				if (_has_actor[index]) {
+					DisplayChar a_dc = _actors[index];
+
+					if (a_dc._use_bcol) {
+						console->putCharEx(i, screen_size._y - j - 1,
+							a_dc._char, a_dc._fcol * fade, a_dc._bcol * fade);
+					} else {
+						console->putCharEx(i, screen_size._y - j - 1,
+							a_dc._char, a_dc._fcol * fade, bg_dc._fcol * fade);
+					}
+				}
+			} else {
+				console->putCharEx(i, screen_size._y - j - 1,
+					s_void._char, s_void._fcol, s_void._bcol);
 			}
 		}
 	}
@@ -94,11 +150,11 @@ void Map::ReadWorld(Coord eye_pos) {
 	{
 		for (int j = 0; j < _height; j++)
 		{
-//			if (_tcod_map->isInFov(i, j))
+			if (_tcod_map->isInFov(i, j))
 			{
 				Coord pos(i, j);
 				const Terrain* t = _world->GetTerrain(pos);
-				SetChar(pos, _world->GetActor(pos), t);
+				SetChars(pos, _world->GetActor(pos), t);
 			}
 		}
 	}

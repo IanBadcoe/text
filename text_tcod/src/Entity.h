@@ -30,7 +30,7 @@ public:
 	Entity(EntityType t) : _type(t), _pos(0, 0), _w(nullptr) {}
 
 	DisplayChar Disp() const { return _dc; }
-	void SetDisplayChar(DisplayChar dc) { assert(dc._char < 0x100); _dc = dc; }
+	void SetDisplayChar(DisplayChar dc) { _dc = dc; }
 
 	void SetPos(Coord pos) {
 		_pos = pos;
@@ -73,32 +73,4 @@ public:
 
 	static Entity* VirtualSerialiseFrom(std::istringstream& in);
 	static void RegisterCreator(const EntityCreator* ac);
-};
-
-class Terrain : public Entity {
-public:
-	Terrain(std::istringstream& in);
-	Terrain(EntityType et, bool is_walkable, bool is_transparent) :
-		Entity(et),
-		_is_walkable(is_walkable),
-		_is_transparent(is_transparent) {}
-
-	bool IsWalkable() const { return _is_walkable; }
-	bool IsTransparent() const { return _is_transparent; }
-
-	// Inherited via ISerialisable
-	virtual void SerialiseTo(std::ostringstream& out) const override = 0;
-
-	virtual void CalcDisp(uint8_t code) = 0;
-	virtual bool DrawCompatWith(const Terrain* other) const = 0;
-
-	static uint8_t GetBlock(uint8_t code);
-
-private:
-	static void InitBlockData();
-
-	static std::map<uint8_t, uint8_t> s_block_translate;
-
-	bool _is_walkable;
-	bool _is_transparent;
 };
