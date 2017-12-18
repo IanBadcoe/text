@@ -8,8 +8,10 @@
 
 class Floor : public Terrain {
 public:
-	Floor(std::istringstream& in) : Terrain(in) { }
-	Floor() : Terrain(EntityType::Floor, true, true) { }
+	Floor(std::istringstream& in) : Terrain(in) {}
+	Floor() : Terrain(EntityType::Floor, true, true) {
+		SetDisplayChar(DisplayChar('x', s_foreground));
+	}
 
 	// Inherited via Terrain
 	virtual void SerialiseTo(std::ostringstream& out) const override;

@@ -14,7 +14,8 @@ enum class EntityType {
 	Player,
 	Wall,
 	Floor,
-	ShadedVoid
+	ShadedVoid,
+	Rock
 };
 
 class EntityCreator;

@@ -2,7 +2,7 @@
 
 #include "Coord.h"
 
-#include "mersenne.hpp"
+#include "noise.hpp"
 
 class World;
 class Entity;
@@ -40,14 +40,14 @@ public:
 	virtual Terrain* TerrainForCell(Coord pos);
 
 private:
-	float Noise(const Coord& pos);
-
 	int _cx;
 	int _cy;
 	int _rad;
 
-	float _phases[4];
-	float _wavelengths[4];
+	float Noise(Coord pos, float scale = 1.0f, int offset = 0, bool turbulent = false);
+
+	TCODRandom _random;
+	TCODNoise _noise;
 };
 
 class TestTemplate : public Template {

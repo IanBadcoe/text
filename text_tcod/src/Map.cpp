@@ -116,7 +116,7 @@ void Map::Draw(TCODConsole* console) {
 			if (_frames[index] > 0)
 			{
 				float fade = (200 - (_frame - _frames[index])) / 200.0f;
-				fade = std::max(0.25f, fade);
+				fade = std::max(0.4f, fade);
 
 				DisplayChar bg_dc = _terrain[index];
 				console->putCharEx(i, screen_size._y - j - 1,
@@ -150,7 +150,7 @@ void Map::ReadWorld(Coord eye_pos) {
 	{
 		for (int j = 0; j < _height; j++)
 		{
-			if (_tcod_map->isInFov(i, j))
+//			if (_tcod_map->isInFov(i, j))
 			{
 				Coord pos(i, j);
 				const Terrain* t = _world->GetTerrain(pos);

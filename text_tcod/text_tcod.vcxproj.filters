@@ -72,6 +72,9 @@
     <ClInclude Include="src\Terrain.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\Rock.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Entity.cpp">
@@ -132,6 +135,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Terrain.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rock.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

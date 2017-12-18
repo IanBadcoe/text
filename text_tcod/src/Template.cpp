@@ -4,6 +4,7 @@
 
 #include "Floor.h"
 #include "Wall.h"
+#include "Rock.h"
 #include "World.h"
 #include "ShadedVoid.h"
 
@@ -41,17 +42,9 @@ Terrain* CircleTemplate::TerrainForCell(Coord pos) {
 SkyslandTemplate::SkyslandTemplate(int cx, int cy, int rad, uint32_t seed) :
 	_cx(cx),
 	_cy(cy),
-	_rad(rad) {
-	TCODRandom r(seed);
-
-	for (int i = 0; i < 4; i++) {
-		_phases[i] = r.getFloat(0, (float)_rad);
-		if (i < 2) {
-			_wavelengths[i] = r.getFloat(_rad / 16.0f, _rad / 8.0f);
-		} else {
-			_wavelengths[i] = r.getFloat(_rad / 8.0f, (float)_rad / 4);
-		}
-	}
+	_rad(rad),
+	_random(seed),
+	_noise(2, 0.5f, 20.0f, &_random, TCOD_noise_type_t::TCOD_NOISE_SIMPLEX) {
 }
 
 Terrain* SkyslandTemplate::TerrainForCell(Coord pos) {
@@ -63,12 +56,37 @@ Terrain* SkyslandTemplate::TerrainForCell(Coord pos) {
 
 	float hyperb = (0.5f - r4 / (r4 + 1)) * 2;
 
-	float height = hyperb + Noise(pos) / 2;
+	float height = hyperb + Noise(pos, 0.1f) * 0.2f;
 
-	if (height > 0.5) {
-		return new Wall(1000);
-	} else if (height > 0.25) {
-		return new Wall(500);
+//  	if (height > 0.5) {
+//  		return new Wall(1000);
+//  	} else if (height > 0.25) {
+//  		return new Wall(500);
+	if (height > 0.25) {
+		if (Noise(pos, 0.1f, 1000, true) > 0.5) {
+			float r = Noise(pos, 0.2f, 2000);
+			float g = Noise(pos, 0.2f, 3000);
+			float b = Noise(pos, 0.2f, 4000);
+
+			if (r > g && r > b) {
+				return new Rock(Rock::Type::RedOre);
+			} else if (g > b && g > r) {
+				return new Rock(Rock::Type::GreenOre);
+			} else {
+				return new Rock(Rock::Type::BlueOre);
+			}
+		} else {
+			// rock
+			float hardness = Noise(pos, 1.0, 100);
+
+			if (hardness < -0.2) {
+				return new Rock(Rock::Type::Earth);
+			} else if (hardness > 0.2) {
+				return new Rock(Rock::Type::Hard);
+			} else {
+				return new Rock(Rock::Type::Soft);
+			}
+		}
 	} else if (height > 0.0f) {
 		return new Floor();
 	} else if (height > -0.5f) {
@@ -80,13 +98,15 @@ Terrain* SkyslandTemplate::TerrainForCell(Coord pos) {
 	return nullptr;
 }
 
-float SkyslandTemplate::Noise(const Coord& pos) {
-	float x0 = (pos._x + _phases[0]) / _wavelengths[0];
-	float x1 = (pos._x + _phases[1]) / _wavelengths[1];
-	float y0 = (pos._y + _phases[2]) / _wavelengths[2];
-	float y1 = (pos._y + _phases[3]) / _wavelengths[3];
+float SkyslandTemplate::Noise(Coord pos, float scale /* = 1.0f */, int offset /* = 0 */, bool turbulent /* = false */) {
+	float f[] = { (pos._x + offset) * scale, pos._y * scale };
 
-	return (sin(x0) + sin(x1) + sin(y0) + sin(y1)) / 4;
+	if (turbulent)
+	{
+		return _noise.get(f);
+	} else {
+		return _noise.getTurbulence(f, 3);
+	}
 }
 
 Terrain * TestTemplate::TerrainForCell(Coord pos) {
