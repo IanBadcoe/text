@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Entity.h"
+#include "Terrain.h"
 
 #include "DisplayChar.h"
 
@@ -19,7 +19,7 @@ public:
 	virtual void SerialiseTo(std::ostringstream& out) const override;
 
 	// Inherited via Terrain
-	virtual void CalcDisp(uint8_t code) override;
+	virtual void CalcDisp(const Terrain* surrounds[8]) override;
 	virtual bool DrawCompatWith(const Terrain* other) const override;
 
 private:

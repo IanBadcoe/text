@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Entity.h"
+#include "Terrain.h"
 
 #include "DisplayChar.h"
 
@@ -9,20 +9,18 @@
 class Floor : public Terrain {
 public:
 	Floor(std::istringstream& in) : Terrain(in) { }
-	Floor() : Terrain(EntityType::Floor, true, true) { SetDisplayChar(s_floor); }
+	Floor() : Terrain(EntityType::Floor, true, true) { }
 
 	// Inherited via Terrain
 	virtual void SerialiseTo(std::ostringstream& out) const override;
 
 private:
-	static DisplayChar s_floor;
-	static TCODColor s_floor_foreground;
-	static TCODColor s_floor_background;
+	static TCODColor s_foreground;
 
     static EntityCreator s_creator;
 
 	// Inherited via Terrain
-	virtual void CalcDisp(uint8_t code) override;
+	virtual void CalcDisp(const Terrain* surrounds[8]) override;
 
 	// Inherited via Terrain
 	virtual bool DrawCompatWith(const Terrain* other) const override;

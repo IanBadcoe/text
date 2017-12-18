@@ -14,16 +14,6 @@ class World;
 class Player;
 
 class Map {
-private:
-	class MapChar {
-	public:
-		MapChar() : _dc(' ', TCOD_white, TCOD_black), _frame(0) {}
-		MapChar(DisplayChar dc, int frame) : _dc(dc), _frame(frame) {}
-
-		DisplayChar _dc;
-		uint64_t _frame;
-	};
-
 public:
     Map() :
         _width(0),
@@ -31,56 +21,19 @@ public:
         _frame(0),
         _p(nullptr),
         _tcod_map(nullptr),
-        _world(nullptr)
-    {
-    }
+        _world(nullptr) {}
 
 	~Map() {
-		delete[] _map;
-        delete _tcod_map;
+		ClearWorld();
 	}
 
 	void SetPlayer(const Player* p) { _p = p; }
 
-    void SetWorld(const World* world)
-    {
-        if (world == _world)
-            return;
+	void SetWorld(const World* world);
 
-        _world = world;
-
-        ClearWorld();
-
-		_width = _world->GetWidth();
-		_height = _world->GetHeight();
-
-		_map = new MapChar[_width * _height];
-        _tcod_map = new TCODMap(_width, _height);
-
-        for (int i = 0; i < _width; i++) {
-            for (int j = 0; j < _height; j++) {
-                _tcod_map->setProperties(i, j, false, false);
-            }
-        }
-    }
-
-    void ClearWorld() {
-        delete _map;
-        delete _tcod_map;
-
-		_map = nullptr;
-		_tcod_map = nullptr;
-
-		_width = 0;
-        _height = 0;
-
-    }
+	void ClearWorld();
     
-    DisplayChar GetChar(Coord pos) const {
-		return _map[idx(pos)]._dc;
-	}
-
-	void SetChar(Coord pos, const Entity* entity, const Terrain* terrain);
+	void SetChars(Coord pos, const Actor* actor, const Terrain* terrain);
 
 	int idx(Coord pos) const {
 		return pos._x + pos._y * _width;
@@ -96,9 +49,12 @@ private:
     int _width;
 	int _height;
 
-	MapChar* _map;
+	DisplayChar* _terrain;
+	DisplayChar* _actors;
+	int64_t* _frames;
+	bool* _has_actor;
 
-	int _frame;
+	int64_t _frame;
 
 	const Player* _p;
 
