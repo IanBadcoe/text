@@ -40,7 +40,7 @@ float InputHandler::InnerStep()
 
 		_command_dest->ReceiveCommand(cmd);
 
-		return 15.0;
+		return 5.0;
 	}
 
 	if (key.vk == TCODK_ESCAPE)

@@ -5,22 +5,22 @@
 
 #include "color.hpp"
 
-#include <assert.h>
-#include <queue>
-
 class Player : public Actor, public ICommandReceiver {
 public:
     Player(std::istringstream& in);
-	Player(int id) : Actor(EntityType::Player, 1.0f), _id(id) {
+	Player(int id) : Actor(EntityType::Player, 1.0f) {
 		assert(_id >= 0 && _id < s_max_players);
+
+		SetId(id);
 	}
 
 	virtual float InnerStep();
 
-	virtual DisplayChar Disp() const;
-
 	int GetId() const { return _id; }
-	void SetId(int id) { _id = id; }
+	void SetId(int id) {
+		_id = id;
+		SetDisplayChar(DisplayChar('@', s_foreground[_id]));
+	}
 
 	// ICommandReceiver
 	virtual void ReceiveCommand(const Command& c) override {

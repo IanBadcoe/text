@@ -2,8 +2,6 @@
 
 #include "Command.h"
 
-#include <vector>
-
 #include <sstream>
 
 class Universe;

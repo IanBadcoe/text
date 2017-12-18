@@ -60,11 +60,6 @@ float Player::InnerStep()
 	return ExecuteCommand(c);
 }
 
-DisplayChar Player::Disp() const
-{
-	return DisplayChar('@', s_foreground[_id]);
-}
-
 float Player::ExecuteCommand(const Command& cmd)
 {
 	World* w = GetWorld();
@@ -79,9 +74,10 @@ float Player::ExecuteCommand(const Command& cmd)
 		Coord old_pos = GetPos();
 		Coord new_pos = old_pos.Step(d);
 
+		const Terrain* t = w->GetTerrain(new_pos);
 		if (w->InRange(new_pos)) {
 			if (!w->GetActor(new_pos)
-				&& w->GetTerrain(new_pos)->IsWalkable())
+				&& t && t->IsWalkable())
 			{
 				w->RemoveActor(old_pos);
 				w->AddActor(new_pos, this);

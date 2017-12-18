@@ -26,7 +26,7 @@ public:
 	}
 
 	const Terrain* GetTerrain(Coord pos) const {
-		return _terrain[idx(pos)];
+		return const_cast<World*>(this)->GetTerrain(pos);
 	}
 
 	Actor* GetActor(Coord pos) {
@@ -38,15 +38,20 @@ public:
 	}
 
 	void SetTerrain(Coord pos, Terrain* e);
+	void ClearTerrain(Coord pos);
+	void RecalcTerrainDisps();
 
 	void AddActor(Coord pos, Actor* e);
 	void RemoveActor(Coord pos);
 
-	int idx(Coord pos) const {
-		return pos._x + pos._y * _width;
+	int idx(int i, int j) const {
+		return i + j * _width;
 	}
 
-	void ClearTerrain(Coord pos);
+	int idx(Coord pos) const {
+		return idx(pos._x, pos._y);
+	}
+
 
 	void ClearEntity(Coord pos);
 
@@ -77,9 +82,12 @@ public:
 	void Clear();
 
 private:
+
 	int _width;
 	int _height;
 
 	Terrain **_terrain;
 	Actor **_actors;
+
+	bool _dirty_terrain;
 };

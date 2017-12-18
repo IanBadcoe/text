@@ -4,8 +4,6 @@
 
 #include "Messages.h"
 
-#include <vector>
-
 class NetworkData;
 class Networker;
 

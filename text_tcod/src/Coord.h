@@ -44,6 +44,10 @@ public:
         return Coord(_x / v, _y / 2);
     }
 
+	bool operator==(const Coord& c) {
+		return _x == c._x && _y == c._y;
+	}
+
 	int _x;
 	int _y;
 };

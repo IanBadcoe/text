@@ -2,8 +2,6 @@
 
 #include "Coord.h"
 
-#include <vector>
-
 struct Command {
     Coord _from;
     Coord _to;

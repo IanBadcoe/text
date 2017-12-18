@@ -66,6 +66,9 @@
     <ClInclude Include="src\Coord.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\ShadedVoid.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Entity.cpp">
@@ -120,6 +123,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Coord.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ShadedVoid.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

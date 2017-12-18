@@ -10,11 +10,17 @@
 DisplayChar Map::s_void(L' ', TCOD_white);
 
 void Map::SetChar(Coord pos, const Entity* entity, const Terrain* terrain) {
-	assert(terrain);
-
     SetWorld(_p->GetWorld());
 
 	_map[idx(pos)]._frame = _frame;
+
+	bool walkable = false;
+	bool transparent = true;
+	if (terrain)
+	{
+		walkable = terrain->IsWalkable();
+		transparent = terrain->IsTransparent();
+	}
 
 	if (entity)
 	{
@@ -27,12 +33,18 @@ void Map::SetChar(Coord pos, const Entity* entity, const Terrain* terrain) {
 			_map[idx(pos)]._dc._bcol = terrain->Disp()._bcol;
 		}
 	}
+	else if (terrain)
+	{
+		DisplayChar dc = terrain->Disp();
+		assert(dc._char <= 0x100);
+		_map[idx(pos)]._dc = dc;
+	}
 	else
 	{
-		_map[idx(pos)]._dc = terrain->Disp();
+		_map[idx(pos)]._dc = s_void;
 	}
 
-	_tcod_map->setProperties(pos._x, pos._y, terrain->IsTransparent(), terrain->IsWalkable());
+	_tcod_map->setProperties(pos._x, pos._y, transparent, walkable);
 }
 
 void Map::Draw(TCODConsole* console) {
@@ -65,6 +77,7 @@ void Map::Draw(TCODConsole* console) {
 			else
 			{
 				DisplayChar dc = _map[idx(world_pos)]._dc;
+				assert(dc._char < 0x100);
 				console->putCharEx(i, screen_size._y - j - 1,
 					dc._char, dc._fcol * fade, dc._bcol * fade);
 			}
@@ -81,7 +94,7 @@ void Map::ReadWorld(Coord eye_pos) {
 	{
 		for (int j = 0; j < _height; j++)
 		{
-			if (_tcod_map->isInFov(i, j))
+//			if (_tcod_map->isInFov(i, j))
 			{
 				Coord pos(i, j);
 				const Terrain* t = _world->GetTerrain(pos);

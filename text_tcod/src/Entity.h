@@ -1,9 +1,8 @@
 #pragma once
 
-#include <assert.h>
-
 #include "Coord.h"
 #include "ISerialisable.h"
+#include "DisplayChar.h"
 
 #include <sstream>
 
@@ -14,7 +13,8 @@ enum class EntityType {
 	Unknown,
 	Player,
 	Wall,
-	Floor
+	Floor,
+	ShadedVoid
 };
 
 class EntityCreator;
@@ -25,10 +25,12 @@ public:
 	{
 		in >>= _type;
 		in >>= _pos;
+		in >>= _dc;
 	}
 	Entity(EntityType t) : _type(t), _pos(0, 0), _w(nullptr) {}
 
-	virtual DisplayChar Disp() const = 0;
+	DisplayChar Disp() const { return _dc; }
+	void SetDisplayChar(DisplayChar dc) { assert(dc._char < 0x100); _dc = dc; }
 
 	void SetPos(Coord pos) {
 		_pos = pos;
@@ -52,6 +54,7 @@ private:
 	EntityType _type;
 	Coord _pos;
 	World* _w;
+	DisplayChar _dc;
 };
 
 class EntityCreator {
@@ -86,7 +89,16 @@ public:
 	// Inherited via ISerialisable
 	virtual void SerialiseTo(std::ostringstream& out) const override = 0;
 
+	virtual void CalcDisp(uint8_t code) = 0;
+	virtual bool DrawCompatWith(const Terrain* other) const = 0;
+
+	static uint8_t GetBlock(uint8_t code);
+
 private:
+	static void InitBlockData();
+
+	static std::map<uint8_t, uint8_t> s_block_translate;
+
 	bool _is_walkable;
 	bool _is_transparent;
 };
