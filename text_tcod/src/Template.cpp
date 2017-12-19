@@ -44,7 +44,7 @@ SkyslandTemplate::SkyslandTemplate(int cx, int cy, int rad, uint32_t seed) :
 	_cy(cy),
 	_rad(rad),
 	_random(seed),
-	_noise(2, 0.5f, 20.0f, &_random, TCOD_noise_type_t::TCOD_NOISE_SIMPLEX) {
+	_noise(2, 0.5f, 2.0f, &_random, TCOD_noise_type_t::TCOD_NOISE_SIMPLEX) {
 }
 
 Terrain* SkyslandTemplate::TerrainForCell(Coord pos) {
@@ -52,19 +52,20 @@ Terrain* SkyslandTemplate::TerrainForCell(Coord pos) {
 	float dy = (float)(pos._y - _cy);
 
 	float r2 = ((dx * dx) + (dy * dy)) / (_rad * _rad);
-	float r4 = r2 * r2;
+//	float r4 = r2 * r2;  <-- for "tighter" island
+//	float hyperb = (0.5f - r4 / (r4 + 1)) * 2;
 
-	float hyperb = (0.5f - r4 / (r4 + 1)) * 2;
+	float hyperb = (0.5f - r2 / (r2 + 1)) * 2;
 
-	float height = hyperb + Noise(pos, 0.1f) * 0.2f;
+	float height = hyperb + Noise(pos, 0.1f) * 0.3f;
 
 //  	if (height > 0.5) {
 //  		return new Wall(1000);
 //  	} else if (height > 0.25) {
 //  		return new Wall(500);
-	if (height > 0.25) {
-		const float p_mineral = 0.7f;
-		const float p_vein = 0.5f;
+	if (height > 0.35) {
+		const float p_mineral = 0.75f;
+		const float p_vein = 0.55f;
 
 		float r = Noise(pos, 0.2f, 2000, true);
 		float g = Noise(pos, 0.2f, 3000, true);

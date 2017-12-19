@@ -14,7 +14,7 @@ Universe::Universe() : _local_player_id(-1)
     _world = new World(200, 200);
 
 //	CircleTemplate ct(100, 100, 75, 3);
-	SkyslandTemplate ct(100, 100, 50, 3);
+	SkyslandTemplate ct(100, 100, 25, 3);
 //	TestTemplate ct;
 
     ct.Apply(_world);
@@ -110,7 +110,7 @@ void Universe::EnsurePlayer(int player_id, bool is_local)
 	{
 		_players[player_id] = new Player(player_id);
 
-		for (int i = 0; i < 200; i++) {
+		for (int i = 100; i < 200; i++) {
 			Coord try_pos(100, i);
 
 			if (_world->IsWalkable(try_pos) && !_world->GetActor(try_pos))
