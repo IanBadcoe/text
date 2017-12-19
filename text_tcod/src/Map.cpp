@@ -150,7 +150,7 @@ void Map::ReadWorld(Coord eye_pos) {
 	{
 		for (int j = 0; j < _height; j++)
 		{
-//			if (_tcod_map->isInFov(i, j))
+			if (_tcod_map->isInFov(i, j))
 			{
 				Coord pos(i, j);
 				const Terrain* t = _world->GetTerrain(pos);

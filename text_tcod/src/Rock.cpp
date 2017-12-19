@@ -7,12 +7,12 @@
 #include "Map.h"
 
 TCODColor Rock::s_foregrounds[(int)Rock::Type::NumRockTypes] = {
-	TCODColor(192, 192, 192),
-	TCODColor(128, 128, 128),
-	TCODColor(192, 32, 32),
-	TCODColor(240, 128, 128),
-	TCODColor(128, 240, 128),
-	TCODColor(128, 128, 240)
+	TCODColor(192, 192, 192),				// Hard,
+	TCODColor(128, 128, 128),				// Soft,
+	TCODColor(66, 40, 7),					// Earth,
+	TCODColor(160, 47, 23),					// RedOre,
+	TCODColor(4, 63, 2),					// GreenOre,
+	TCODColor(19, 59, 140)					// BlueOre,
 };
 
 

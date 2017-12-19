@@ -63,30 +63,27 @@ Terrain* SkyslandTemplate::TerrainForCell(Coord pos) {
 //  	} else if (height > 0.25) {
 //  		return new Wall(500);
 	if (height > 0.25) {
-		if (Noise(pos, 0.1f, 1000, true) > 0.5) {
-			float r = Noise(pos, 0.2f, 2000);
-			float g = Noise(pos, 0.2f, 3000);
-			float b = Noise(pos, 0.2f, 4000);
+		const float p_mineral = 0.7f;
+		const float p_vein = 0.5f;
 
-			if (r > g && r > b) {
-				return new Rock(Rock::Type::RedOre);
-			} else if (g > b && g > r) {
-				return new Rock(Rock::Type::GreenOre);
-			} else {
-				return new Rock(Rock::Type::BlueOre);
-			}
-		} else {
-			// rock
-			float hardness = Noise(pos, 1.0, 100);
+		float r = Noise(pos, 0.2f, 2000, true);
+		float g = Noise(pos, 0.2f, 3000, true);
+		float b = Noise(pos, 0.2f, 4000, true);
 
-			if (hardness < -0.2) {
-				return new Rock(Rock::Type::Earth);
-			} else if (hardness > 0.2) {
-				return new Rock(Rock::Type::Hard);
-			} else {
-				return new Rock(Rock::Type::Soft);
-			}
+		if (r > p_mineral) {
+			return new Rock(Rock::Type::RedOre);
+		} if (r > p_vein) {
+			return new Rock(Rock::Type::Earth);
+		} else if (g > p_mineral) {
+			return new Rock(Rock::Type::GreenOre);
+		} else if (b > p_mineral) {
+			return new Rock(Rock::Type::BlueOre);
+		} else if (g > p_vein || b > p_vein) {
+			return new Rock(Rock::Type::Soft);
 		}
+
+		// rock
+		return new Rock(Rock::Type::Hard);
 	} else if (height > 0.0f) {
 		return new Floor();
 	} else if (height > -0.5f) {

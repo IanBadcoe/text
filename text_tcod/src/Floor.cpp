@@ -41,7 +41,10 @@ void Floor::CalcDisp(const Terrain* surrounds[8])
 
 	// special case for floor, use tiles for whole squares
 	if (c == 0xfe)
+	{
 		c = 0x80;
+		brightest_bg = TCODColor(48, 48, 48);
+	}
 
 	SetDisplayChar(DisplayChar(c, s_foreground, brightest_bg));
 }
