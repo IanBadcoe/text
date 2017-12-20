@@ -12,6 +12,7 @@
 #include "CommandCollator.h"
 #include "Server.h"
 #include "Client.h"
+#include "HUD.h"
 
 #define MAX_PLAYERS 4
 #define DESIRED_FRAMETIME 1000 / 30
@@ -33,7 +34,8 @@ int main(int argc, char* argv[]) {
 
 	Universe u;
 
-	Map map;
+	Map map(Rect(1, 1, 60, 49));
+	HUD hud(Rect(60, 1, 79, 49));
 
 	u.SetMap(&map);
 	u.GetInputHandler()->SetConsole(TCODConsole::root);
@@ -43,6 +45,7 @@ int main(int argc, char* argv[]) {
 		// create local player object
 		u.EnsurePlayer(0, true);
 		map.SetPlayer(u.GetPlayer(0));
+		hud.SetPlayer(u.GetPlayer(0));
 
 		CommandCollator cc;
 
@@ -57,7 +60,8 @@ int main(int argc, char* argv[]) {
             cc.EndFrame();
 
             map.Draw(TCODConsole::root);
-            TCODConsole::flush();
+			hud.Draw(TCODConsole::root);
+			TCODConsole::flush();
             map.NextFrame();
         }
 
@@ -88,7 +92,7 @@ int main(int argc, char* argv[]) {
 		assert(id == 0);
 		u.EnsurePlayer(0, true);
 		map.SetPlayer(u.GetPlayer(0));
-
+		hud.SetPlayer(u.GetPlayer(0));
 
 		// universe sends commands to server
 		u.SetCommandReceiver(&server);
@@ -121,6 +125,7 @@ int main(int argc, char* argv[]) {
 			server.EndFrame();
 
 			map.Draw(TCODConsole::root);
+			hud.Draw(TCODConsole::root);
 			TCODConsole::flush();
 			map.NextFrame();
 		}
@@ -157,6 +162,7 @@ int main(int argc, char* argv[]) {
 			}
 
 			map.Draw(TCODConsole::root);
+			hud.Draw(TCODConsole::root);
 			TCODConsole::flush();
 			map.NextFrame();
 

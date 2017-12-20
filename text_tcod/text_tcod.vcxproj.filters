@@ -84,6 +84,12 @@
     <ClInclude Include="src\Label.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\Rect.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\HUD.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Entity.cpp">
@@ -156,6 +162,12 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Label.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rect.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HUD.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

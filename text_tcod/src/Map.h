@@ -3,6 +3,7 @@
 #include "Coord.h"
 #include "World.h"
 #include "DisplayChar.h"
+#include "Rect.h"
 
 #include "color.hpp"
 #include "console.hpp"
@@ -15,13 +16,14 @@ class Player;
 
 class Map {
 public:
-	Map() :
+	Map(Rect pos_in_console) :
 		_width(0),
 		_height(0),
 		_frame(0),
 		_p(nullptr),
 		_tcod_map(nullptr),
-		_world(nullptr) {
+		_world(nullptr),
+		_pos_in_console(pos_in_console) {
 	}
 
 	~Map() {
@@ -31,10 +33,9 @@ public:
 	void SetPlayer(const Player* p) { _p = p; }
 
 	void SetWorld(const World* world);
-
 	void ClearWorld();
 
-	void SetChars(Coord pos, const Actor* actor, const Terrain* terrain);
+	void SetCell(Coord pos, const Actor* actor, const Terrain* terrain);
 
 	int idx(Coord pos) const {
 		return pos._x + pos._y * _width;
@@ -44,11 +45,13 @@ public:
 
 	void Draw(TCODConsole* console);
 
-	Coord MapToWorld(Coord pos) const;
+	Coord MapToWorld(Coord pos) const {
+		return pos + _last_map_to_world;
+	}
 
 private:
     void ReadWorld(Coord eye_pos);
-	void SetMapCorner(const Coord& pos) { _last_map_corner = pos; }
+	void SetMapToWorld(const Coord& pos) { _last_map_to_world = pos; }
 
     int _width;
 	int _height;
@@ -66,8 +69,10 @@ private:
 
     const World* _world;
 
-	// just caching what we last calculated from the player's position
-	Coord _last_map_corner;
+	// caching what we calculated from the player's position when we last drew
+	Coord _last_map_to_world;
+
+	Rect _pos_in_console;
 
 	static DisplayChar s_void;
 };

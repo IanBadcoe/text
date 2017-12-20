@@ -9,17 +9,13 @@
 
 DisplayChar Map::s_void(L' ', TCOD_white);
 
-Coord Map::MapToWorld(Coord map_cell) const {
-	return map_cell + _last_map_corner;
-}
-
-void Map::SetWorld(const World * world) {
+void Map::SetWorld(const World* world) {
 	if (world == _world)
 		return;
 
-	_world = world;
-
 	ClearWorld();
+
+	_world = world;
 
 	_width = _world->GetWidth();
 	_height = _world->GetHeight();
@@ -40,6 +36,8 @@ void Map::SetWorld(const World * world) {
 }
 
 void Map::ClearWorld() {
+	_world = nullptr;
+
 	delete[] _terrain;
 	delete[] _actors;
 	delete[] _has_actor;
@@ -56,7 +54,7 @@ void Map::ClearWorld() {
 	_height = 0;
 }
 
-void Map::SetChars(Coord pos, const Actor* actor, const Terrain* terrain) {
+void Map::SetCell(Coord pos, const Actor* actor, const Terrain* terrain) {
     SetWorld(_p->GetWorld());
 
 	int index = idx(pos);
@@ -102,17 +100,20 @@ void Map::Draw(TCODConsole* console) {
     SetWorld(_p->GetWorld());
 
     Coord screen_size(console->getWidth(), console->getHeight());
+	Rect console_rect(Coord(0, 0), screen_size);
+	assert(console_rect.Contains(_pos_in_console));
 
     Coord pp = _p->GetPos();
 
     ReadWorld(pp);
 
-	SetMapCorner(_world->ClampCoord(pp - screen_size / 2));
+	Coord map_size = _pos_in_console.Size();
+
+	SetMapToWorld(_world->ClampCoord(pp - map_size / 2 - _pos_in_console._bl));
     
-    for (int i = 0; i < screen_size._x; i++)
+    for (int i = _pos_in_console._bl._x; i < _pos_in_console._tr._x; i++)
 	{
-		for (int j = 0; j < screen_size._y; j++)
-		{
+		for (int j = _pos_in_console._bl._y; j < _pos_in_console._tr._y; j++) {
 			Coord world_pos = MapToWorld(Coord(i, j));
 			int index = idx(world_pos);
 
@@ -157,7 +158,7 @@ void Map::ReadWorld(Coord eye_pos) {
 			{
 				Coord pos(i, j);
 				const Terrain* t = _world->GetTerrain(pos);
-				SetChars(pos, _world->GetActor(pos), t);
+				SetCell(pos, _world->GetActor(pos), t);
 			}
 		}
 	}

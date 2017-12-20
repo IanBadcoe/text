@@ -19,9 +19,11 @@
     <ClInclude Include="src\DisplayChar.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Floor.h" />
+    <ClInclude Include="src\HUD.h" />
     <ClInclude Include="src\InputHandler.h" />
     <ClInclude Include="src\Label.h" />
     <ClInclude Include="src\Path.h" />
+    <ClInclude Include="src\Rect.h" />
     <ClInclude Include="src\Serialization.h" />
     <ClInclude Include="src\Map.h" />
     <ClInclude Include="src\Messages.h" />
@@ -45,6 +47,7 @@
     <ClCompile Include="src\Coord.cpp" />
     <ClCompile Include="src\Entity.cpp" />
     <ClCompile Include="src\Floor.cpp" />
+    <ClCompile Include="src\HUD.cpp" />
     <ClCompile Include="src\InputHandler.cpp" />
     <ClCompile Include="src\Label.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -57,6 +60,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Rect.cpp" />
     <ClCompile Include="src\Rock.cpp" />
     <ClCompile Include="src\Server.cpp" />
     <ClCompile Include="src\ShadedVoid.cpp" />
