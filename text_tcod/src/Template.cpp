@@ -7,6 +7,7 @@
 #include "Rock.h"
 #include "World.h"
 #include "ShadedVoid.h"
+#include "Universe.h"
 
 #include "Math.h"
 
@@ -16,6 +17,8 @@ void Template::Apply(World* w) {
 			w->SetTerrain(Coord(i, j), TerrainForCell(Coord(i, j)));
 		}
 	}
+
+	PostProcess(w);
 
 	w->RecalcTerrainDisps();
 }
@@ -35,6 +38,9 @@ Terrain* CircleTemplate::TerrainForCell(Coord pos) {
 	}
 
 	return new Wall(1000);
+}
+
+void CircleTemplate::PostProcess(World * w) {
 }
 
 
@@ -107,6 +113,12 @@ float SkyslandTemplate::Noise(Coord pos, float scale /* = 1.0f */, int offset /*
 	}
 }
 
+void SkyslandTemplate::PostProcess(World* w) {
+	for (int i = 0; i < 4; i++) {
+		w->EnsureBase(i);
+	}
+}
+
 Terrain * TestTemplate::TerrainForCell(Coord pos) {
 	pos = pos - Coord(100, 10);
 	int i = pos._x / 4;
@@ -141,4 +153,7 @@ Terrain * TestTemplate::TerrainForCell(Coord pos) {
 	}
 
 	return new Floor();
+}
+
+void TestTemplate::PostProcess(World * w) {
 }

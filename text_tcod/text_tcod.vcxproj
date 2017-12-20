@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Actor.h" />
+    <ClInclude Include="src\Base.h" />
     <ClInclude Include="src\Client.h" />
     <ClInclude Include="src\Command.h" />
     <ClInclude Include="src\CommandCollator.h" />
@@ -42,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Actor.cpp" />
+    <ClCompile Include="src\Base.cpp" />
     <ClCompile Include="src\Client.cpp" />
     <ClCompile Include="src\CommandCollator.cpp" />
     <ClCompile Include="src\Coord.cpp" />

@@ -16,7 +16,7 @@ TCODColor Rock::s_foregrounds[(int)Rock::Type::NumRockTypes] = {
 };
 
 
-static Entity* CreateRock(std::istringstream& in) {
+static Entity* CreateRock(std::istringstream& in, const CreatorArg& ca) {
     return new Rock(in);
 }
 

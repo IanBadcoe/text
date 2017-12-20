@@ -18,7 +18,7 @@ TCODColor ShadedVoid::s_background[4] = {
 	TCODColor(0, 0, 0)
 };
 
-static Entity* CreateShadedVoid(std::istringstream& in) {
+static Entity* CreateShadedVoid(std::istringstream& in, const CreatorArg& ca) {
     return new ShadedVoid(in);
 }
 

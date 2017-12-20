@@ -9,11 +9,15 @@
 std::vector<TCODColor> Player::s_foreground;
 int Player::s_max_players = 0;
 
-static Entity* CreatePlayer(std::istringstream& in) {
+static Entity* CreatePlayer(std::istringstream& in, const CreatorArg& ca) {
 	return new Player(in);
 }
 
 EntityCreator Player::s_creator(EntityType::Player, CreatePlayer);
+
+TCODColor Player::GetColour() const {
+	return s_foreground[_id];
+}
 
 Player::Player(std::istringstream& in) : Actor(in) {
     in >>= _id;

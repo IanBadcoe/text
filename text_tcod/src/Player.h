@@ -52,4 +52,6 @@ private:
 	static std::vector<TCODColor> s_foreground;
 
 	static EntityCreator s_creator;
+public:
+	TCODColor GetColour() const;
 };

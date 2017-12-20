@@ -15,6 +15,7 @@ class World;
 class Player;
 class Actor;
 class Universe;
+class Base;
 
 class World {
 public:
@@ -60,7 +61,6 @@ public:
 		return idx(pos._x, pos._y);
 	}
 
-
 	void ClearEntity(Coord pos);
 
 	int GetWidth() const {
@@ -92,7 +92,13 @@ public:
 	// for debug facilities...
 	bool ProcessWorldCommand(const Command& c);
 
+	void EnsureBase(int base_id);
+	Base* GetBase(int base_id);
+	void RegisterBase(int base_id, Base* base);
+
 private:
+	bool TryBase(int i, Coord c);
+
 	int _width;
 	int _height;
 
@@ -106,4 +112,6 @@ private:
 
 	// for passing commands to...
 	Universe* _universe;
+
+	std::map<int, Base*> _base_map;
 };

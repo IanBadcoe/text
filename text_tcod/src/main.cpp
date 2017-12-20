@@ -42,6 +42,7 @@ int main(int argc, char* argv[]) {
 
     if (argc == 2 && std::string("-nn") == argv[1])
     {
+		// base in the world wants to find that player
 		u.CreateTestWorld();
 		// create local player object
 		u.EnsurePlayer(0, true);

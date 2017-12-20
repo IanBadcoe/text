@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "Messages.h"
 #include "Map.h"
+#include "Base.h"
 
 #include <set>
 
@@ -119,26 +120,47 @@ void Universe::SerialiseFrom(std::istringstream& in)
 		assert(dynamic_cast<Player*>(_world->GetActor(p)));
 
 		_players[id] = static_cast<Player*>(_world->GetActor(p));
+
+		EnsurePlayer(id, false);
 	}
 }
 
 void Universe::EnsurePlayer(int player_id, bool is_local)
 {
+	Base* b = _world->GetBase(player_id);
+
 	if (!GetPlayer(player_id))
 	{
 		_players[player_id] = new Player(player_id);
 
-		for (int i = 100; i < 200; i++) {
-			Coord try_pos(100, i);
+		// if this player has a base in the world, place them near it
+		if (!b)
+		{
+			for (int i = 100; i < 200; i++) {
+				Coord try_pos(100, i);
 
-			if (_world->IsWalkable(try_pos) && !_world->GetActor(try_pos))
-			{
-				_world->AddActor(try_pos, _players[player_id]);
-				break;
+				if (_world->IsWalkable(try_pos) && !_world->GetActor(try_pos)) {
+					_world->AddActor(try_pos, _players[player_id]);
+					break;
+				}
+			}
+		} else {
+			for (IterateNxNSpiralOut it(b->GetPos(), 5); !it.Ended(); it.Next()) {
+				Coord try_pos(it.Current());
+				
+				if (_world->IsWalkable(try_pos) && !_world->GetActor(try_pos)) {
+					_world->AddActor(try_pos, _players[player_id]);
+					break;
+				}
 			}
 		}
 
 		_stepable_queue.AddRelativeStep(_players[player_id], 0.5f);
+	}
+
+	if (b) {
+		// if we now have a player and a base, thell the base...
+		b->SetPlayer(_players[player_id]);
 	}
 
 	if (is_local)

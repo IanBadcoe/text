@@ -7,12 +7,14 @@
 class World;
 class Entity;
 class Terrain;
+class Universe;
 
 class Template {
 public:
 	void Apply(World* w);
 
 	virtual Terrain* TerrainForCell(Coord pos) = 0;
+	virtual void PostProcess(World* w) = 0;
 };
 
 class CircleTemplate : public Template {
@@ -30,6 +32,9 @@ private:
 	int _cy;
 	int _rad;
 	int _width;
+
+	// Inherited via Template
+	virtual void PostProcess(World * w) override;
 };
 
 class SkyslandTemplate : public Template {
@@ -48,9 +53,15 @@ private:
 
 	TCODRandom _random;
 	TCODNoise _noise;
+
+	// Inherited via Template
+	virtual void PostProcess(World * w) override;
 };
 
 class TestTemplate : public Template {
 	// Inherited via Template
 	virtual Terrain * TerrainForCell(Coord pos) override;
+
+	// Inherited via Template
+	virtual void PostProcess(World * w) override;
 };

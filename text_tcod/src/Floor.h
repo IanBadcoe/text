@@ -16,8 +16,9 @@ public:
 	// Inherited via Terrain
 	virtual void SerialiseTo(std::ostringstream& out) const override;
 
-private:
 	static TCODColor s_foreground;
+
+private:
 
     static EntityCreator s_creator;
 

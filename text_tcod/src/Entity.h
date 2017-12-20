@@ -7,6 +7,7 @@
 #include <sstream>
 
 class World;
+class Universe;
 class DisplayChar;
 
 enum class EntityType {
@@ -16,7 +17,9 @@ enum class EntityType {
 	Floor,
 	ShadedVoid,
 	Rock,
-	Label
+	Label,
+	Base,
+	BaseEdge
 };
 
 class EntityCreator;
@@ -59,9 +62,16 @@ private:
 	DisplayChar _dc;
 };
 
+struct CreatorArg {
+	CreatorArg(Universe* u, World* w) : _w(w), _u(u) {}
+
+	World* _w;
+	Universe* _u;
+};
+
 class EntityCreator {
 public:
-	typedef Entity* (*CreateFunc)(std::istringstream& in);
+	typedef Entity* (*CreateFunc)(std::istringstream& in, const CreatorArg& ca);
 
 	EntityCreator(EntityType type, CreateFunc func) : _type(type), _func(func)
 	{
@@ -71,8 +81,9 @@ public:
 	EntityType _type;
 	CreateFunc _func;
 
-	static std::map<EntityType, EntityCreator::CreateFunc> s_creation_map;
+	static std::map<EntityType, EntityCreator::CreateFunc>* s_creation_map;
 
-	static Entity* VirtualSerialiseFrom(std::istringstream& in);
+	static Entity* VirtualSerialiseFrom(std::istringstream& in, const CreatorArg& ca);
 	static void RegisterCreator(const EntityCreator* ac);
+	static void EnsureMap();
 };

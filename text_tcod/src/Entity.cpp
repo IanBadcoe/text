@@ -4,7 +4,7 @@
 
 #include "World.h"
 
-std::map<EntityType, EntityCreator::CreateFunc> EntityCreator::s_creation_map;
+std::map<EntityType, EntityCreator::CreateFunc>* EntityCreator::s_creation_map = nullptr;
 
 
 void Entity::SerialiseTo(std::ostringstream& out) const {
@@ -13,7 +13,9 @@ void Entity::SerialiseTo(std::ostringstream& out) const {
 	out <<= _dc;
 }
 
-Entity* EntityCreator::VirtualSerialiseFrom(std::istringstream& in) {
+Entity* EntityCreator::VirtualSerialiseFrom(std::istringstream& in, const CreatorArg& ca) {
+	EnsureMap();
+
 	EntityType t;
 
 	in >>= t;
@@ -23,16 +25,24 @@ Entity* EntityCreator::VirtualSerialiseFrom(std::istringstream& in) {
 		in.unget();
 	}
 
-	auto it = s_creation_map.find(t);
+	auto it = s_creation_map->find(t);
 
-	assert(it != s_creation_map.end());
+	assert(it != s_creation_map->end());
 
-	return it->second(in);
+	return it->second(in, ca);
 }
 
 void EntityCreator::RegisterCreator(const EntityCreator * ac) {
-	assert(s_creation_map.find(ac->_type) == s_creation_map.end());
+	EnsureMap();
 
-	s_creation_map[ac->_type] = ac->_func;
+	assert(s_creation_map->find(ac->_type) == s_creation_map->end());
+
+	(*s_creation_map)[ac->_type] = ac->_func;
+}
+
+void EntityCreator::EnsureMap() {
+	if (!s_creation_map) {
+		s_creation_map = new std::map<EntityType, CreateFunc>();
+	}
 }
 

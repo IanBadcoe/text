@@ -5,6 +5,8 @@
 #include "Player.h"
 #include "Universe.h"
 #include "Label.h"
+#include "Base.h"
+#include "Floor.h"
 
 World::World(Universe* u) :
 	_width(0),
@@ -164,6 +166,87 @@ bool World::ProcessWorldCommand(const Command& c) {
 	return false;
 }
 
+void World::EnsureBase(int base_id) {
+	int end = base_id + 4;
+
+	for (int j = base_id; j < end; j++) {
+		Coord c(_height / 2, _width / 2);
+		Coord::Dir d;
+		int size;
+
+		switch (j % 4) {
+		case 0:
+			d = Coord::Dir::West;
+			size = _width / 2 - 2;
+			break;
+
+		case 1:
+			d = Coord::Dir::North;
+			size = _height / 2 - 2;
+			break;
+
+		case 2:
+			d = Coord::Dir::East;
+			size = _width / 2 - 2;
+			break;
+
+		case 3:
+			d = Coord::Dir::South;
+			size = _height / 2 - 2;
+			break;
+		}
+
+		for (int k = 0; k < size; k++) {
+			if (TryBase(base_id, c))
+				return;
+
+			c = c.Step(d);
+		}
+	}
+
+	assert(false);
+}
+
+Base* World::GetBase(int base_id) {
+	auto it = _base_map.find(base_id);
+
+	if (it == _base_map.end())
+		return nullptr;
+
+	return it->second;
+}
+
+void World::RegisterBase(int base_id, Base* base) {
+	assert(_base_map.find(base_id) == _base_map.end());
+
+	_base_map[base_id] = base;
+}
+
+bool World::TryBase(int base_id, Coord c) {
+	const Terrain* t = GetTerrain(c);
+
+	if (!t || t->GetType() != EntityType::Floor)
+		return false;
+
+	// clear off an area around the base
+	for (IterateNxN it(c, 5); !it.Ended(); it.Next()) {
+		SetTerrain(it.Current(), new Floor());
+	}
+
+	Base* b = new Base(base_id);
+	SetTerrain(c, b);
+
+	for (int j = 0; j < 8; j++) {
+		Coord d = c.Step((Coord::Dir)j);
+
+		SetTerrain(d, new BaseEdge(b, (Coord::Dir)j));
+	}
+
+	RegisterBase(base_id, b);
+
+	return true;
+}
+
 void World::RecalcTerrainDisps() {
 	if (!_dirty_terrain)
 		return;
@@ -217,9 +300,16 @@ void World::SerialiseTo(std::ostringstream& out) const
 		}
 	}
 
+	// bases first as BaseEdges need them to already exist
 	for (int i = 0; i < _width * _height; i++) {
-		if (_terrain[i])
+		if (_terrain[i] && _terrain[i]->GetType() == EntityType::Base)
 		{
+			_terrain[i]->SerialiseTo(out);
+		}
+	}
+
+	for (int i = 0; i < _width * _height; i++) {
+		if (_terrain[i] && _terrain[i]->GetType() != EntityType::Base) {
 			_terrain[i]->SerialiseTo(out);
 		}
 	}
@@ -242,8 +332,10 @@ void World::SerialiseFrom(std::istringstream& in)
 	in >>= num_actors;
 	in >>= num_terrains;
 
+	CreatorArg ca(_universe, this);
+
 	for (int i = 0; i < num_actors; i++) {
-		Entity* entity = EntityCreator::VirtualSerialiseFrom(in);
+		Entity* entity = EntityCreator::VirtualSerialiseFrom(in, ca);
 
 		assert(dynamic_cast<Actor*>(entity));
 
@@ -254,7 +346,7 @@ void World::SerialiseFrom(std::istringstream& in)
 	static Entity* last = nullptr;
 
 	for (int i = 0; i < num_terrains; i++) {
-		Entity* entity = EntityCreator::VirtualSerialiseFrom(in);
+		Entity* entity = EntityCreator::VirtualSerialiseFrom(in, ca);
 		last = entity;
 
 		assert(dynamic_cast<Terrain*>(entity));
