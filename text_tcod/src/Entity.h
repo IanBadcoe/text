@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Coord.h"
-#include "ISerialisable.h"
+#include "Serialization.h"
 #include "DisplayChar.h"
 
 #include <sstream>
@@ -15,7 +15,8 @@ enum class EntityType {
 	Wall,
 	Floor,
 	ShadedVoid,
-	Rock
+	Rock,
+	Label
 };
 
 class EntityCreator;

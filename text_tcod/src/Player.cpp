@@ -49,19 +49,22 @@ void Player::SerialiseTo(std::ostringstream& out) const
 
 float Player::InnerStep()
 {
-	if (!_command_queue.size())
-	{
-		return 0.1f;
-	}
+	// does nothing if there isn't one, or it cannot be run in this state
+	// otherwise leaves us in a state that will return an appropriate delay below
+	ExecuteCommand();
 
-	Command c = _command_queue.front();
-	_command_queue.pop();
-
-	return ExecuteCommand(c);
+	// pump the state machine
+	return Actor::InnerStep();
 }
 
-float Player::ExecuteCommand(const Command& cmd)
+void Player::ExecuteCommand()
 {
+	if (!_command_queue.size())
+		return;
+
+	Command cmd = _command_queue.front();
+	_command_queue.pop();
+
 	World* w = GetWorld();
 	assert(w);
 
@@ -72,23 +75,26 @@ float Player::ExecuteCommand(const Command& cmd)
 		Coord::Dir d = cmd._dir;
 
 		Coord old_pos = GetPos();
-		Coord new_pos = old_pos.Step(d);
+		_dest = old_pos.Step(d);
 
-		const Terrain* t = w->GetTerrain(new_pos);
-		if (w->InRange(new_pos)) {
-			if (!w->GetActor(new_pos)
-				&& t && t->IsWalkable())
-			{
-				w->RemoveActor(old_pos);
-				w->AddActor(new_pos, this);
-			}
+		_state = State::SingleStep;
+
+		return;
+	}
+
+	case Command::Type::WorldCellClick:
+	{
+		if (!GetWorld()->ComputePath(this, GetPos(), cmd._world_cell, _current_path)) {
+			// state unchanged...
+			return;
 		}
 
-		return 3.0f;
+		_state = State::FollowingPath;
+
+		// first step on path should follow immediately
+		return;
 	}
 	}
 
 	assert(false);
-
-	return 0.0f;
 }

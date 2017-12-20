@@ -12,12 +12,7 @@ class Server :
 	public ICommandSequenceReceiver
 {
 public:
-	Server(Networker* network, Universe* universe) :
-		_network(network),
-		_universe(universe)
-	{
-		_collator.SetCommandSequenceReceiver(this);
-	}
+	Server(Networker* network, Universe* universe);
 
 	// Inherited via INetworkHandler
 	virtual void Connected(Networker* networker, const PeerHandle peer) override;

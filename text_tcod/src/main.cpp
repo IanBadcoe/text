@@ -35,6 +35,9 @@ int main(int argc, char* argv[]) {
 
 	Map map;
 
+	u.SetMap(&map);
+	u.GetInputHandler()->SetConsole(TCODConsole::root);
+
     if (argc == 2 && std::string("-nn") == argv[1])
     {
 		// create local player object

@@ -6,22 +6,25 @@
 #include "InputHandler.h"
 #include "Actor.h"
 #include "Networker.h"
-#include "ISerialisable.h"
 
 #include <map>
+
+class Map;
+
 
 class Universe :
 	public ICommandSequenceReceiver,
 	public ICommandSender,
-	public ICommandReceiver,
-	public ISerialisable
+	public ICommandReceiver
 {
 public:
     Universe();
     ~Universe();
 
+	void CreateTestWorld();
+
     const World* GetWorld() const { return _world; }
-	const InputHandler* GetInputHandler() const { return _input; }
+	InputHandler* GetInputHandler() const { return _input; }
 
     // Inherited via ICommandSequenceReceiver
     virtual void ReceiveCommandSequence(const CommandSequence& cs) override;
@@ -33,8 +36,8 @@ public:
     virtual void ReceiveCommand(const Command& c) override;
 
 	// Inherited via ISerialisable
-	virtual void SerialiseTo(std::ostringstream& out) const override;
-	virtual void SerialiseFrom(std::istringstream& in) override;
+	void SerialiseTo(std::ostringstream& out) const;
+	void SerialiseFrom(std::istringstream& in);
 
 	// true -> end of frame
 	// false -> more to process
@@ -53,9 +56,14 @@ public:
 
 	void EnsurePlayer(int player_id, bool is_local);
 
+	void SetMap(const Map* map) {
+		_map = map;
+	}
+
 private:
 	void ProcessCommand(const Command& cmd);
 	bool ProcessGlobalCommand(const Command& cmd);
+	Command TranslateCommand(Command c);
 
 	ICommandReceiver* _pass_commands_to;
 
@@ -67,5 +75,8 @@ private:
 
 	std::map<int, Player*> _players;
 	int _local_player_id;
+
+	// for coordinate translation from commands
+	const Map* _map;
 };
 

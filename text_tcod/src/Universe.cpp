@@ -6,19 +6,12 @@
 #include "Template.h"
 #include "Player.h"
 #include "Messages.h"
+#include "Map.h"
 
 #include <set>
 
-Universe::Universe() : _local_player_id(-1)
+Universe::Universe() : _local_player_id(-1), _world(nullptr), _input(nullptr), _map(nullptr)
 {
-    _world = new World(200, 200);
-
-//	CircleTemplate ct(100, 100, 75, 3);
-	SkyslandTemplate ct(100, 100, 25, 3);
-//	TestTemplate ct;
-
-    ct.Apply(_world);
-
 	_input = new InputHandler();
 	_input->SetCommandReceiver(this);
 
@@ -27,6 +20,17 @@ Universe::Universe() : _local_player_id(-1)
 
 Universe::~Universe()
 {
+}
+
+void Universe::CreateTestWorld() {
+	_world = new World(this);
+	_world->SetSize(200, 200);
+
+	//	CircleTemplate ct(100, 100, 75, 3);
+	SkyslandTemplate ct(100, 100, 25, 3);
+	//	TestTemplate ct;
+
+	ct.Apply(_world);
 }
 
 void Universe::ReceiveCommandSequence(const CommandSequence& cs)
@@ -41,7 +45,10 @@ void Universe::ProcessCommand(const Command& cmd)
 {
 	if (!ProcessGlobalCommand(cmd))
 	{
-		GetPlayer(cmd._player_id)->ReceiveCommand(cmd);
+		if (!_world->ProcessWorldCommand(cmd))
+		{
+			GetPlayer(cmd._player_id)->ReceiveCommand(cmd);
+		}
 	}
 }
 
@@ -52,8 +59,7 @@ void Universe::SetCommandReceiver(ICommandReceiver* csr)
 
 void Universe::ReceiveCommand(const Command& c)
 {
-	Command temp(c);
-	temp._player_id = _local_player_id;
+	Command temp = TranslateCommand(c);
 
 	_pass_commands_to->ReceiveCommand(temp);
 }
@@ -61,6 +67,17 @@ void Universe::ReceiveCommand(const Command& c)
 bool Universe::ProcessGlobalCommand(const Command& cmd)
 {
 	return false;
+}
+
+Command Universe::TranslateCommand(Command cmd) {
+	cmd._player_id = _local_player_id;
+
+	if (cmd._type == Command::Type::ConsoleCellClick) {
+		cmd._type = Command::Type::WorldCellClick;
+		cmd._world_cell = _map->MapToWorld(cmd._map_cell);
+	}
+
+	return cmd;
 }
 
 void Universe::SerialiseTo(std::ostringstream& out) const
@@ -81,8 +98,9 @@ void Universe::SerialiseTo(std::ostringstream& out) const
 
 void Universe::SerialiseFrom(std::istringstream& in)
 {
-	assert(_world);
+	assert(!_world);
 
+	_world = new World(this);
 	_world->SerialiseFrom(in);
 
 	_stepable_queue.SerialiseFrom(in, this);

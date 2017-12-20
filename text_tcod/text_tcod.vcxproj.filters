@@ -18,9 +18,6 @@
     <ClInclude Include="src\InputHandler.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\ISerialisable.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="src\Map.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -73,6 +70,18 @@
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\Rock.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Stepable.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Serialization.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Path.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Label.h">
       <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
@@ -138,6 +147,15 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Rock.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Stepable.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Path.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Label.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

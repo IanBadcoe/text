@@ -3,17 +3,19 @@
 #include "Coord.h"
 
 struct Command {
-    Coord _from;
-    Coord _to;
+	enum class Type {
+		Move,
+		Exit,
+		ConsoleCellClick,
+		WorldCellClick
+	};
+
+	Type _type;
+
+	Coord _map_cell;
+    Coord _world_cell;
 
     int _player;
-
-    enum class Type {
-        Move,
-		Exit
-    };
-
-    Type _type;
 
     Coord::Dir _dir;
 

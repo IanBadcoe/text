@@ -2,8 +2,11 @@
 
 #include "Entity.h"
 #include "Terrain.h"
+#include "Path.h"
+#include "CommandCollator.h"
 
-#include "ISerialisable.h"
+#include "fov.hpp"
+#include "path.hpp"
 
 #include <algorithm>
 #include <queue>
@@ -11,16 +14,20 @@
 class World;
 class Player;
 class Actor;
+class Universe;
 
-class World : ISerialisable {
+class World {
 public:
-	World(int width, int height);
+	World(Universe* u);
 
 	~World();
 
+	void SetSize(int width, int height);
+	void Clear();
+
 	// Inherited via ISerialisable
-	virtual void SerialiseTo(std::ostringstream& out) const override;
-	virtual void SerialiseFrom(std::istringstream& in) override;
+	void SerialiseTo(std::ostringstream& out) const;
+	void SerialiseFrom(std::istringstream& in);
 
 	Terrain* GetTerrain(Coord pos) {
 		return _terrain[idx(pos)];
@@ -80,10 +87,12 @@ public:
 			&& pos._y >= 0 && pos._y < _height;
 	}
 
-	void Clear();
+	bool ComputePath(Player* player, Coord from, Coord to, Path& output) const;
+
+	// for debug facilities...
+	bool ProcessWorldCommand(const Command& c);
 
 private:
-
 	int _width;
 	int _height;
 
@@ -91,4 +100,10 @@ private:
 	Actor **_actors;
 
 	bool _dirty_terrain;
+
+	// make this a collection of maps for different kinds of locomotion, e.g. Actors who can open doors or not, Actors who can fly or not
+	TCODMap* _tcod_map;
+
+	// for passing commands to...
+	Universe* _universe;
 };

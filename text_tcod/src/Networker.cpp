@@ -518,11 +518,14 @@ void NetworkData::SendToAllPeers(const uint8_t* data, size_t size)
 
 void NetworkData::Service()
 {
-	Concurrency::critical_section::scoped_lock sl(_cs);
-
 	ENetEvent event;
 
-	int ret = enet_host_service(_enet_host, &event, 5);
+	int ret = 0;
+
+	{
+		Concurrency::critical_section::scoped_lock sl(_cs);
+		ret = enet_host_service(_enet_host, &event, 5);
+	}
 
 	if (ret < 0)
 	{

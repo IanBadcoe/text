@@ -7,6 +7,13 @@
 
 #include <set>
 
+Server::Server(Networker * network, Universe * universe) :
+	_network(network),
+	_universe(universe) {
+	_collator.SetCommandSequenceReceiver(this);
+	_universe->CreateTestWorld();
+}
+
 void Server::Connected(Networker* networker, const PeerHandle peer)
 {
 	printf("Server: Connection, peer=%p\n", peer);
@@ -17,8 +24,8 @@ void Server::Connected(Networker* networker, const PeerHandle peer)
 	_universe->EnsurePlayer(player_id, false);
 
 	// sync their peer with the current game state
-	UniverseMessage em(_universe, player_id);
-	_network->SendToPeer(peer, em);
+	UniverseMessage um(_universe, player_id);
+	_network->SendToPeer(peer, um);
 
 	// tell everybody else they joined
 	PeerJoinedMessage pj(player_id, _collator.GetFrame());

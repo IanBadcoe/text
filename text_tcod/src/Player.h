@@ -27,7 +27,7 @@ public:
 		_command_queue.push(c);
 	}
 
-	float ExecuteCommand(const Command& cmd);
+	void ExecuteCommand();
 
 	static void SetMaxPlayers(int num, const TCODColor* colours) {
 		s_max_players = num;

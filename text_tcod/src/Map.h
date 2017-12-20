@@ -15,13 +15,14 @@ class Player;
 
 class Map {
 public:
-    Map() :
-        _width(0),
-        _height(0),
-        _frame(0),
-        _p(nullptr),
-        _tcod_map(nullptr),
-        _world(nullptr) {}
+	Map() :
+		_width(0),
+		_height(0),
+		_frame(0),
+		_p(nullptr),
+		_tcod_map(nullptr),
+		_world(nullptr) {
+	}
 
 	~Map() {
 		ClearWorld();
@@ -32,7 +33,7 @@ public:
 	void SetWorld(const World* world);
 
 	void ClearWorld();
-    
+
 	void SetChars(Coord pos, const Actor* actor, const Terrain* terrain);
 
 	int idx(Coord pos) const {
@@ -43,8 +44,11 @@ public:
 
 	void Draw(TCODConsole* console);
 
+	Coord MapToWorld(Coord pos) const;
+
 private:
     void ReadWorld(Coord eye_pos);
+	void SetMapCorner(const Coord& pos) { _last_map_corner = pos; }
 
     int _width;
 	int _height;
@@ -61,6 +65,9 @@ private:
 	TCODMap* _tcod_map;
 
     const World* _world;
+
+	// just caching what we last calculated from the player's position
+	Coord _last_map_corner;
 
 	static DisplayChar s_void;
 };

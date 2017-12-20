@@ -3,18 +3,16 @@
 #include "World.h"
 
 #include "Player.h"
+#include "Universe.h"
+#include "Label.h"
 
-World::World(int width, int height) : _width(width), _height(height), _dirty_terrain(false)
+World::World(Universe* u) :
+	_width(0),
+	_height(0),
+	_dirty_terrain(false),
+	_tcod_map(nullptr),
+	_universe(u)
 {
-	_terrain = new Terrain*[_width * _height];
-	_actors = new Actor*[_width * _height];
-
-	for (int i = 0; i < _width; i++) {
-		for (int j = 0; j < _width; j++) {
-			_terrain[idx(Coord(i, j))] = nullptr;
-			_actors[idx(Coord(i, j))] = nullptr;
-		}
-	}
 }
 
 World::~World()
@@ -26,17 +24,41 @@ World::~World()
 		}
 	}
 
-	delete _terrain;
+	delete[] _terrain;
+	delete[] _actors;
 }
 
-void World::SetTerrain(Coord pos, Terrain* e)
+void World::SetSize(int width, int height) {
+	Clear();
+
+	_width = width;
+	_height = height;
+
+	_terrain = new Terrain*[_width * _height];
+	_actors = new Actor*[_width * _height];
+
+	_tcod_map = new TCODMap(_width, _height);
+
+	for (int i = 0; i < _width; i++) {
+		for (int j = 0; j < _width; j++) {
+			_terrain[idx(Coord(i, j))] = nullptr;
+			_actors[idx(Coord(i, j))] = nullptr;
+			_tcod_map->setProperties(i, j, false, false);
+		}
+	}
+}
+
+void World::SetTerrain(Coord pos, Terrain* t)
 {
 	ClearTerrain(pos);
 
-	_terrain[idx(pos)] = e;
+	_terrain[idx(pos)] = t;
 
-	if (e) {
-		e->SetPos(pos);
+	if (t) {
+		t->SetPos(pos);
+		_tcod_map->setProperties(pos._x, pos._y, false, t->IsWalkable());
+	} else {
+		_tcod_map->setProperties(pos._x, pos._y, false, false);
 	}
 
 	_dirty_terrain = true;
@@ -72,6 +94,9 @@ void World::ClearTerrain(Coord pos)
 	}
 
 	_terrain[idx(pos)] = nullptr;
+	_tcod_map->setProperties(pos._x, pos._y, false, false);
+
+	_dirty_terrain = true;
 }
 
 void World::ClearEntity(Coord pos)
@@ -98,6 +123,45 @@ void World::Clear()
 			ClearTerrain(p);
 		}
 	}
+
+	delete[] _terrain;
+	delete[] _actors;
+	delete _tcod_map;
+
+	_width = 0;
+	_height = 0;
+}
+
+bool World::ComputePath(Player* player, Coord from, Coord to, Path& output) const {
+	output.Clear();
+
+	TCODPath path(_tcod_map);
+
+	if (!path.compute(from._x, from._y, to._x, to._y))
+		return false;
+
+	for (int i = 0; i < path.size(); i++) {
+		Coord pos;
+
+		path.get(i, &pos._x, &pos._y);
+
+		output._path.push_back(pos);
+	}
+
+	return true;
+}
+
+bool World::ProcessWorldCommand(const Command& c) {
+// 	static int i = 0;
+// 	if (c._type == Command::Type::WorldCellClick) {
+// 		AddActor(c._world_cell, new Label(i));
+// 
+// 		i = (i + 1) % 10;
+// 
+// 		return true;
+// 	}
+
+	return false;
 }
 
 void World::RecalcTerrainDisps() {
@@ -165,8 +229,12 @@ void World::SerialiseFrom(std::istringstream& in)
 {
 	Clear();
 
-	in >>= _width;
-	in >>= _height;
+	int w, h;
+
+	in >>= w;
+	in >>= h;
+
+	SetSize(w, h);
 
 	int num_actors;
 	int num_terrains;
@@ -182,8 +250,12 @@ void World::SerialiseFrom(std::istringstream& in)
 		AddActor(entity->GetPos(), static_cast<Actor*>(entity));
 	}
 
-	for (int i = 0; i < _width * _height; i++) {
+	_tcod_map = new TCODMap(_width, _height);
+	static Entity* last = nullptr;
+
+	for (int i = 0; i < num_terrains; i++) {
 		Entity* entity = EntityCreator::VirtualSerialiseFrom(in);
+		last = entity;
 
 		assert(dynamic_cast<Terrain*>(entity));
 

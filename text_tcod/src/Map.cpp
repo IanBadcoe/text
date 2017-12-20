@@ -9,6 +9,10 @@
 
 DisplayChar Map::s_void(L' ', TCOD_white);
 
+Coord Map::MapToWorld(Coord map_cell) const {
+	return map_cell + _last_map_corner;
+}
+
 void Map::SetWorld(const World * world) {
 	if (world == _world)
 		return;
@@ -103,14 +107,13 @@ void Map::Draw(TCODConsole* console) {
 
     ReadWorld(pp);
 
-    Coord map_corner = pp - screen_size / 2;
-    map_corner = _world->ClampCoord(map_corner);
+	SetMapCorner(_world->ClampCoord(pp - screen_size / 2));
     
     for (int i = 0; i < screen_size._x; i++)
 	{
 		for (int j = 0; j < screen_size._y; j++)
 		{
-			Coord world_pos = Coord(i, j) + map_corner;
+			Coord world_pos = MapToWorld(Coord(i, j));
 			int index = idx(world_pos);
 
 			if (_frames[index] > 0)
