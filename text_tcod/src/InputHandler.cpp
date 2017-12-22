@@ -50,10 +50,12 @@ float InputHandler::InnerStep()
 			_command_dest->ReceiveCommand(cmd);
 		}
 
-		if (key.vk == 'm') {
+		if (key.c == 'm') {
 			Command cmd;
 			cmd._type = Command::Type::DebugCreateNPC;
 			cmd._npc_type = EntityType::Miner;
+
+			_command_dest->ReceiveCommand(cmd);
 		}
 	} else if (ev == TCOD_EVENT_MOUSE_PRESS) {
 		Coord console_pos = FixConsoleCell(mouse.cx, mouse.cy);
