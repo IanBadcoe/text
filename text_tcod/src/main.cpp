@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
 		map.SetPlayer(u.GetPlayer(0));
 		hud.SetPlayer(u.GetPlayer(0));
 
-		CommandCollator cc;
+		CommandCollator cc(false);
 
 		cc.SetCommandSequenceReceiver(&u);
         u.SetCommandReceiver(&cc);

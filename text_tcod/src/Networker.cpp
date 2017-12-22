@@ -438,39 +438,49 @@ bool NetworkData::IsTerminated() const
 
 void NetworkData::SendEvents(Networker* n, INetworkHandler* nh)
 {
-	std::vector<ENetEvent> temp;
+	PeerHandle from_whom;
+	std::string packet_data;
+	ENetEventType type;
+
 	{
+		// do all the Enet non-thread-safe stuff in here
+		// INCLUDING THE PACKET DELETE
 		Concurrency::critical_section::scoped_lock sl(_cs);
 
-		temp = _event_queue;
+		if (!_event_queue.size())
+			return;
 
-		_event_queue.clear();
+		const ENetEvent& ev = _event_queue.front();
+
+		type = ev.type;
+		from_whom = reinterpret_cast<PeerHandle>(ev.peer);
+
+		if (type == ENetEventType::ENET_EVENT_TYPE_RECEIVE) 			{
+			packet_data.insert(packet_data.begin(), ev.packet->data, ev.packet->data + ev.packet->dataLength);
+			enet_packet_destroy(ev.packet);
+		}
+
+		_event_queue.erase(_event_queue.begin());
 	}
 
-	for (int i = 0; i < temp.size(); i++)
+	switch (type) {
+	case ENetEventType::ENET_EVENT_TYPE_CONNECT:
 	{
-		ENetEvent event = temp[i];
-		switch (event.type) {
-		case ENetEventType::ENET_EVENT_TYPE_CONNECT:
-		{
-			nh->Connected(n, reinterpret_cast<PeerHandle>(event.peer));
-			break;
-		}
+		nh->Connected(n, from_whom);
+		break;
+	}
 
-		case ENetEventType::ENET_EVENT_TYPE_DISCONNECT:
-		{
-			nh->Disconnected(n, reinterpret_cast<PeerHandle>(event.peer));
-			break;
-		}
+	case ENetEventType::ENET_EVENT_TYPE_DISCONNECT:
+	{
+		nh->Disconnected(n, from_whom);
+		break;
+	}
 
-		case ENetEventType::ENET_EVENT_TYPE_RECEIVE:
-		{
-			std::string data(event.packet->data, event.packet->data + event.packet->dataLength);
-			enet_packet_destroy(event.packet);
-			nh->Receive(n, reinterpret_cast<PeerHandle>(event.peer), data);
-			break;
-		}
-		}
+	case ENetEventType::ENET_EVENT_TYPE_RECEIVE:
+	{
+		nh->Receive(n, from_whom, packet_data);
+		break;
+	}
 	}
 }
 
@@ -494,7 +504,7 @@ void NetworkData::SendToServer(const uint8_t* data, size_t size)
 
 void NetworkData::SendToPeer(ENetPeer* peer, const uint8_t* data, size_t size)
 {
-	Concurrency::critical_section::scoped_lock sl(_cs);
+//	Concurrency::critical_section::scoped_lock sl(_cs);
 
 	ENetPacket* packet = enet_packet_create(data,
 		size,
@@ -505,7 +515,7 @@ void NetworkData::SendToPeer(ENetPeer* peer, const uint8_t* data, size_t size)
 
 void NetworkData::SendToAllPeers(const uint8_t* data, size_t size)
 {
-	Concurrency::critical_section::scoped_lock sl(_cs);
+//	Concurrency::critical_section::scoped_lock sl(_cs);
 
 	assert(_enet_host);
 

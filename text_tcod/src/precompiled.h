@@ -2,6 +2,13 @@
 
 #define WINDOWS_LEAN_AND_MEAN
 
+// memory debugging
+#if 0
+#define _CRTDBG_MAP_ALLOC  
+#include <stdlib.h>  
+#include <crtdbg.h>  
+#endif
+
 #include <winsock2.h>
 #include <windows.h>
 

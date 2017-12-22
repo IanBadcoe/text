@@ -5,7 +5,8 @@
 class CommandCollator : public ICommandReceiver, public ICommandSequenceSender
 {
 public:
-	CommandCollator() : _is_ended(false) {}
+	// server "always_send"s because clients require the empty packet to know the frame has happened
+	CommandCollator(bool always_send) : _is_ended(false), _always_send(always_send) {}
 
     // ICommandReceiver
     void ReceiveCommand(const Command& c)
@@ -29,10 +30,13 @@ public:
     void EndFrame() {
         CommandSequence ret = _wip;
 
-        _wip._commands.clear();
         _wip._frame++;
 
-        _destination->ReceiveCommandSequence(ret);
+		if (_always_send || _wip._commands.size())
+		{
+			_wip._commands.clear();
+			_destination->ReceiveCommandSequence(ret);
+		}
     }
 
 	bool IsEnded() const { return _is_ended; }
@@ -44,5 +48,6 @@ private:
     CommandSequence _wip;
     ICommandSequenceReceiver*  _destination;
 	bool _is_ended;
+	bool _always_send;
 };
 

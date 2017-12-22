@@ -33,7 +33,6 @@ public:
 	int AddPeer(PeerHandle peer);
 	int RemovePeer(PeerHandle peer);
 
-
 private:
 	Networker* _network;
 	CommandCollator _collator;

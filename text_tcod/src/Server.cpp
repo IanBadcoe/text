@@ -9,6 +9,7 @@
 
 Server::Server(Networker * network, Universe * universe) :
 	_network(network),
+	_collator(true),
 	_universe(universe) {
 	_collator.SetCommandSequenceReceiver(this);
 	_universe->CreateTestWorld();
