@@ -2,7 +2,7 @@
 
 #include "Networker.h"
 
-#include "enet/enet.h"
+#include "Messages.h"
 
 class NetworkData {
 public:

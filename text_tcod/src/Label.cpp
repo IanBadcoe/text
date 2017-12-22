@@ -1,6 +1,6 @@
 #include "precompiled.h"
-#include "Label.h"
 
+#include "Label.h"
 
 float Label::InnerStep() {
 	// shut-down stepping

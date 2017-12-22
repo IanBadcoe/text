@@ -2,10 +2,6 @@
 
 #include "Terrain.h"
 
-#include "DisplayChar.h"
-
-#include "color.hpp"
-
 class Floor : public Terrain {
 public:
 	Floor(std::istringstream& in) : Terrain(in) {}

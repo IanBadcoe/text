@@ -1,10 +1,6 @@
 #include "precompiled.h"
 
 #include "Rock.h"
-#include "Floor.h"
-#include "ShadedVoid.h"
-
-#include "Map.h"
 
 TCODColor Rock::s_foregrounds[(int)Rock::Type::NumRockTypes] = {
 	TCODColor(192, 192, 192),				// Hard,
@@ -46,7 +42,7 @@ void Rock::CalcDisp(const Terrain* surrounds[8])
 				code |= 1 << (k / 2);
 			} else {
 				// we take our background from the brightest adjoining empty space's foreground
-				if (dynamic_cast<const ShadedVoid*>(surrounds[k]) || dynamic_cast<const Floor*>(surrounds[k])) {
+				if (surrounds[k]->GetType() == EntityType::ShadedVoid || surrounds[k]->GetType() == EntityType::Floor) {
 					brightest_bg = std::max(brightest_bg, surrounds[k]->Disp()._fcol);
 				}
 			}

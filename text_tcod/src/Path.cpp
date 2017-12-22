@@ -2,6 +2,8 @@
 
 #include "Path.h"
 
+#include "Serialization.h"
+
 Path::Path(std::istringstream & in) {
 	in >>= _step;
 

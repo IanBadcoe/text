@@ -1,13 +1,10 @@
 #pragma once
 
-#include "Coord.h"
-
-#include "noise.hpp"
-
 class World;
 class Entity;
 class Terrain;
 class Universe;
+class Coord;
 
 class Template {
 public:

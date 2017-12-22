@@ -2,8 +2,6 @@
 
 #include "InputHandler.h"
 
-#include "sys.hpp"
-
 static int s_create_guard = 0;
 
 InputHandler::InputHandler() :
@@ -50,6 +48,12 @@ float InputHandler::InnerStep()
 			cmd._type = Command::Type::Exit;
 
 			_command_dest->ReceiveCommand(cmd);
+		}
+
+		if (key.vk == 'm') {
+			Command cmd;
+			cmd._type = Command::Type::DebugCreateNPC;
+			cmd._npc_type = EntityType::Miner;
 		}
 	} else if (ev == TCOD_EVENT_MOUSE_PRESS) {
 		Coord console_pos = FixConsoleCell(mouse.cx, mouse.cy);

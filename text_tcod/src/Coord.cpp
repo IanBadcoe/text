@@ -2,10 +2,10 @@
 
 #include "Coord.h"
 
-// Directions are anti-clockwise from south
-
+// Directions are clockwise from North
 int Coord::DX[8] = { 0, 1, 1, 1, 0, -1, -1, -1 };
 int Coord::DY[8] = { 1, 1, 0, -1, -1, -1, 0, 1 };
+
 Coord Coord::DC[8] = {
 	Coord(DX[0], DY[0]),
 	Coord(DX[1], DY[1]),

@@ -1,14 +1,9 @@
 #include "precompiled.h"
 
-#include "libtcod.hpp"
-
 #include "Map.h"
-#include "World.h"
-#include "Template.h"
 #include "Player.h"
 #include "Networker.h"
 #include "Universe.h"
-#include "Command.h"
 #include "CommandCollator.h"
 #include "Server.h"
 #include "Client.h"

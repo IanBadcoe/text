@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Coord.h"
-#include "Serialization.h"
 
 class Path
 {

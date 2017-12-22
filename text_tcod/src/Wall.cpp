@@ -1,10 +1,6 @@
 #include "precompiled.h"
 
 #include "Wall.h"
-#include "Floor.h"
-#include "ShadedVoid.h"
-
-#include "Map.h"
 
 DisplayChar Wall::s_strong_wall(L'#', TCOD_white);
 DisplayChar Wall::s_weak_wall(L'#', TCOD_gray);
@@ -40,7 +36,7 @@ void Wall::CalcDisp(const Terrain* surrounds[8])
 			}
 	
 			// we take our background from the brightest adjoining floor or empty space
-			if (dynamic_cast<const Floor*>(surrounds[k]) || dynamic_cast<const ShadedVoid*>(surrounds[k]))
+			if (surrounds[k]->GetType() == EntityType::Floor || surrounds[k]->GetType() == EntityType::ShadedVoid)
 			{
 				brightest_bg = std::max(brightest_bg, surrounds[k]->Disp()._fcol);
 			}

@@ -1,14 +1,10 @@
 #pragma once
 
-#include "enet/enet.h"
-
-#include "Messages.h"
-
 class NetworkData;
 class Networker;
+struct Message;
 
 class PeerDummy;
-
 typedef PeerDummy* PeerHandle;
 
 class INetworkHandler {

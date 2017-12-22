@@ -2,10 +2,8 @@
 
 #include "Actor.h"
 
+#include "Terrain.h"
 #include "World.h"
-#include "Universe.h"
-#include "InputHandler.h"
-
 
 Actor::Actor(std::istringstream & in) :
 	Entity(in),
@@ -28,6 +26,14 @@ void Actor::SerialiseTo(std::ostringstream& out) const
 }
 
 float Actor::InnerStep() {
+	if (_state == State::Idle && !_is_idle)
+	{
+		// when we get a first idle tick
+		BecomeIdle();
+	}
+
+	_is_idle = _state == State::Idle;
+
 	switch (_state) {
 	case State::Idle:
 	{

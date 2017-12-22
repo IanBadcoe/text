@@ -2,14 +2,11 @@
 
 #include "Template.h"
 
+#include "World.h"
 #include "Floor.h"
 #include "Wall.h"
 #include "Rock.h"
-#include "World.h"
 #include "ShadedVoid.h"
-#include "Universe.h"
-
-#include "Math.h"
 
 void Template::Apply(World* w) {
 	for (int i = 0; i < w->GetWidth(); i++) {

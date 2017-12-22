@@ -2,8 +2,6 @@
 
 #include "Command.h"
 
-#include <sstream>
-
 class Universe;
 
 struct Message {

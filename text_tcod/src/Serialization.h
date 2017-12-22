@@ -1,7 +1,5 @@
 #pragma once
 
-#include <sstream>
-
 template <typename T>
 std::ostringstream& operator<<=(std::ostringstream& out, const T& in) {
 	out.write(reinterpret_cast<const char*>(&in), sizeof(T));

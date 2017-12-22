@@ -1,8 +1,5 @@
 #pragma once
 
-#include "color.hpp"
-
-
 class DisplayChar {
 public:
 	DisplayChar() : _char('x'), _fcol(TCODColor(0, 0, 0)), _bcol(TCODColor(0, 0, 0)), _use_bcol(true) {}

@@ -1,16 +1,9 @@
 #pragma once
 
-#include "Command.h"
-
-#include "World.h"
 #include "InputHandler.h"
-#include "Actor.h"
-#include "Networker.h"
-
-#include <map>
 
 class Map;
-
+class Player;
 
 class Universe :
 	public ICommandSequenceReceiver,

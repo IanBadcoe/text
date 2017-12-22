@@ -2,8 +2,6 @@
 
 #include "Terrain.h"
 
-#include <sstream>
-
 class Player;
 
 class Base : public Terrain {

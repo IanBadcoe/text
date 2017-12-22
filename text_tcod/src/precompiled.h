@@ -18,8 +18,20 @@
 #include <algorithm>
 #include <vector>
 #include <queue>
+#include <sstream>
+#include <map>
 
 #include <concrt.h>
 
 #undef min
 #undef max
+
+// libtcod
+#include "console_types.h"
+#include "color.hpp"
+#include "libtcod.hpp"
+#include "sys.hpp"
+#include "console.hpp"
+
+// enet
+#include "enet/enet.h"

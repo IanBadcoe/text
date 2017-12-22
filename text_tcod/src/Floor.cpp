@@ -1,9 +1,6 @@
 #include "precompiled.h"
 
 #include "Floor.h"
-#include "ShadedVoid.h"
-
-#include "Map.h"
 
 TCODColor Floor::s_foreground(32, 32, 32);
 
@@ -30,7 +27,7 @@ void Floor::CalcDisp(const Terrain* surrounds[8])
 				code |= 1 << (k / 2);
 			} else {
 				// we take our background from the brightest adjoining empty space's foreground
-				if (dynamic_cast<const ShadedVoid*>(surrounds[k])) {
+				if (surrounds[k]->GetType() == EntityType::ShadedVoid) {
 					brightest_bg = std::max(brightest_bg, surrounds[k]->Disp()._fcol);
 				}
 			}

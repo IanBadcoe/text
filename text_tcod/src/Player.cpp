@@ -2,9 +2,7 @@
 
 #include "Player.h"
 
-#include "Map.h"
 #include "World.h"
-#include "Coord.h"
 
 std::vector<TCODColor> Player::s_foreground;
 int Player::s_max_players = 0;
@@ -59,6 +57,9 @@ float Player::InnerStep()
 
 	// pump the state machine
 	return Actor::InnerStep();
+}
+
+void Player::BecomeIdle() {
 }
 
 void Player::ExecuteCommand()

@@ -5,11 +5,8 @@
 #include "World.h"
 #include "Template.h"
 #include "Player.h"
-#include "Messages.h"
 #include "Map.h"
 #include "Base.h"
-
-#include <set>
 
 Universe::Universe() : _local_player_id(-1), _world(nullptr), _input(nullptr), _map(nullptr)
 {

@@ -2,8 +2,6 @@
 
 #include "ShadedVoid.h"
 
-#include "Map.h"
-
 TCODColor ShadedVoid::s_foreground[4] = {
 	TCODColor(16, 16, 128),
 	TCODColor(12, 12, 96),

@@ -2,10 +2,6 @@
 
 #include "Terrain.h"
 
-#include "DisplayChar.h"
-
-#include <sstream>
-
 class DisplayChar;
 
 class Wall : public Terrain {

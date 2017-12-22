@@ -2,9 +2,7 @@
 
 #include "World.h"
 
-#include "Player.h"
-#include "Universe.h"
-#include "Label.h"
+#include "Actor.h"
 #include "Base.h"
 #include "Floor.h"
 

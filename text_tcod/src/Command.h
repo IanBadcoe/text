@@ -1,13 +1,15 @@
 #pragma once
 
 #include "Coord.h"
+#include "Entity.h"
 
 struct Command {
 	enum class Type {
 		Move,
 		Exit,
 		ConsoleCellClick,
-		WorldCellClick
+		WorldCellClick,
+		DebugCreateNPC
 	};
 
 	Type _type;
@@ -21,6 +23,8 @@ struct Command {
 
 	int _player_id;
 	int _from_frame;
+
+	EntityType _npc_type;
 };
 
 struct CommandSequence {

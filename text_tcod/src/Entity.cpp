@@ -2,8 +2,6 @@
 
 #include "Entity.h"
 
-#include "World.h"
-
 std::map<EntityType, EntityCreator::CreateFunc>* EntityCreator::s_creation_map = nullptr;
 
 

@@ -2,8 +2,6 @@
 
 #include "HUD.h"
 
-#include "Player.h"
-
 void HUD::Draw(TCODConsole* console) {
 	if (!_p)
 		return;

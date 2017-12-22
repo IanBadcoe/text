@@ -5,8 +5,6 @@
 #include "Messages.h"
 #include "Universe.h"
 
-#include <set>
-
 Server::Server(Networker * network, Universe * universe) :
 	_network(network),
 	_collator(true),

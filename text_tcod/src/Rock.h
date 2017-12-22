@@ -2,8 +2,6 @@
 
 #include "Terrain.h"
 
-#include <sstream>
-
 class DisplayChar;
 
 class Rock : public Terrain {

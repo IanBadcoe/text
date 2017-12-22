@@ -1,9 +1,12 @@
 #include "precompiled.h"
 
 #include "Stepable.h"
+#include "Serialization.h"
 #include "Entity.h"
 #include "InputHandler.h"
+#include "Actor.h"
 #include "Universe.h"
+#include "World.h"
 
 
 Stepable::Stepable(std::istringstream& in) {

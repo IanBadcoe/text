@@ -1,21 +1,15 @@
 #pragma once
 
-#include "Entity.h"
 #include "Terrain.h"
-#include "Path.h"
-#include "CommandCollator.h"
-
-#include "fov.hpp"
-#include "path.hpp"
-
-#include <algorithm>
-#include <queue>
 
 class World;
 class Player;
 class Actor;
 class Universe;
 class Base;
+class Path;
+
+struct Command;
 
 class World {
 public:

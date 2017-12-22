@@ -93,6 +93,9 @@
     <ClInclude Include="src\Base.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\Miner.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Entity.cpp">
@@ -174,6 +177,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Base.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Miner.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

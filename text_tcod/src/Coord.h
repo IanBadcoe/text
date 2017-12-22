@@ -1,9 +1,5 @@
 #pragma once
 
-#include <map>
-
-#include "console_types.h"
-
 class Coord {
 public:
 	Coord() : _x(0), _y(0) {}

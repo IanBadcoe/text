@@ -1,11 +1,6 @@
 #pragma once
 
-#include "Coord.h"
-#include "DisplayChar.h"
 #include "Rect.h"
-
-#include "color.hpp"
-#include "console.hpp"
 
 class Player;
 

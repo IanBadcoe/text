@@ -3,8 +3,6 @@
 #include "Actor.h"
 #include "Command.h"
 
-#include "color.hpp"
-
 class Player : public Actor, public ICommandReceiver {
 public:
     Player(std::istringstream& in);
@@ -54,4 +52,7 @@ private:
 	static EntityCreator s_creator;
 public:
 	TCODColor GetColour() const;
+
+	// Inherited via Actor
+	virtual void BecomeIdle() override;
 };

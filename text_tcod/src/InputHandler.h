@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Actor.h"
+#include "Stepable.h"
 #include "Command.h"
 
 class TCODConsole;

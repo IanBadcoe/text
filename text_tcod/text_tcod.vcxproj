@@ -23,6 +23,7 @@
     <ClInclude Include="src\HUD.h" />
     <ClInclude Include="src\InputHandler.h" />
     <ClInclude Include="src\Label.h" />
+    <ClInclude Include="src\Miner.h" />
     <ClInclude Include="src\Path.h" />
     <ClInclude Include="src\Rect.h" />
     <ClInclude Include="src\Serialization.h" />
@@ -55,6 +56,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Map.cpp" />
     <ClCompile Include="src\Messages.cpp" />
+    <ClCompile Include="src\Miner.cpp" />
     <ClCompile Include="src\Networker.cpp" />
     <ClCompile Include="src\Path.cpp" />
     <ClCompile Include="src\Player.cpp" />

@@ -4,22 +4,26 @@
 #include "Serialization.h"
 #include "DisplayChar.h"
 
-#include <sstream>
-
 class World;
 class Universe;
 class DisplayChar;
 
 enum class EntityType {
 	Unknown,
-	Player,
+
 	Wall,
 	Floor,
 	ShadedVoid,
 	Rock,
-	Label,
+
+	Label,		// debug desperation utility...
+
 	Base,
-	BaseEdge
+	BaseEdge,
+
+	Player,
+
+	Miner
 };
 
 class EntityCreator;

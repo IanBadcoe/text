@@ -5,6 +5,7 @@
 #include "Floor.h"
 #include "Player.h"
 #include "Universe.h"
+#include "World.h"
 
 static Entity* CreateBase(std::istringstream& in, const CreatorArg& ca) {
     return new Base(in, ca);

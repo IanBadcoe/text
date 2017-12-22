@@ -2,10 +2,6 @@
 
 #include "Terrain.h"
 
-#include "DisplayChar.h"
-
-#include "color.hpp"
-
 class ShadedVoid : public Terrain {
 public:
 	ShadedVoid(std::istringstream& in);

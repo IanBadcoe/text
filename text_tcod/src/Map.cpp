@@ -2,8 +2,6 @@
 
 #include "Map.h"
 
-#include "Terrain.h"
-#include "Actor.h"
 #include "World.h"
 #include "Player.h"
 

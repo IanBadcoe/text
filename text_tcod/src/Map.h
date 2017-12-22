@@ -1,13 +1,7 @@
 #pragma once
 
-#include "Coord.h"
-#include "World.h"
-#include "DisplayChar.h"
 #include "Rect.h"
-
-#include "color.hpp"
-#include "console.hpp"
-#include "fov.hpp"
+#include "Actor.h"
 
 class Entity;
 class Terrain;
