@@ -65,7 +65,5 @@ private:
 
 	int _last_frame;
 
-#if _DEBUG
 	float _last_time;
-#endif
 };

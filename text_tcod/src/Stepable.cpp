@@ -35,10 +35,8 @@ bool StepableQueue::Step() {
 	assert(_queue.size());
 
 	QueueEntry qe = _queue.top();
-#if _DEBUG
 	assert(qe._time >= _last_time);
 	_last_time = qe._time;
-#endif
 
 	float new_time = qe._time;
 
@@ -176,8 +174,6 @@ void StepableQueue::Clear() {
 	_queue = std::priority_queue<QueueEntry>();
 	_contains.clear();
 	_last_frame = 0;
-#if _DEBUG
-	_last_time = -1.0f;
-#endif
+	_last_time = 0.0f;
 }
 
