@@ -6,7 +6,7 @@ class Universe;
 class Stepable {
 public:
 	Stepable(std::istringstream& in);
-	Stepable(float speed) : _speed(speed) {}
+	Stepable(Universe* u);
 	~Stepable();
 
 	void Step(StepableQueue* queue, float time);

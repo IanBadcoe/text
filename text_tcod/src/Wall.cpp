@@ -5,7 +5,7 @@
 DisplayChar Wall::s_strong_wall(L'#', TCOD_white);
 DisplayChar Wall::s_weak_wall(L'#', TCOD_gray);
 
-static Entity* CreateWall(std::istringstream& in, const CreatorArg& ca) {
+static Entity* CreateWall(std::istringstream& in, World* w) {
     return new Wall(in);
 }
 

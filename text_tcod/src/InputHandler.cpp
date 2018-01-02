@@ -4,8 +4,8 @@
 
 static int s_create_guard = 0;
 
-InputHandler::InputHandler() :
-	Stepable(1.0f),
+InputHandler::InputHandler(Universe* u) :
+	Stepable(u),
 	_command_dest(nullptr),
 	_console(nullptr)
 {

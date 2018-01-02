@@ -3,11 +3,13 @@
 #include "Player.h"
 
 #include "World.h"
+#include "Base.h"
+#include "Miner.h"
 
 std::vector<TCODColor> Player::s_foreground;
 int Player::s_max_players = 0;
 
-static Entity* CreatePlayer(std::istringstream& in, const CreatorArg& ca) {
+static Entity* CreatePlayer(std::istringstream& in, World* w) {
 	return new Player(in);
 }
 
@@ -89,7 +91,7 @@ void Player::ExecuteCommand()
 
 	case Command::Type::WorldCellClick:
 	{
-		if (!GetWorld()->ComputePath(this, GetPos(), cmd._world_cell, _current_path)) {
+		if (!w->ComputePath(this, GetPos(), cmd._world_cell, _current_path)) {
 			// state unchanged...
 			return;
 		}
@@ -97,6 +99,27 @@ void Player::ExecuteCommand()
 		_state = State::FollowingPath;
 
 		// first step on path should follow immediately
+		return;
+	}
+
+	case Command::Type::DebugCreateNPC:
+	{
+		// we try to spawn from our base
+		Coord where = w->GetBase(cmd._player_id)->GetPos();
+
+		IterateNxNSpiralOut it(where, 5);
+
+		while (!it.Ended()) {
+			Coord p = it.Current();
+			const Terrain* t = w->GetTerrain(p);
+
+			if (t && t->IsWalkable() && w->GetActor(p) == nullptr) 				{
+				new Miner(w, p);
+			}
+
+			it.Next();
+		}
+
 		return;
 	}
 	}

@@ -4,7 +4,7 @@
 
 TCODColor Floor::s_foreground(32, 32, 32);
 
-static Entity* CreateFloor(std::istringstream& in, const CreatorArg& ca) {
+static Entity* CreateFloor(std::istringstream& in, World* w) {
     return new Floor(in);
 }
 

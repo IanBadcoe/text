@@ -7,9 +7,7 @@
 class Actor : public Entity, public Stepable {
 public:
 	Actor(std::istringstream& in);
-	Actor(EntityType et, float speed) :
-		Entity(et), Stepable(speed), _is_idle(false) {
-	}
+	Actor(EntityType et, World* w, const Coord& pos);
 
 	enum class State {
 		Idle,

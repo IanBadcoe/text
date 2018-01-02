@@ -6,7 +6,7 @@ class Player;
 
 class Base : public Terrain {
 public:
-	Base(std::istringstream& in, const CreatorArg& ca);
+	Base(std::istringstream& in, World* w);
 	Base(int id) : Terrain(EntityType::Base, false, true), _player_in(false), _id(id) {}
 
 	// Inherited via Terrain
@@ -35,7 +35,7 @@ private:
 
 class BaseEdge : public Terrain {
 public:
-	BaseEdge(std::istringstream& in, const CreatorArg& ca);
+	BaseEdge(std::istringstream& in, World* w);
 	BaseEdge(const Base* base, Coord::Dir d);
 
 	// Inherited via Terrain

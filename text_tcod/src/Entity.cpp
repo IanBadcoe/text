@@ -11,7 +11,7 @@ void Entity::SerialiseTo(std::ostringstream& out) const {
 	out <<= _dc;
 }
 
-Entity* EntityCreator::VirtualSerialiseFrom(std::istringstream& in, const CreatorArg& ca) {
+Entity* EntityCreator::VirtualSerialiseFrom(std::istringstream& in, World* w) {
 	EnsureMap();
 
 	EntityType t;
@@ -27,7 +27,7 @@ Entity* EntityCreator::VirtualSerialiseFrom(std::istringstream& in, const Creato
 
 	assert(it != s_creation_map->end());
 
-	return it->second(in, ca);
+	return it->second(in, w);
 }
 
 void EntityCreator::RegisterCreator(const EntityCreator * ac) {

@@ -7,13 +7,13 @@
 #include "Universe.h"
 #include "World.h"
 
-static Entity* CreateBase(std::istringstream& in, const CreatorArg& ca) {
-    return new Base(in, ca);
+static Entity* CreateBase(std::istringstream& in, World* w) {
+    return new Base(in, w);
 }
 
 EntityCreator Base::s_creator(EntityType::Base, CreateBase);
 
-Base::Base(std::istringstream& in, const CreatorArg& ca) : Terrain(in)
+Base::Base(std::istringstream& in, World* w) : Terrain(in)
 {
 	int player_id;
 	in >>= player_id;
@@ -22,10 +22,10 @@ Base::Base(std::istringstream& in, const CreatorArg& ca) : Terrain(in)
 
 	if (player_id != -1)
 	{
-		SetPlayer(ca._u->GetPlayer(player_id));
+		SetPlayer(w->GetUniverse()->GetPlayer(player_id));
 	}
 
-	ca._w->RegisterBase(_id, this);
+	w->RegisterBase(_id, this);
 }
 
 void Base::SerialiseTo(std::ostringstream& out) const
@@ -60,17 +60,17 @@ int Base::GetId() const {
 	return _id;
 }
 
-static Entity* CreateBaseEdge(std::istringstream& in, const CreatorArg& ca) {
-	return new BaseEdge(in, ca);
+static Entity* CreateBaseEdge(std::istringstream& in, World* w) {
+	return new BaseEdge(in, w);
 }
 
 EntityCreator BaseEdge::s_creator(EntityType::BaseEdge, CreateBaseEdge);
 
-BaseEdge::BaseEdge(std::istringstream& in, const CreatorArg& ca) : Terrain(in) {
+BaseEdge::BaseEdge(std::istringstream& in, World* w) : Terrain(in) {
 	int base_id;
 	in >>= base_id;
 
-	SetBase(ca._w->GetBase(base_id));
+	SetBase(w->GetBase(base_id));
 }
 
 BaseEdge::BaseEdge(const Base* base, Coord::Dir dir) : Terrain(EntityType::BaseEdge, false, true), _base(base) {

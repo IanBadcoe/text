@@ -66,16 +66,9 @@ private:
 	DisplayChar _dc;
 };
 
-struct CreatorArg {
-	CreatorArg(Universe* u, World* w) : _w(w), _u(u) {}
-
-	World* _w;
-	Universe* _u;
-};
-
 class EntityCreator {
 public:
-	typedef Entity* (*CreateFunc)(std::istringstream& in, const CreatorArg& ca);
+	typedef Entity* (*CreateFunc)(std::istringstream& in, World* w);
 
 	EntityCreator(EntityType type, CreateFunc func) : _type(type), _func(func)
 	{
@@ -85,9 +78,10 @@ public:
 	EntityType _type;
 	CreateFunc _func;
 
-	static std::map<EntityType, EntityCreator::CreateFunc>* s_creation_map;
-
-	static Entity* VirtualSerialiseFrom(std::istringstream& in, const CreatorArg& ca);
+	static Entity* VirtualSerialiseFrom(std::istringstream& in, World* w);
 	static void RegisterCreator(const EntityCreator* ac);
 	static void EnsureMap();
+
+private:
+	static std::map<EntityType, EntityCreator::CreateFunc>* s_creation_map;
 };

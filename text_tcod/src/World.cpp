@@ -152,15 +152,6 @@ bool World::ComputePath(Player* player, Coord from, Coord to, Path& output) cons
 }
 
 bool World::ProcessWorldCommand(const Command& c) {
-// 	static int i = 0;
-// 	if (c._type == Command::Type::WorldCellClick) {
-// 		AddActor(c._world_cell, new Label(i));
-// 
-// 		i = (i + 1) % 10;
-// 
-// 		return true;
-// 	}
-
 	return false;
 }
 
@@ -330,10 +321,8 @@ void World::SerialiseFrom(std::istringstream& in)
 	in >>= num_actors;
 	in >>= num_terrains;
 
-	CreatorArg ca(_universe, this);
-
 	for (int i = 0; i < num_actors; i++) {
-		Entity* entity = EntityCreator::VirtualSerialiseFrom(in, ca);
+		Entity* entity = EntityCreator::VirtualSerialiseFrom(in, this);
 
 		assert(dynamic_cast<Actor*>(entity));
 
@@ -344,7 +333,7 @@ void World::SerialiseFrom(std::istringstream& in)
 	static Entity* last = nullptr;
 
 	for (int i = 0; i < num_terrains; i++) {
-		Entity* entity = EntityCreator::VirtualSerialiseFrom(in, ca);
+		Entity* entity = EntityCreator::VirtualSerialiseFrom(in, this);
 		last = entity;
 
 		assert(dynamic_cast<Terrain*>(entity));

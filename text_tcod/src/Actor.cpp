@@ -15,6 +15,14 @@ Actor::Actor(std::istringstream & in) :
 	in >>= _dest;
 }
 
+Actor::Actor(EntityType et, World * w, const Coord & pos) :
+	Entity(et),
+	Stepable(w->GetUniverse()),
+	_is_idle(false)
+{
+	w->AddActor(pos, this);
+}
+
 void Actor::SerialiseTo(std::ostringstream& out) const
 {
     Entity::SerialiseTo(out);

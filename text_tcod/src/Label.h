@@ -1,5 +1,7 @@
 #pragma once
 
+#if 0
+
 #include "Actor.h"
 
 class Label : public Actor
@@ -13,3 +15,4 @@ public:
 	virtual float InnerStep() override;
 };
 
+#endif

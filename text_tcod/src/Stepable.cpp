@@ -13,6 +13,10 @@ Stepable::Stepable(std::istringstream& in) {
 	in >>= _speed;
 }
 
+Stepable::Stepable(Universe* u) : _speed(1.0f) {
+	u->QueueNewStepable(this);
+}
+
 Stepable::~Stepable() {
 	if (_in_queue) {
 		_in_queue->Remove(this);
@@ -66,6 +70,7 @@ void StepableQueue::AddRelativeStep(Stepable* s, float t) {
 }
 
 void StepableQueue::AddAbsoluteStep(Stepable* s, float t) {
+	assert(s);
 	assert(!Contains(s));
 	assert(t >= _last_time);
 

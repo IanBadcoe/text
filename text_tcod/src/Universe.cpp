@@ -10,10 +10,8 @@
 
 Universe::Universe() : _local_player_id(-1), _world(nullptr), _input(nullptr), _map(nullptr)
 {
-	_input = new InputHandler();
+	_input = new InputHandler(this);
 	_input->SetCommandReceiver(this);
-
-	_stepable_queue.AddRelativeStep(_input, 0.0f);
 }
 
 Universe::~Universe()
@@ -128,7 +126,7 @@ void Universe::EnsurePlayer(int player_id, bool is_local)
 
 	if (!GetPlayer(player_id))
 	{
-		_players[player_id] = new Player(player_id);
+		Coord place_where;
 
 		// if this player has a base in the world, place them near it
 		if (!b)
@@ -137,7 +135,8 @@ void Universe::EnsurePlayer(int player_id, bool is_local)
 				Coord try_pos(100, i);
 
 				if (_world->IsWalkable(try_pos) && !_world->GetActor(try_pos)) {
-					_world->AddActor(try_pos, _players[player_id]);
+					place_where = try_pos;
+
 					break;
 				}
 			}
@@ -146,22 +145,24 @@ void Universe::EnsurePlayer(int player_id, bool is_local)
 				Coord try_pos(it.Current());
 				
 				if (_world->IsWalkable(try_pos) && !_world->GetActor(try_pos)) {
-					_world->AddActor(try_pos, _players[player_id]);
+					place_where = try_pos;
+
 					break;
 				}
 			}
 		}
 
-		_stepable_queue.AddRelativeStep(_players[player_id], 0.5f);
+		_players[player_id] = new Player(player_id, _world, place_where);
 	}
 
 	if (b) {
-		// if we now have a player and a base, thell the base...
+		// if we now have a player and a base, tell the base...
 		b->SetPlayer(_players[player_id]);
 	}
 
 	if (is_local)
 	{
+		// if this is our locl player, and we didn't know...
 		assert(_local_player_id == -1);
 		_local_player_id = player_id;
 	}

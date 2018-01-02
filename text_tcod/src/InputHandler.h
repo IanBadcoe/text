@@ -8,7 +8,7 @@ class TCODConsole;
 class InputHandler : public Stepable, public ICommandSender
 {
 public:
-	InputHandler();
+	InputHandler(Universe* u);
 	~InputHandler();
 
 	virtual float InnerStep() override;

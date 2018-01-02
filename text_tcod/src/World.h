@@ -90,6 +90,8 @@ public:
 	Base* GetBase(int base_id);
 	void RegisterBase(int base_id, Base* base);
 
+	Universe* GetUniverse() { return _universe; }
+
 private:
 	bool TryBase(int i, Coord c);
 

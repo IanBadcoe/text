@@ -96,6 +96,9 @@
     <ClInclude Include="src\Miner.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\PlayerOwned.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Entity.cpp">
@@ -180,6 +183,9 @@
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Miner.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PlayerOwned.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>

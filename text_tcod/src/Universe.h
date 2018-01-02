@@ -53,6 +53,11 @@ public:
 		_map = map;
 	}
 
+	void QueueNewStepable(Stepable* s) {
+		// any new stepable's first step is 1/2 a frame in the future
+		_stepable_queue.AddRelativeStep(s, 0.5f);
+	}
+
 private:
 	void ProcessCommand(const Command& cmd);
 	bool ProcessGlobalCommand(const Command& cmd);
