@@ -111,7 +111,7 @@ void BaseEdge::SerialiseTo(std::ostringstream& out) const {
 void BaseEdge::CalcDisp(const Terrain* surrounds[8]) {
 }
 
-bool BaseEdge::DrawCompatWith(const Terrain * other) const {
+bool BaseEdge::DrawCompatWith(const Terrain* other) const {
 	return false;
 }
 

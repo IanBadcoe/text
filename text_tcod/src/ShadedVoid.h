@@ -28,5 +28,5 @@ private:
 	virtual void CalcDisp(const Terrain* surrounds[8]) override;
 
 	// Inherited via Terrain
-	virtual bool DrawCompatWith(const Terrain * other) const override;
+	virtual bool DrawCompatWith(const Terrain* other) const override;
 };

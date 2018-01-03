@@ -19,7 +19,7 @@ public:
 	}
 
 	// Inherited via Actor
-	virtual void SerialiseTo(std::ostringstream & out) const override;
+	virtual void SerialiseTo(std::ostringstream& out) const override;
 
 protected:
 	Player* _player;

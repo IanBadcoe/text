@@ -5,7 +5,7 @@
 #include "Terrain.h"
 #include "World.h"
 
-Actor::Actor(std::istringstream & in) :
+Actor::Actor(std::istringstream& in) :
 	Entity(in),
 	Stepable(in),
 	_current_path(in),
@@ -15,7 +15,7 @@ Actor::Actor(std::istringstream & in) :
 	in >>= _dest;
 }
 
-Actor::Actor(EntityType et, SerialiseOrder so, World * w, const Coord & pos) :
+Actor::Actor(EntityType et, SerialiseOrder so, World* w, const Coord& pos) :
 	Entity(et, so),
 	Stepable(w->GetUniverse()),
 	_is_idle(false)

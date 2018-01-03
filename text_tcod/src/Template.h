@@ -31,7 +31,7 @@ private:
 	int _width;
 
 	// Inherited via Template
-	virtual void PostProcess(World * w) override;
+	virtual void PostProcess(World* w) override;
 };
 
 class SkyslandTemplate : public Template {
@@ -52,13 +52,13 @@ private:
 	TCODNoise _noise;
 
 	// Inherited via Template
-	virtual void PostProcess(World * w) override;
+	virtual void PostProcess(World* w) override;
 };
 
 class TestTemplate : public Template {
 	// Inherited via Template
-	virtual Terrain * TerrainForCell(Coord pos) override;
+	virtual Terrain* TerrainForCell(Coord pos) override;
 
 	// Inherited via Template
-	virtual void PostProcess(World * w) override;
+	virtual void PostProcess(World* w) override;
 };

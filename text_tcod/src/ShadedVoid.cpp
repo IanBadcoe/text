@@ -22,7 +22,7 @@ static Entity* CreateShadedVoid(std::istringstream& in, World* w) {
 
 EntityCreator ShadedVoid::s_creator(EntityType::ShadedVoid, CreateShadedVoid);
 
-ShadedVoid::ShadedVoid(std::istringstream & in) : Terrain(in) {
+ShadedVoid::ShadedVoid(std::istringstream& in) : Terrain(in) {
 	in >>= _depth;
 }
 

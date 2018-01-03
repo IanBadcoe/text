@@ -31,7 +31,7 @@ Entity* EntityCreator::VirtualSerialiseFrom(std::istringstream& in, World* w) {
 	return it->second(in, w);
 }
 
-void EntityCreator::RegisterCreator(const EntityCreator * ac) {
+void EntityCreator::RegisterCreator(const EntityCreator* ac) {
 	EnsureMap();
 
 	assert(s_creation_map->find(ac->_type) == s_creation_map->end());

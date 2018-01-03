@@ -18,6 +18,6 @@ float Miner::InnerStep() {
 void Miner::BecomeIdle() {
 }
 
-void Miner::SerialiseTo(std::ostringstream & out) const {
+void Miner::SerialiseTo(std::ostringstream& out) const {
 	PlayerOwned::SerialiseTo(out);
 }

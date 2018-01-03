@@ -304,7 +304,7 @@ void Networker::InnerThreadFunction()
 	}
 }
 
-void Networker::SendToServer(const Message & msg)
+void Networker::SendToServer(const Message& msg)
 {
 	std::ostringstream str;
 	std::string buffer;
@@ -318,7 +318,7 @@ void Networker::SendToServer(const Message & msg)
 	SendToServer(reinterpret_cast<const uint8_t*>(s.data()), s.size());
 }
 
-void Networker::SendToServer(const uint8_t * data, size_t size)
+void Networker::SendToServer(const uint8_t* data, size_t size)
 {
 	assert(_data);
 
@@ -350,14 +350,14 @@ void Networker::SendToAllPeers(const Message& msg)
 	SendToAllPeers(reinterpret_cast<const uint8_t*>(s.data()), s.size());
 }
 
-void Networker::SendToPeer(PeerHandle peer, const uint8_t * data, size_t size)
+void Networker::SendToPeer(PeerHandle peer, const uint8_t* data, size_t size)
 {
 	assert(_data);
 	
 	_data->SendToPeer(reinterpret_cast<ENetPeer*>(peer), data, size);
 }
 
-void Networker::SendToAllPeers(const uint8_t * data, size_t size)
+void Networker::SendToAllPeers(const uint8_t* data, size_t size)
 {
 	assert(_data);
 

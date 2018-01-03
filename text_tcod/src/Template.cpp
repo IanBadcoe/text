@@ -37,7 +37,7 @@ Terrain* CircleTemplate::TerrainForCell(Coord pos) {
 	return new Wall(1000);
 }
 
-void CircleTemplate::PostProcess(World * w) {
+void CircleTemplate::PostProcess(World* w) {
 }
 
 
@@ -152,5 +152,5 @@ Terrain * TestTemplate::TerrainForCell(Coord pos) {
 	return new Floor();
 }
 
-void TestTemplate::PostProcess(World * w) {
+void TestTemplate::PostProcess(World* w) {
 }

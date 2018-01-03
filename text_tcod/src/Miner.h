@@ -17,5 +17,5 @@ private:
 	static EntityCreator s_creator;
 
 	// Inherited via PlayerOwned
-	virtual void SerialiseTo(std::ostringstream & out) const override;
+	virtual void SerialiseTo(std::ostringstream& out) const override;
 };

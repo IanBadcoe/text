@@ -77,7 +77,7 @@ void UniverseMessage::FromBytes(std::istringstream& in)
 	_u->EnsurePlayer(_your_player_id, true);
 }
 
-void CommandSequenceMessage::ToBytes(std::ostringstream & out) const
+void CommandSequenceMessage::ToBytes(std::ostringstream& out) const
 {
 	ToBytesBase(out);
 
@@ -91,7 +91,7 @@ void CommandSequenceMessage::ToBytes(std::ostringstream & out) const
 	}
 }
 
-void CommandSequenceMessage::FromBytes(std::istringstream & in)
+void CommandSequenceMessage::FromBytes(std::istringstream& in)
 {
 	FromBytesBase(in);
 

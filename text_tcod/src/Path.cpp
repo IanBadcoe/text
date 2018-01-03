@@ -4,7 +4,7 @@
 
 #include "Serialization.h"
 
-Path::Path(std::istringstream & in) {
+Path::Path(std::istringstream& in) {
 	in >>= _step;
 
 	int num_steps = 0;
@@ -18,7 +18,7 @@ Path::Path(std::istringstream & in) {
 	}
 }
 
-void Path::SerialiseTo(std::ostringstream & out) const {
+void Path::SerialiseTo(std::ostringstream& out) const {
 	out <<= _step;
 	out <<= (int)_path.size();
 	for (int i = 0; i < _path.size(); i++) {
