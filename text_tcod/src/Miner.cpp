@@ -3,12 +3,12 @@
 #include "Miner.h"
 
 static Entity* CreateMiner(std::istringstream& in, World* w) {
-	return new Miner(in);
+	return new Miner(in, w);
 }
 
 EntityCreator Miner::s_creator(EntityType::Miner, CreateMiner);
 
-Miner::Miner(std::istringstream & in) : PlayerOwned(in) {
+Miner::Miner(std::istringstream& in, World* w) : PlayerOwned(in, w) {
 }
 
 float Miner::InnerStep() {
@@ -16,4 +16,8 @@ float Miner::InnerStep() {
 }
 
 void Miner::BecomeIdle() {
+}
+
+void Miner::SerialiseTo(std::ostringstream & out) const {
+	PlayerOwned::SerialiseTo(out);
 }

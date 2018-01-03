@@ -5,7 +5,7 @@
 class Floor : public Terrain {
 public:
 	Floor(std::istringstream& in) : Terrain(in) {}
-	Floor() : Terrain(EntityType::Floor, true, true) {
+	Floor() : Terrain(EntityType::Floor, SerialiseOrder::TerrainDontCare, true, true) {
 		SetDisplayChar(DisplayChar('x', s_foreground));
 	}
 

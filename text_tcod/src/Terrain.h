@@ -5,8 +5,8 @@
 class Terrain : public Entity {
 public:
 	Terrain(std::istringstream& in);
-	Terrain(EntityType et, bool is_walkable, bool is_transparent) :
-		Entity(et),
+	Terrain(EntityType et, SerialiseOrder so, bool is_walkable, bool is_transparent) :
+		Entity(et, so),
 		_is_walkable(is_walkable),
 		_is_transparent(is_transparent) {
 	}

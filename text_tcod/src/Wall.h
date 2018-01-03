@@ -7,7 +7,7 @@ class DisplayChar;
 class Wall : public Terrain {
 public:
     Wall(std::istringstream& in);
-	Wall(int str) : Terrain(EntityType::Wall, false, false), _str(str) {}
+	Wall(int str) : Terrain(EntityType::Wall, SerialiseOrder::TerrainDontCare, false, false), _str(str) {}
 
 	int GetStr() const { return _str; }
 

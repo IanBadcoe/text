@@ -9,6 +9,7 @@ void Entity::SerialiseTo(std::ostringstream& out) const {
 	out <<= _type;
 	out <<= _pos;
 	out <<= _dc;
+	out <<= _serialise_order;
 }
 
 Entity* EntityCreator::VirtualSerialiseFrom(std::istringstream& in, World* w) {

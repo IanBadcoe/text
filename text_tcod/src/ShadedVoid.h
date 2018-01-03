@@ -5,7 +5,7 @@
 class ShadedVoid : public Terrain {
 public:
 	ShadedVoid(std::istringstream& in);
-	ShadedVoid(int depth) : Terrain(EntityType::ShadedVoid, false, true), _depth(depth)
+	ShadedVoid(int depth) : Terrain(EntityType::ShadedVoid, SerialiseOrder::TerrainDontCare, false, true), _depth(depth)
 	{
 		assert(_depth >= 0 && _depth < 4);
 

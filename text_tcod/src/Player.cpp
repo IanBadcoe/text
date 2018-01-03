@@ -5,6 +5,7 @@
 #include "World.h"
 #include "Base.h"
 #include "Miner.h"
+#include "Universe.h"
 
 std::vector<TCODColor> Player::s_foreground;
 int Player::s_max_players = 0;
@@ -75,6 +76,8 @@ void Player::ExecuteCommand()
 	World* w = GetWorld();
 	assert(w);
 
+	Universe* u = w->GetUniverse();
+
 	switch (cmd._type)
 	{
 	case Command::Type::Move:
@@ -113,8 +116,10 @@ void Player::ExecuteCommand()
 			Coord p = it.Current();
 			const Terrain* t = w->GetTerrain(p);
 
-			if (t && t->IsWalkable() && w->GetActor(p) == nullptr) 				{
-				new Miner(w, p);
+			if (t && t->IsWalkable() && w->GetActor(p) == nullptr) {
+				new Miner(w, p, u->GetPlayer(cmd._player_id));
+
+				return;
 			}
 
 			it.Next();

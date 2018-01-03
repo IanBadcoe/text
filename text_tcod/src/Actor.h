@@ -7,7 +7,7 @@
 class Actor : public Entity, public Stepable {
 public:
 	Actor(std::istringstream& in);
-	Actor(EntityType et, World* w, const Coord& pos);
+	Actor(EntityType et, SerialiseOrder so, World* w, const Coord& pos);
 
 	enum class State {
 		Idle,
@@ -15,8 +15,7 @@ public:
 		SingleStep
 	};
 
-	// Inherited via ISerialisable
-	virtual void SerialiseTo(std::ostringstream& out) const;
+	virtual void SerialiseTo(std::ostringstream& out) const = 0;
 
 	// from Stepable (derived classes call this to step our state machine...)
 	virtual float InnerStep() = 0;

@@ -6,7 +6,7 @@
 class Player : public Actor, public ICommandReceiver {
 public:
     Player(std::istringstream& in);
-	Player(int id, World* w, const Coord& pos) : Actor(EntityType::Player, w, pos) {
+	Player(int id, World* w, const Coord& pos) : Actor(EntityType::Player, SerialiseOrder::ActorPlayer, w, pos) {
 		assert(_id >= 0 && _id < s_max_players);
 
 		SetId(id);

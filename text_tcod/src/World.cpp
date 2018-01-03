@@ -282,24 +282,20 @@ void World::SerialiseTo(std::ostringstream& out) const
 	out <<= num_actors;
 	out <<= num_terrains;
 
-	for (int i = 0; i < _width * _height; i++) {
-		if (_actors[i])
-		{
-			_actors[i]->SerialiseTo(out);
+	for(SerialiseOrder so = SerialiseOrder::ActorBegin; so < SerialiseOrder::ActorEnd; so++)
+	{
+		for (int i = 0; i < _width * _height; i++) {
+			if (_actors[i] && _actors[i]->GetSerialisationOrder() == so) {
+				_actors[i]->SerialiseTo(out);
+			}
 		}
 	}
 
-	// bases first as BaseEdges need them to already exist
-	for (int i = 0; i < _width * _height; i++) {
-		if (_terrain[i] && _terrain[i]->GetType() == EntityType::Base)
-		{
-			_terrain[i]->SerialiseTo(out);
-		}
-	}
-
-	for (int i = 0; i < _width * _height; i++) {
-		if (_terrain[i] && _terrain[i]->GetType() != EntityType::Base) {
-			_terrain[i]->SerialiseTo(out);
+	for (SerialiseOrder so = SerialiseOrder::TerrainBegin; so < SerialiseOrder::TerrainEnd; so++) {
+		for (int i = 0; i < _width * _height; i++) {
+			if (_terrain[i] && _terrain[i]->GetSerialisationOrder() == so) {
+				_terrain[i]->SerialiseTo(out);
+			}
 		}
 	}
 }

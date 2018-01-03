@@ -17,8 +17,6 @@ struct Command {
 	Coord _map_cell;
     Coord _world_cell;
 
-    int _player;
-
     Coord::Dir _dir;
 
 	int _player_id;

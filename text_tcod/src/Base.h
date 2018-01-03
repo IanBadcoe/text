@@ -7,7 +7,7 @@ class Player;
 class Base : public Terrain {
 public:
 	Base(std::istringstream& in, World* w);
-	Base(int id) : Terrain(EntityType::Base, false, true), _player_in(false), _id(id) {}
+	Base(int id) : Terrain(EntityType::Base, SerialiseOrder::TerrainBase, false, true), _player_in(false), _id(id) {}
 
 	// Inherited via Terrain
 	virtual void SerialiseTo(std::ostringstream& out) const override;

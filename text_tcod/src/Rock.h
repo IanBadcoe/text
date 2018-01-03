@@ -18,7 +18,7 @@ public:
 	};
 
 	Rock(std::istringstream& in);
-	Rock(Type t) : Terrain(EntityType::Rock, false, false), _t(t) {}
+	Rock(Type t) : Terrain(EntityType::Rock, SerialiseOrder::TerrainDontCare, false, false), _t(t) {}
 
 	// Inherited via Terrain
 	virtual void SerialiseTo(std::ostringstream& out) const override;

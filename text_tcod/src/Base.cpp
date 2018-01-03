@@ -73,7 +73,7 @@ BaseEdge::BaseEdge(std::istringstream& in, World* w) : Terrain(in) {
 	SetBase(w->GetBase(base_id));
 }
 
-BaseEdge::BaseEdge(const Base* base, Coord::Dir dir) : Terrain(EntityType::BaseEdge, false, true), _base(base) {
+BaseEdge::BaseEdge(const Base* base, Coord::Dir dir) : Terrain(EntityType::BaseEdge, SerialiseOrder::TerrainAfterBase, false, true), _base(base) {
 	switch (dir) {
 	case Coord::Dir::North:
 		SetDisplayChar(DisplayChar(0xe8, TCOD_gray, Floor::s_foreground));
