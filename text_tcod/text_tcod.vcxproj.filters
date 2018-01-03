@@ -188,5 +188,6 @@
     <ClCompile Include="src\PlayerOwned.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Command.cpp" />
   </ItemGroup>
 </Project>

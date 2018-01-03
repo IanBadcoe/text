@@ -47,6 +47,7 @@
     <ClCompile Include="src\Actor.cpp" />
     <ClCompile Include="src\Base.cpp" />
     <ClCompile Include="src\Client.cpp" />
+    <ClCompile Include="src\Command.cpp" />
     <ClCompile Include="src\CommandCollator.cpp" />
     <ClCompile Include="src\Coord.cpp" />
     <ClCompile Include="src\Entity.cpp" />
