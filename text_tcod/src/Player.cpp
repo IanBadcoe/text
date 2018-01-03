@@ -113,11 +113,11 @@ void Player::ExecuteCommand()
 		IterateNxNSpiralOut it(where, 5);
 
 		while (!it.Ended()) {
-			Coord p = it.Current();
-			const Terrain* t = w->GetTerrain(p);
+			Coord pos = it.Current();
+			const Terrain* t = w->GetTerrain(pos);
 
-			if (t && t->IsWalkable() && w->GetActor(p) == nullptr) {
-				new Miner(w, p, u->GetPlayer(cmd._player_id));
+			if (t && t->IsWalkable() && w->GetActor(pos) == nullptr) {
+				new Miner(w, pos, u->GetPlayer(cmd._player_id));
 
 				return;
 			}
