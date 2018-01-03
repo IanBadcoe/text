@@ -6,8 +6,7 @@ class Miner : public PlayerOwned
 {
 public:
 	Miner(std::istringstream& in, World* w);
-	Miner(World* w, const Coord& pos, Player* p) :
-		PlayerOwned(EntityType::Miner, SerialiseOrder::ActorAfterPlayer, w, pos, p) {}
+	Miner(World* w, const Coord& pos, Player* p);
 
 	// Inherited via Actor
 	virtual float InnerStep() override;

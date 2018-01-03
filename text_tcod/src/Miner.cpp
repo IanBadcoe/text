@@ -1,6 +1,7 @@
 #include "precompiled.h"
 
 #include "Miner.h"
+#include "Player.h"
 
 static Entity* CreateMiner(std::istringstream& in, World* w) {
 	return new Miner(in, w);
@@ -9,6 +10,11 @@ static Entity* CreateMiner(std::istringstream& in, World* w) {
 EntityCreator Miner::s_creator(EntityType::Miner, CreateMiner);
 
 Miner::Miner(std::istringstream& in, World* w) : PlayerOwned(in, w) {
+}
+
+Miner::Miner(World * w, const Coord & pos, Player * p) :
+	PlayerOwned(EntityType::Miner, SerialiseOrder::ActorAfterPlayer, w, pos, p) {
+	SetDisplayChar(DisplayChar('m', p->GetColour()));
 }
 
 float Miner::InnerStep() {
