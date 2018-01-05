@@ -8,16 +8,17 @@
 Actor::Actor(std::istringstream& in) :
 	Entity(in),
 	Stepable(in),
-	_current_path(in),
-	_state(State::Idle)
+	_current_path(in)
 {
 	in >>= _state;
 	in >>= _dest;
+	in >>= _is_idle;
 }
 
 Actor::Actor(EntityType et, SerialiseOrder so, World* w, const Coord& pos) :
 	Entity(et, so),
 	Stepable(w->GetUniverse()),
+	_state(State::Idle),
 	_is_idle(false)
 {
 	w->AddActor(pos, this);
@@ -31,6 +32,7 @@ void Actor::SerialiseTo(std::ostringstream& out) const
 
 	out <<= _state;
 	out <<= _dest;
+	out <<= _is_idle;
 }
 
 float Actor::InnerStep() {
