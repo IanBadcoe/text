@@ -28,15 +28,18 @@ float InputHandler::InnerStep()
 
 	TCOD_event_t ev = TCODSystem::checkForEvent(TCOD_EVENT_KEY_PRESS | TCOD_EVENT_MOUSE_PRESS, &key, &mouse);
 
-	if (ev == TCOD_EVENT_KEY_PRESS)
+    Command cmd;
+
+    // character keys come through twice, once as TCODK_CHAR and once as TCODK_TEXT
+    // ignore the latter
+	if (ev == TCOD_EVENT_KEY_PRESS && key.vk != TCODK_TEXT)
 	{
 		if (key.vk >= TCODK_KP1 && key.vk <= TCODK_KP9 && key.vk != TCODK_KP5) {
 			Coord::KeyMapType::iterator it = Coord::KeyMap.find(key.vk);
 			assert(it != Coord::KeyMap.end());
 
 			Coord::Dir d = it->second;
-
-			Command cmd;
+            
 			cmd._type = Command::Type::Move;
 			cmd._dir = d;
 
@@ -44,14 +47,12 @@ float InputHandler::InnerStep()
 		}
 
 		if (key.vk == TCODK_ESCAPE) {
-			Command cmd;
 			cmd._type = Command::Type::Exit;
 
 			_command_dest->ReceiveCommand(cmd);
 		}
 
 		if (key.c == 'm') {
-			Command cmd;
 			cmd._type = Command::Type::DebugCreateNPC;
 			cmd._npc_type = EntityType::Miner;
 
@@ -60,7 +61,6 @@ float InputHandler::InnerStep()
 	} else if (ev == TCOD_EVENT_MOUSE_PRESS) {
 		Coord console_pos = FixConsoleCell(mouse.cx, mouse.cy);
 
-		Command cmd;
 		cmd._type = Command::Type::ConsoleCellClick;
 		cmd._map_cell = console_pos;
 
