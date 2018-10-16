@@ -78,15 +78,15 @@ void StepableQueue::AddAbsoluteStep(Stepable* s, float t) {
 	_queue.push(QueueEntry(s, t));
 	_contains.insert(s);
 
-	std::priority_queue<QueueEntry> temp(_queue);
-
-	float tt = temp.top()._time;
-
-	while (temp.size()) {
-		assert(temp.top()._time >= tt);
-		tt = temp.top()._time;
-		temp.pop();
-	}
+//	std::priority_queue<QueueEntry> temp(_queue);
+//
+//	float tt = temp.top()._time;
+//
+//	while (temp.size()) {
+//		assert(temp.top()._time >= tt);
+//		tt = temp.top()._time;
+//		temp.pop();
+//	}
 }
 
 void StepableQueue::SerialiseTo(std::ostringstream& out) const {

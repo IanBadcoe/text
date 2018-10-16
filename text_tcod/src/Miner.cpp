@@ -18,7 +18,8 @@ Miner::Miner(World * w, const Coord & pos, Player * p) :
 }
 
 float Miner::InnerStep() {
-	return 0.0f;
+    // do we even need this function?
+    return Actor::InnerStep();
 }
 
 void Miner::BecomeIdle() {
