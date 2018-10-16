@@ -31,15 +31,27 @@ void Client::Receive(Networker* networker, const PeerHandle peer, const std::str
 		break;
 	}
 
-	case Message::Type::JoinResponse:
+	case Message::Type::JoinAnnounce:
 	{
 		PeerJoinedMessage pj;
 		pj.FromBytes(str);
 
-		// if this was us, we area already known as the local player and this does nothing
+		// if this was us, we are already known as the local player and this does nothing
 		// if it was somebody else, ensure we have a player object for them...
 		_universe->EnsurePlayer(pj._player_id, false);
 		_current_frame = pj._frame_number;
+
+		break;
+	}
+
+	case Message::Type::LeaveAnnounce:
+	{
+		PeerLeftMessage pl;
+		pl.FromBytes(str);
+
+		// if this was us, we are already known as the local player and this does nothing
+		// if it was somebody else, ensure we have a player object for them...
+		_universe->EnsurePlayer(pl._player_id, false);
 
 		break;
 	}
@@ -74,8 +86,14 @@ void Client::Receive(Networker* networker, const PeerHandle peer, const std::str
 
 void Client::ReceiveCommand(const Command& c)
 {
-	Command temp(c);
-	temp._from_frame = _current_frame;
+	if (IsEnded())
+		return;
+
+	if (c._type == Command::Type::Exit)
+	{
+		_is_ended = true;
+		return;
+	}
 
 	CommandMessage cm(c);
 

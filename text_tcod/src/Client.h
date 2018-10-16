@@ -11,6 +11,7 @@ class Client :
 {
 public:
 	Client(Networker* network, Universe* universe) : _network(network), _is_ended(false), _highest_frame_received(-1), _current_frame(0), _universe(universe) {}
+	~Client() { }
 
 	// Inherited via INetworkHandler
 	virtual void Connected(Networker* networker, const PeerHandle peer) override;
@@ -27,7 +28,11 @@ public:
 	virtual void SetCommandSequenceReceiver(ICommandSequenceReceiver* csr) override;
 
 	bool IsEnded() const { return _is_ended; }
-	bool FrameReceived() const { return _highest_frame_received >= _current_frame + 1; }
+	bool FrameReceived() const
+	{
+		// when we are exiting, no point waiting to sych another frame...
+		return IsEnded() || _highest_frame_received >= _current_frame + 1;
+	}
 	void EndFrame() { _current_frame++; }
 
 private:

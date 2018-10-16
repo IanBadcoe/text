@@ -20,7 +20,7 @@ struct Command {
     Coord::Dir _dir;
 
 	int _player_id;
-	int _from_frame;
+//	int _from_frame;
 
 	EntityType _npc_type;
 };

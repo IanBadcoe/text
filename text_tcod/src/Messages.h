@@ -6,15 +6,16 @@ class Universe;
 
 struct Message {
 	enum class Type {
-		Unknwown,
-		JoinResponse,
+		Unknown,
+		JoinAnnounce,
+		LeaveAnnounce,
 		Command,
 		CommandSequence,			// AKA frame data
 		Universe
 	};
 
 	Message(Type t) : _type(t) {}
-	Message() : _type(Type::Unknwown) {}
+	Message() : _type(Type::Unknown) {}
 
 	Type _type;
 
@@ -28,7 +29,7 @@ struct Message {
 struct PeerJoinedMessage : public Message {
 	PeerJoinedMessage() {}
 	PeerJoinedMessage(int player_id, int frame_number) :
-		Message(Message::Type::JoinResponse),
+		Message(Message::Type::JoinAnnounce),
 		_player_id(player_id),
 		_frame_number(frame_number) {}
 
@@ -43,7 +44,7 @@ struct PeerJoinedMessage : public Message {
 struct PeerLeftMessage : public Message {
 	PeerLeftMessage() {}
 	PeerLeftMessage(int player_id) :
-		Message(Message::Type::JoinResponse),
+		Message(Message::Type::LeaveAnnounce),
 		_player_id(player_id) {}
 
 	int _player_id;

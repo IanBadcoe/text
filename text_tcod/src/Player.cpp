@@ -127,6 +127,9 @@ void Player::ExecuteCommand()
 
 		return;
 	}
+
+	default:
+		assert(false);
 	}
 
 	assert(false);

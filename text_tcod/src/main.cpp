@@ -72,13 +72,15 @@ int main(int argc, char* argv[]) {
 		force_no_client = true;
 	}
 
-    Networker network(1234, MAX_PLAYERS, force_no_client);
+	Networker network(1234, MAX_PLAYERS, force_no_client);
 
 	while (!network.IsReady())
 		;
 
 	if (network.IsServer())
 	{
+		// currently attaching the Networker to one of a client or server
+		// if we go to switching mode between the two we may need to stop doing that and instead do more cleanup on the Networker when the client/server disconnects
 		Server server(&network, &u);
 
 		// create local player object
@@ -129,6 +131,8 @@ int main(int argc, char* argv[]) {
 	}
 	else
 	{
+		// currently attaching the Networker to one of a client or server
+		// if we go to switching mode between the two we may need to stop doing that and instead do more cleanup on the Networker when the client/server disconnects
 		Client client(&network, &u);
 
 		// universe sends commands to server

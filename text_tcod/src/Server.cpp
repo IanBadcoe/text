@@ -64,7 +64,7 @@ void Server::Receive(Networker* networker, const PeerHandle peer, const std::str
 		break;
 	}
 
-	case Message::Type::JoinResponse:
+	case Message::Type::JoinAnnounce:
 	{
 		assert(false);
 

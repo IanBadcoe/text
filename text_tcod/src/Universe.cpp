@@ -128,9 +128,10 @@ void Universe::EnsurePlayer(int player_id, bool is_local)
 	{
 		Coord place_where;
 
-		// if this player has a base in the world, place them near it
 		if (!b)
 		{
+			// no base, place in first free space in top of centre line
+			// (may not happen any more...)
 			for (int i = 100; i < 200; i++) {
 				Coord try_pos(100, i);
 
@@ -141,6 +142,7 @@ void Universe::EnsurePlayer(int player_id, bool is_local)
 				}
 			}
 		} else {
+			// if this player has a base in the world, place them near it
 			for (IterateNxNSpiralOut it(b->GetPos(), 5); !it.Ended(); it.Next()) {
 				Coord try_pos(it.Current());
 				

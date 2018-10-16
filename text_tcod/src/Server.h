@@ -13,6 +13,7 @@ class Server :
 {
 public:
 	Server(Networker* network, Universe* universe);
+	~Server() { }
 
 	// Inherited via INetworkHandler
 	virtual void Connected(Networker* networker, const PeerHandle peer) override;
