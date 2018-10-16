@@ -50,12 +50,19 @@ float InputHandler::InnerStep()
 			_command_dest->ReceiveCommand(cmd);
 		}
 
-		if (key.c == 'm') {
-			Command cmd;
-			cmd._type = Command::Type::DebugCreateNPC;
-			cmd._npc_type = EntityType::Miner;
+		// character keys come through twice, once as a keycode and then again as text
+		// (this is because in oriental languages one key-press != one char, and also maybe
+		//  and more simply effects of SHIFT on the exact char obtained...)
+		// so far, we need only the key code, so ignore the text...
+		if (key.vk == TCODK_CHAR)
+		{
+			if (key.c == 'm') {
+				Command cmd;
+				cmd._type = Command::Type::DebugCreateNPC;
+				cmd._npc_type = EntityType::Miner;
 
-			_command_dest->ReceiveCommand(cmd);
+				_command_dest->ReceiveCommand(cmd);
+			}
 		}
 	} else if (ev == TCOD_EVENT_MOUSE_PRESS) {
 		Coord console_pos = FixConsoleCell(mouse.cx, mouse.cy);
